@@ -16,7 +16,7 @@ interface DoctorsTableProps {
   onView: (doctor: Doctor) => void;
 }
 
-const DoctorsTable: React.FC<DoctorsTableProps> = ({ onApprove, onReject, onView }) => {
+const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
 
   const pendingDoctors: Doctor[] = [
