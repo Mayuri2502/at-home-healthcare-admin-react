@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
@@ -7,8 +7,7 @@ import Toast from '../../components/doctors/Toast';
 interface DoctorDetailProps {}
 
 const DoctorDetail: React.FC<DoctorDetailProps> = () => {
-  const navigate = useNavigate();
-  const [modalState, setModalState] = useState({
+    const [modalState, setModalState] = useState({
     isOpen: false,
     type: 'approve' as 'approve' | 'reject',
     doctorName: 'Dr. Sarah Jenkins'
@@ -72,12 +71,13 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
         {/* Header */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20 pt-10 pb-10">
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => navigate('/doctors')}
-              className="text-slate-400 hover:text-primary transition-colors"
-            >
-              <i className="fa-solid fa-arrow-left"></i>
-            </button>
+            <Link to="/doctors" className="inline-block">
+              <button 
+                className="text-slate-400 hover:text-primary transition-colors"
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+              </button>
+            </Link>
             <h1 className="text-lg font-bold text-slate-900">Doctor Profile Detail</h1>
           </div>
           <div className="flex items-center gap-4">

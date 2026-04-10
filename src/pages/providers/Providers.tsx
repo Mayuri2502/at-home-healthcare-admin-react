@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 
 interface Provider {
@@ -13,8 +13,7 @@ interface Provider {
 }
 
 const Providers: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [selectedService, setSelectedService] = useState('all');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
@@ -114,12 +113,13 @@ const Providers: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 ml-8">
-            <button 
-              onClick={() => navigate('/providers/create')}
-              className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
-            >
-              <i className="fa-solid fa-plus"></i> Create Provider
-            </button>
+            <Link to="/providers/create" className="inline-block">
+              <button 
+                className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
+              >
+                <i className="fa-solid fa-plus"></i> Create Provider
+              </button>
+            </Link>
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
             <button className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg relative">
               <i className="fa-regular fa-bell text-lg"></i>
@@ -248,12 +248,13 @@ const Providers: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button 
-                          onClick={() => navigate(`/providers/edit/${provider.id}`)}
-                          className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
-                        >
-                          <i className="fa-solid fa-pen-to-square"></i>
-                        </button>
+                        <Link to={`/providers/edit/${provider.id}`} className="inline-block">
+                          <button 
+                            className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
+                          >
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </button>
+                        </Link>
                         {provider.status === 'active' ? (
                           <button
                             onClick={() => handleDeactivate(provider.name)}

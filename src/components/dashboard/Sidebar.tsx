@@ -43,9 +43,7 @@ const Sidebar: React.FC = () => {
             to={item.path}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'sidebar-item-active bg-primary/10 text-primary border-r-3 border-primary'
-                  : 'text-slate-500 hover:bg-slate-50'
+                isActive ? 'sidebar-item-active bg-primary/10 text-primary border-r-3 border-primary' : 'text-slate-500 hover:bg-slate-50'
               }`
             }
           >
@@ -67,9 +65,7 @@ const Sidebar: React.FC = () => {
             to={item.path}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'sidebar-item-active bg-primary/10 text-primary border-r-3 border-primary'
-                  : 'text-slate-500 hover:bg-slate-50'
+                isActive ? 'sidebar-item-active bg-primary/10 text-primary border-r-3 border-primary' : 'text-slate-500 hover:bg-slate-50'
               }`
             }
           >

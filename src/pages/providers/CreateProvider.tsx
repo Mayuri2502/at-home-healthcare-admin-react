@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 
 interface Service {
@@ -8,8 +8,7 @@ interface Service {
 }
 
 const CreateProvider: React.FC = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
+    const { id } = useParams<any>();
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
@@ -89,7 +88,7 @@ const CreateProvider: React.FC = () => {
 
   const handleConfirmLeave = () => {
     setShowConfirmModal(false);
-    navigate('/providers');
+    window.location.href = '/providers';
   };
 
   const handleStay = () => {
@@ -112,7 +111,7 @@ const CreateProvider: React.FC = () => {
 
     // Redirect after delay
     setTimeout(() => {
-      navigate('/providers');
+      window.location.href = '/providers';
     }, 2000);
   };
 

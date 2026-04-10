@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -7,7 +6,6 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -28,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     // Redirect to login with return URL
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    window.location.href = '/login';
   }
 
   return <>{children}</>;

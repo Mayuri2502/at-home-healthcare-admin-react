@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     email: 'admin@at-home.health',
     password: 'Admin@123'
   });
@@ -15,9 +13,9 @@ const Login: React.FC = () => {
     // Check if user is already logged in
     const token = localStorage.getItem('authToken');
     if (token) {
-      navigate('/dashboard');
+      window.location.href = '/dashboard';
     }
-  }, [navigate]);
+  }, []);
 
   const togglePassword = () => {
     const input = document.getElementById('password') as HTMLInputElement;
@@ -57,7 +55,7 @@ const Login: React.FC = () => {
           email: formData.email,
           role: 'Senior Admin'
         }));
-        navigate('/dashboard');
+        window.location.href = '/dashboard';
       } else {
         setError('Invalid email or password. Please try again.');
       }
