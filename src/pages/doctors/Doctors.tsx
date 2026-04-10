@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import DoctorsTable from '../../components/doctors/DoctorsTable';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Doctors: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   const [modalState, setModalState] = useState<{
@@ -55,7 +58,7 @@ const Doctors: React.FC = () => {
     const status = modalState.type === 'approve' ? 'Approved' : 'Rejected';
     setToast({
       show: true,
-      message: `Doctor successfully ${status}`
+      message: t('doctors.statusUpdate', { status, doctorName: modalState.doctorName })
     });
     hideModal();
   };
@@ -78,7 +81,7 @@ const Doctors: React.FC = () => {
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
               <input
                 type="text"
-                placeholder="Search by name, email or specialty..."
+                placeholder={t('doctors.searchDoctors')}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
               />
             </div>
@@ -88,10 +91,9 @@ const Doctors: React.FC = () => {
               <i className="fa-regular fa-bell text-lg"></i>
               <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-white"></span>
             </button>
-            <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-600">FR - Paris</span>
-              <i className="fa-solid fa-circle text-[8px] text-success"></i>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
             </div>
           </div>
         </header>
@@ -102,10 +104,10 @@ const Doctors: React.FC = () => {
             <div className="flex justify-between items-end">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                  Doctor Management
+                  {t('doctors.title')}
                 </h2>
                 <p className="text-slate-500 text-sm mt-1">
-                  Review registrations and manage active medical professionals.
+                  {t('doctors.subtitle')}
                 </p>
               </div>
               {/* <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">

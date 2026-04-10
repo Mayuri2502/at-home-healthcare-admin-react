@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Login.css';
 
 const Login: React.FC = () => {
-    const [formData, setFormData] = useState({
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
     email: 'admin@at-home.health',
     password: 'Admin@123'
   });
@@ -57,7 +59,7 @@ const Login: React.FC = () => {
         }));
         window.location.href = '/dashboard';
       } else {
-        setError('Invalid email or password. Please try again.');
+        setError(t('auth.invalidCredentials'));
       }
       setIsLoading(false);
     }, 1000);
@@ -89,9 +91,9 @@ const Login: React.FC = () => {
           <section className="w-full max-w-[440px]">
             <div className="bg-surface rounded-2xl shadow-soft border border-border p-8 md:p-10">
               <div className="mb-8">
-                <h1 className="text-2xl font-semibold mb-2">Admin Login</h1>
+                <h1 className="text-2xl font-semibold mb-2">{t('auth.adminLogin')}</h1>
                 <p className="text-textMuted text-sm">
-                  Welcome back. Please enter your credentials to access the healthcare dashboard.
+                  {t('auth.loginDescription')}
                 </p>
               </div>
 
@@ -99,7 +101,7 @@ const Login: React.FC = () => {
                 {/* Email Field */}
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-textMuted">
-                    Email Address
+                    {t('auth.emailAddress')}
                   </label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-textMuted/60">
@@ -122,10 +124,10 @@ const Login: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-textMuted">
-                      Password
+                      {t('auth.password')}
                     </label>
                     <a href="/forgot-password" className="text-xs font-semibold text-accent hover:underline">
-                      Forgot password?
+                      {t('auth.forgotPassword') || 'Forgot password?'}
                     </a>
                   </div>
                   <div className="relative">
@@ -181,10 +183,10 @@ const Login: React.FC = () => {
                     {isLoading ? (
                       <span className="flex items-center justify-center gap-2">
                         <i className="fa-solid fa-spinner fa-spin"></i>
-                        Logging in...
+                        {t('auth.loggingIn')}
                       </span>
                     ) : (
-                      'Login to Dashboard'
+                      t('auth.loginToDashboard')
                     )}
                   </button>
                 </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Service {
   id: string;
@@ -24,6 +25,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
   onSave,
   service
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
@@ -50,7 +52,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
       <div className="bg-white w-full max-w-lg rounded-2xl tradingview-shadow overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h3 className="text-lg font-bold text-slate-900">
-            {service ? 'Edit Service' : 'Add New Service'}
+            {service ? t('services.editService') : t('services.addNewService')}
           </h3>
           <button
             onClick={onClose}
@@ -63,7 +65,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Service Name
+              {t('services.serviceName')}
             </label>
             <input
               type="text"
@@ -78,7 +80,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Description
+              {t('services.description')}
             </label>
             <textarea
               name="description"
@@ -93,7 +95,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-              Category
+              {t('services.category')}
             </label>
             <select
               name="category"
@@ -101,17 +103,17 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
             >
-              <option value="Diagnostics">Diagnostics</option>
-              <option value="Nursing">Nursing</option>
-              <option value="Rehabilitation">Rehabilitation</option>
-              <option value="Pharmacy">Pharmacy</option>
+              <option value="Diagnostics">{t('servicesData.diagnostics')}</option>
+              <option value="Nursing">{t('servicesData.homeNursing')}</option>
+              <option value="Rehabilitation">{t('servicesData.rehabilitation')}</option>
+              <option value="Pharmacy">{t('servicesData.pharmacy')}</option>
             </select>
           </div>
 
           <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100">
             <i className="fa-solid fa-circle-info text-amber-500"></i>
             <p className="text-[11px] text-amber-700 leading-relaxed font-medium">
-              After saving, you can map a specific intake form to this service in the Forms Configuration section.
+              {t('services.formMappingInfo')}
             </p>
           </div>
         </form>

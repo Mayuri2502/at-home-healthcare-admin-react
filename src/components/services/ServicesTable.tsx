@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Service {
   id: string;
@@ -22,6 +23,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   onEdit,
   onDelete
 }) => {
+  const { t } = useTranslation();
   const getIconColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
       blue: 'bg-blue-50 text-blue-600',
@@ -68,12 +70,12 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
     <section className="bg-white rounded-2xl border border-slate-200 tradingview-shadow overflow-hidden">
       <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
         <div className="flex items-center gap-4">
-          <h2 className="text-sm font-bold text-slate-800">All Services</h2>
+          <h2 className="text-sm font-bold text-slate-800">{t('services.allServices')}</h2>
           <div className="flex gap-2">
             <select className="text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none">
-              <option>All Status</option>
-              <option>Mapped Only</option>
-              <option>Unmapped Only</option>
+              <option>{t('services.allStatus')}</option>
+              <option>{t('services.mappedOnly')}</option>
+              <option>{t('services.unmappedOnly')}</option>
             </select>
           </div>
         </div>
@@ -92,19 +94,19 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
           <thead>
             <tr className="bg-slate-50/50 border-b border-slate-100">
               <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Service Name
+                {t('services.serviceName')}
               </th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Description
+                {t('services.description')}
               </th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Form Mapped
+                {t('services.formMapped')}
               </th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Assigned Providers
+                {t('services.assignedProviders')}
               </th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
-                Actions
+                {t('services.actions')}
               </th>
             </tr>
           </thead>
@@ -126,12 +128,12 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                   {service.formMapped ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold border border-emerald-100 uppercase tracking-wider">
                       <i className="fa-solid fa-circle-check text-[8px]"></i>
-                      Yes
+                      {t('common.yes')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold border border-amber-100 uppercase tracking-wider">
                       <i className="fa-solid fa-circle-exclamation text-[8px]"></i>
-                      No
+                      {t('common.no')}
                     </span>
                   )}
                 </td>
@@ -162,7 +164,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
 
       {/* Pagination */}
       <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-white">
-        <p className="text-xs text-slate-400 font-medium">Showing 1 to {services.length} of 24 results</p>
+        <p className="text-xs text-slate-400 font-medium">{t('services.showingResults', { start: 1, end: services.length, total: 24 })}</p>
         <div className="flex items-center gap-1">
           <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
             <i className="fa-solid fa-chevron-left text-[10px]"></i>
