@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequestData } from './RequestTypes';
 
 interface RequestDetailModalProps {
@@ -12,6 +13,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   onClose,
   request
 }) => {
+  const { t } = useTranslation();
   if (!isOpen || !request) return null;
 
   const getStatusChipClass = (status: string): string => {
@@ -26,10 +28,10 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
 
   const getStatusText = (status: string): string => {
     const statusTexts = {
-      pending: 'Pending Approval',
-      completed: 'Completed',
-      inprogress: 'In Progress',
-      returned: 'Returned'
+      pending: t('requests.pending'),
+      completed: t('requests.completed'),
+      inprogress: t('requests.inProgress'),
+      returned: t('requests.returned')
     };
     return statusTexts[status as keyof typeof statusTexts] || status;
   };
@@ -37,13 +39,13 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   const getTimelineEvents = () => {
     return [
       {
-        status: 'Request Submitted',
+        status: t('requests.requestSubmitted'),
         date: 'Oct 26, 2023 at 14:20',
         icon: 'fa-check',
         color: 'emerald'
       },
       {
-        status: 'In Progress',
+        status: t('requests.inProgress'),
         date: 'Oct 26, 2023 at 15:45',
         icon: 'fa-spinner',
         color: 'blue'
@@ -62,8 +64,8 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               <i className="fa-solid fa-clipboard-check text-xl"></i>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Request #{request.id}</h3>
-              <p className="text-xs text-slate-500">Submitted on {request.dateCreated}</p>
+              <h3 className="text-lg font-bold text-slate-900">{t('requests.request')} #{request.id}</h3>
+              <p className="text-xs text-slate-500">{t('requests.submittedOn')} {request.dateCreated}</p>
             </div>
           </div>
           <button
@@ -78,7 +80,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div className="bg-slate-50 p-4 rounded-xl">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                Doctor Information
+                {t('requests.doctorInformation')}
               </p>
               <div className="flex items-center gap-3 mb-3">
                 <img
@@ -88,16 +90,16 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 />
                 <div>
                   <p className="text-sm font-bold text-slate-800">{request.doctor.name}</p>
-                  <p className="text-xs text-slate-500">{request.doctor.specialty} Specialist</p>
+                  <p className="text-xs text-slate-500">{request.doctor.specialty} {t('requests.specialist')}</p>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">RPPS Number:</span>
+                  <span className="text-slate-500">{t('requests.rppsNumber')}:</span>
                   <span className="font-bold text-slate-700">10009876543</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Contact:</span>
+                  <span className="text-slate-500">{t('requests.contact')}:</span>
                   <span className="font-bold text-slate-700">+33 6 12 34 56 78</span>
                 </div>
               </div>
@@ -105,7 +107,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
             
             <div className="bg-slate-50 p-4 rounded-xl">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                Patient Information
+                {t('requests.patientInformation')}
               </p>
               <div className="mb-3">
                 <p className="text-sm font-bold text-slate-800">{request.patient}</p>
@@ -113,11 +115,11 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Address:</span>
+                  <span className="text-slate-500">{t('requests.address')}:</span>
                   <span className="font-bold text-slate-700">14 Rue de la Paix, Paris</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Contact:</span>
+                  <span className="text-slate-500">{t('requests.contact')}:</span>
                   <span className="font-bold text-slate-700">+33 6 98 76 54 32</span>
                 </div>
               </div>
@@ -126,7 +128,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
           
           <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-slate-700">Service Requested</p>
+              <p className="text-xs font-bold text-slate-700">{t('requests.serviceRequested')}</p>
               <span className={getStatusChipClass(request.status)}>
                 {getStatusText(request.status)}
               </span>
@@ -138,7 +140,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
           </div>
           
           <div className="space-y-3">
-            <p className="text-xs font-bold text-slate-700">Status Timeline</p>
+            <p className="text-xs font-bold text-slate-700">{t('requests.statusTimeline')}</p>
             <div className="space-y-2">
               {timelineEvents.map((event, index) => (
                 <div key={index} className="flex items-start gap-3">
@@ -160,10 +162,10 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
           >
-            Close
+            {t('common.close')}
           </button>
           <button className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all">
-            Reassign Provider
+            {t('requests.reassignProvider')}
           </button>
         </div>
       </div>

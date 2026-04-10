@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface Service {
   id: string;
@@ -8,7 +10,8 @@ interface Service {
 }
 
 const CreateProvider: React.FC = () => {
-    const { id } = useParams<any>();
+  const { t } = useTranslation();
+  const { id } = useParams<any>();
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
@@ -97,17 +100,17 @@ const CreateProvider: React.FC = () => {
 
   const handleSubmit = () => {
     if (!formData.providerName) {
-      showToastMessage('Please enter a provider name.', 'error');
+      showToastMessage(t('providers.validation.providerNameRequired'), 'error');
       return;
     }
 
     if (!formData.email) {
-      showToastMessage('Please enter an email address.', 'error');
+      showToastMessage(t('providers.validation.emailRequired'), 'error');
       return;
     }
 
-    const action = isEditMode ? 'updated' : 'created';
-    showToastMessage(`Provider successfully ${action}!`, 'success');
+    const action = isEditMode ? t('providers.validation.updated') : t('providers.validation.created');
+    showToastMessage(t('providers.validation.success', { action }), 'success');
 
     // Redirect after delay
     setTimeout(() => {
@@ -150,31 +153,34 @@ const CreateProvider: React.FC = () => {
             </button>
             <div>
               <h1 className="text-lg font-bold text-slate-900">
-                {isEditMode ? 'Edit Provider Details' : 'Create New Provider'}
+                {isEditMode ? t('providers.editProvider') : t('providers.createProvider')}
               </h1>
               <p className="text-[11px] text-slate-500 font-medium">
-                {isEditMode ? 'Update provider information and services.' : 'Fill in the details to register a healthcare service provider.'}
+                {isEditMode ? t('providers.updateProviderInfo') : t('providers.registerProviderInfo')}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {isEditMode && (
               <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold border border-amber-100 uppercase tracking-wider">
-                Editing Mode
+                {t('providers.editingMode')}
               </span>
             )}
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
             <button 
               onClick={handleCancel}
               className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               onClick={handleSubmit}
               className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
             >
-              {isEditMode ? 'Save Changes' : 'Create Provider'}
+              {isEditMode ? t('providers.saveChanges') : t('providers.createProvider')}
             </button>
           </div>
         </header>
@@ -187,11 +193,11 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
                   <i className="fa-solid fa-id-card"></i>
                 </div>
-                <h2 className="text-sm font-bold text-slate-800">Basic Information</h2>
+                <h2 className="text-sm font-bold text-slate-800">{t('providers.basicInformation')}</h2>
               </div>
               {isEditMode && (
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-slate-500">Provider Status:</span>
+                  <span className="text-xs font-bold text-slate-500">{t('providers.providerStatus')}:</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -202,14 +208,14 @@ const CreateProvider: React.FC = () => {
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"></div>
                   </label>
                   <span className={`text-xs font-bold ${formData.status ? 'text-emerald-600' : 'text-slate-400'}`}>
-                    {formData.status ? 'Active' : 'Inactive'}
+                    {formData.status ? t('common.active') : t('common.inactive')}
                   </span>
                 </div>
               )}
             </div>
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Provider Name</label>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('providers.providerName')}</label>
                 <div className="relative">
                   <i className="fa-solid fa-building absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                   <input
@@ -223,7 +229,7 @@ const CreateProvider: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('providers.emailAddress')}</label>
                 <div className="relative">
                   <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                   <input
@@ -237,7 +243,7 @@ const CreateProvider: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Contact Number</label>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('providers.contactNumber')}</label>
                 <div className="relative">
                   <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                   <input
@@ -353,22 +359,22 @@ const CreateProvider: React.FC = () => {
             <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-circle-question text-2xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Unsaved Changes</h3>
+            <h3 className="text-xl font-bold text-slate-900">{t('providers.unsavedChanges')}</h3>
             <p className="text-slate-500 text-sm mt-2">
-              You have unsaved changes in form. Are you sure you want to leave? Progress will be lost.
+              {t('providers.unsavedChangesMessage')}
             </p>
             <div className="mt-8 flex gap-3">
               <button
                 onClick={handleStay}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
               >
-                Stay Here
+                {t('providers.stayHere')}
               </button>
               <button
                 onClick={handleConfirmLeave}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-primary hover:bg-slate-800 rounded-xl"
               >
-                Discard & Leave
+                {t('providers.discardAndLeave')}
               </button>
             </div>
           </div>

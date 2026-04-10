@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarItem {
   icon: string;
@@ -8,19 +9,21 @@ interface SidebarItem {
 }
 
 const Sidebar: React.FC = () => {
+  const { t } = useTranslation();
+  
   const mainNavItems: SidebarItem[] = [
-    { icon: 'fa-chart-pie', label: 'Dashboard Overview', path: '/dashboard' },
-    { icon: 'fa-user-doctor', label: 'Doctors', path: '/doctors' },
-    { icon: 'fa-hospital', label: 'Providers', path: '/providers' },
-    { icon: 'fa-hand-holding-medical', label: 'Services', path: '/services' },
-    { icon: 'fa-file-lines', label: 'Forms', path: '/forms' },
-    { icon: 'fa-clipboard-list', label: 'Requests', path: '/requests' },
-    { icon: 'fa-bell', label: 'Notifications', path: '/notifications' }
+    { icon: 'fa-chart-pie', label: t('navigation.dashboard'), path: '/dashboard' },
+    { icon: 'fa-user-doctor', label: t('navigation.doctors'), path: '/doctors' },
+    { icon: 'fa-hospital', label: t('navigation.providers'), path: '/providers' },
+    { icon: 'fa-hand-holding-medical', label: t('navigation.services'), path: '/services' },
+    { icon: 'fa-file-lines', label: t('navigation.forms'), path: '/forms' },
+    { icon: 'fa-clipboard-list', label: t('navigation.requests'), path: '/requests' },
+    { icon: 'fa-bell', label: t('navigation.notifications'), path: '/notifications' }
   ];
 
   const systemNavItems: SidebarItem[] = [
-    { icon: 'fa-shield-halved', label: 'Audit Logs', path: '/audit-logs' },
-    { icon: 'fa-gear', label: 'Settings', path: '/settings' }
+    { icon: 'fa-shield-halved', label: t('navigation.auditLogs'), path: '/audit-logs' },
+    { icon: 'fa-gear', label: t('navigation.settings'), path: '/settings' }
   ];
 
   return (
@@ -90,7 +93,7 @@ const Sidebar: React.FC = () => {
           <button 
             onClick={() => window.logout?.()} 
             className="text-slate-400 hover:text-danger p-1 auth-logout"
-            title="Logout"
+            title={t('auth.logout')}
           >
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
           </button>

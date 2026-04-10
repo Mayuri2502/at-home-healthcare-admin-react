@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import './i18n'; // Initialize i18n
+import { useTranslation } from 'react-i18next';
 import { Login, ForgotPassword, ResetPassword } from './pages/auth';
 import { Dashboard } from './pages/dashboard';
 import { Doctors } from './pages/doctors';
@@ -27,7 +29,14 @@ window.logout = () => {
 };
 
 function App() {
+  const { i18n } = useTranslation();
+  
   useEffect(() => {
+    // Force language initialization
+    if (!i18n.language || i18n.language === 'dev') {
+      i18n.changeLanguage('en');
+    }
+    
     // Add global styles for authentication
     const style = document.createElement('style');
     style.textContent = `
@@ -41,7 +50,7 @@ function App() {
       }
     `;
     document.head.appendChild(style);
-  }, []);
+  }, [i18n]);
 
   return (
     <Router>

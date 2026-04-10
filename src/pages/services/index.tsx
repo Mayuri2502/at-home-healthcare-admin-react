@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import { ServicesTable } from '../../components/services/ServicesTable';
 import { AddServiceModal } from '../../components/services/AddServiceModal';
 import { DeleteConfirmModal } from '../../components/services/DeleteConfirmModal';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface Service {
   id: string;
@@ -16,6 +18,7 @@ interface Service {
 }
 
 export const Services: React.FC = () => {
+  const { t } = useTranslation();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -23,9 +26,9 @@ export const Services: React.FC = () => {
   const services: Service[] = [
     {
       id: '1',
-      name: 'Blood Test (Comprehensive)',
-      description: 'Full metabolic panel and lipid profile blood analysis.',
-      category: 'Diagnostics',
+      name: t('servicesData.bloodTest.name'),
+      description: t('servicesData.bloodTest.description'),
+      category: t('servicesData.bloodTest.category'),
       formMapped: true,
       providers: 14,
       icon: 'fa-droplet',
@@ -33,9 +36,9 @@ export const Services: React.FC = () => {
     },
     {
       id: '2',
-      name: 'Physical Therapy',
-      description: 'In-home physical rehabilitation sessions.',
-      category: 'Rehabilitation',
+      name: t('servicesData.physicalTherapy.name'),
+      description: t('servicesData.physicalTherapy.description'),
+      category: t('servicesData.physicalTherapy.category'),
       formMapped: false,
       providers: 5,
       icon: 'fa-person-walking-with-cane',
@@ -43,9 +46,9 @@ export const Services: React.FC = () => {
     },
     {
       id: '3',
-      name: 'Post-Op Nursing Care',
-      description: 'Skilled nursing for patients recovering from surgery.',
-      category: 'Nursing',
+      name: t('servicesData.postOpNursing.name'),
+      description: t('servicesData.postOpNursing.description'),
+      category: t('servicesData.postOpNursing.category'),
       formMapped: true,
       providers: 10,
       icon: 'fa-house-medical',
@@ -88,8 +91,8 @@ export const Services: React.FC = () => {
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20 pt-10 pb-10">
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-lg font-bold text-slate-900">Services Management</h1>
-              <p className="text-[11px] text-slate-500 font-medium">Configure and manage healthcare services offered to patients.</p>
+              <h1 className="text-lg font-bold text-slate-900">{t('services.title')}</h1>
+              <p className="text-[11px] text-slate-500 font-medium">{t('services.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -97,7 +100,7 @@ export const Services: React.FC = () => {
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
               <input
                 type="text"
-                placeholder="Search services..."
+                placeholder={t('services.searchServices')}
                 className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 w-64 transition-all"
               />
             </div>
@@ -106,8 +109,12 @@ export const Services: React.FC = () => {
               className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10 flex items-center gap-2"
             >
               <i className="fa-solid fa-plus"></i>
-              Add Service
+              {t('services.addService')}
             </button>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
@@ -115,31 +122,31 @@ export const Services: React.FC = () => {
           {/* Stats Section */}
           <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Services</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('services.totalServices')}</p>
               <div className="flex items-end justify-between">
                 <h3 className="text-2xl font-bold text-slate-800">{stats.totalServices}</h3>
-                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded">+2 this month</span>
+                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded">{t('services.thisMonth')}</span>
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mapped Forms</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('services.mappedForms')}</p>
               <div className="flex items-end justify-between">
                 <h3 className="text-2xl font-bold text-slate-800">{stats.mappedForms}</h3>
-                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">75% coverage</span>
+                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">{t('services.coverage')}</span>
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Unmapped Services</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('services.unmappedServices')}</p>
               <div className="flex items-end justify-between">
                 <h3 className="text-2xl font-bold text-slate-800">{stats.unmappedServices}</h3>
-                <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">Action required</span>
+                <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">{t('services.actionRequired')}</span>
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Providers</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('services.activeProviders')}</p>
               <div className="flex items-end justify-between">
                 <h3 className="text-2xl font-bold text-slate-800">{stats.activeProviders}</h3>
-                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded">Across all services</span>
+                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded">{t('services.acrossAllServices')}</span>
               </div>
             </div>
           </section>

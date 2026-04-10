@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './ForgotPassword.css';
 
 const ForgotPassword: React.FC = () => {
+  const { t } = useTranslation();
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle forgot password logic here
@@ -38,7 +41,7 @@ const ForgotPassword: React.FC = () => {
                 className="text-xs font-semibold text-textMuted hover:text-primary flex items-center gap-2 transition-colors"
               >
                 <i className="fa-solid fa-arrow-left"></i>
-                Back to Admin Login
+                {t('auth.backToAdminLogin')}
               </button>
             </div>
 
@@ -46,10 +49,9 @@ const ForgotPassword: React.FC = () => {
               <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary mb-6">
                 <i className="fa-solid fa-key text-xl"></i>
               </div>
-              <h1 className="text-2xl font-semibold mb-2">Forgot Password?</h1>
+              <h1 className="text-2xl font-semibold mb-2">{t('auth.forgotPasswordTitle')}</h1>
               <p className="text-textMuted text-sm leading-relaxed">
-                Enter your administrative email address and we'll send you
-                instructions to reset your password.
+                {t('auth.forgotPasswordDescription')}
               </p>
             </div>
 
@@ -57,7 +59,7 @@ const ForgotPassword: React.FC = () => {
               {/* Email Input */}
               <div className="space-y-2">
                 <label htmlFor="email" className="text-xs font-bold text-textMain uppercase tracking-wider">
-                  Work Email Address
+                  {t('auth.workEmailAddress')}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-textMuted">
@@ -79,7 +81,7 @@ const ForgotPassword: React.FC = () => {
                   type="submit"
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 flex items-center justify-center gap-2 active:scale-[0.98]"
                 >
-                  Send Reset Instructions
+                  {t('auth.sendResetInstructions')}
                   <i className="fa-solid fa-paper-plane text-[10px]"></i>
                 </button>
               </div>

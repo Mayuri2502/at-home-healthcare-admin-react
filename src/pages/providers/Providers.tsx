@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface Provider {
   id: string;
@@ -13,7 +15,8 @@ interface Provider {
 }
 
 const Providers: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [selectedService, setSelectedService] = useState('all');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
@@ -24,28 +27,28 @@ const Providers: React.FC = () => {
   const providers: Provider[] = [
     {
       id: 'PRV-9021',
-      name: 'BioHealth Labs',
-      email: 'contact@biohealth.fr',
-      phone: '+33 1 45 67 89 00',
-      services: ['Diagnostics', 'Blood Test'],
+      name: t('providersData.bioHealth.name'),
+      email: t('providersData.bioHealth.email'),
+      phone: t('providersData.bioHealth.phone'),
+      services: [t('servicesData.diagnostics'), t('servicesData.bloodTest.name')],
       status: 'active',
       initials: 'BH'
     },
     {
       id: 'PRV-4432',
-      name: 'SwiftCare Nursing',
-      email: 'ops@swiftcare.com',
-      phone: '+33 6 88 99 00 11',
-      services: ['Home Nursing', 'Post-Op Care', 'Medication Management'],
+      name: t('providersData.swiftCare.name'),
+      email: t('providersData.swiftCare.email'),
+      phone: t('providersData.swiftCare.phone'),
+      services: [t('servicesData.homeNursing'), t('servicesData.postOpCare'), t('servicesData.medicationManagement')],
       status: 'active',
       initials: 'SC'
     },
     {
       id: 'PRV-1108',
-      name: 'MediPack Solutions',
-      email: 'support@medipack.fr',
-      phone: '+33 1 22 33 44 55',
-      services: ['Pharmacy Delivery'],
+      name: t('providersData.medipack.name'),
+      email: t('providersData.medipack.email'),
+      phone: t('providersData.medipack.phone'),
+      services: [t('servicesData.pharmacyDelivery')],
       status: 'inactive',
       initials: 'MP'
     }
@@ -58,7 +61,7 @@ const Providers: React.FC = () => {
 
   const confirmDeactivate = () => {
     setShowDeactivateModal(false);
-    setToastMessage('Provider has been deactivated successfully.');
+    setToastMessage(t('providers.deactivatedSuccessfully'));
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
@@ -68,14 +71,14 @@ const Providers: React.FC = () => {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold border border-emerald-100">
           <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-          Active
+          {t('common.active')}
         </span>
       );
     } else {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-[10px] font-bold border border-slate-200">
           <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
-          Inactive
+          {t('common.inactive')}
         </span>
       );
     }
@@ -105,7 +108,7 @@ const Providers: React.FC = () => {
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
               <input
                 type="text"
-                placeholder="Search providers by name, email or service..."
+                placeholder={t('providers.searchProviders')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
@@ -117,7 +120,7 @@ const Providers: React.FC = () => {
               <button 
                 className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
               >
-                <i className="fa-solid fa-plus"></i> Create Provider
+                <i className="fa-solid fa-plus"></i> {t('providers.createProvider')}
               </button>
             </Link>
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
@@ -125,6 +128,10 @@ const Providers: React.FC = () => {
               <i className="fa-regular fa-bell text-lg"></i>
               <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-white"></span>
             </button>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
@@ -141,7 +148,7 @@ const Providers: React.FC = () => {
                       : 'text-slate-500 hover:bg-slate-50'
                   }`}
                 >
-                  All Providers
+                  {t('providers.allProviders')}
                 </button>
                 <button
                   onClick={() => setFilterStatus('active')}
@@ -151,7 +158,7 @@ const Providers: React.FC = () => {
                       : 'text-slate-500 hover:bg-slate-50'
                   }`}
                 >
-                  Active
+                  {t('common.active')}
                 </button>
                 <button
                   onClick={() => setFilterStatus('inactive')}
@@ -161,7 +168,7 @@ const Providers: React.FC = () => {
                       : 'text-slate-500 hover:bg-slate-50'
                   }`}
                 >
-                  Inactive
+                  {t('common.inactive')}
                 </button>
               </div>
               <select
@@ -169,14 +176,14 @@ const Providers: React.FC = () => {
                 onChange={(e) => setSelectedService(e.target.value)}
                 className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-600 focus:outline-none shadow-sm"
               >
-                <option value="all">All Services</option>
-                <option value="home-care">Home Care</option>
-                <option value="diagnostics">Diagnostics</option>
-                <option value="pharmacy">Pharmacy</option>
+                <option value="all">{t('services.serviceName')}</option>
+                <option value="home-care">{t('services.homeCare')}</option>
+                <option value="diagnostics">{t('services.diagnostics')}</option>
+                <option value="pharmacy">{t('services.pharmacy')}</option>
               </select>
             </div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span>Showing 1-{providers.length} of {providers.length} Providers</span>
+              <span>{t('common.showing', { start: 1, end: providers.length, total: providers.length, type: t('providers.title') })}</span>
               <div className="flex gap-1 ml-2">
                 <button className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
                   <i className="fa-solid fa-chevron-left text-[10px]"></i>
@@ -194,19 +201,19 @@ const Providers: React.FC = () => {
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Provider
+                    {t('providers.providerName')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Contact Info
+                    {t('common.contact')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Assigned Services
+                    {t('providers.serviceType')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Status
+                    {t('common.status')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
-                    Actions
+                    {t('common.actions')}
                   </th>
                 </tr>
               </thead>
@@ -276,15 +283,15 @@ const Providers: React.FC = () => {
             <div className="p-6 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
               <div className="flex gap-2">
                 <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
-                  Bulk Deactivate
+                  {t('common.bulkDeactivate')}
                 </button>
                 <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
-                  Export CSV
+                  {t('common.export')} CSV
                 </button>
               </div>
               <div className="flex items-center gap-2">
                 <button className="px-3 py-1 text-xs font-bold text-slate-400 cursor-not-allowed">
-                  Previous
+                  {t('common.previous')}
                 </button>
                 <div className="flex gap-1">
                   <button className="w-8 h-8 text-xs font-bold bg-primary text-white rounded-lg">1</button>
@@ -292,7 +299,7 @@ const Providers: React.FC = () => {
                   <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">3</button>
                 </div>
                 <button className="px-3 py-1 text-xs font-bold text-primary hover:underline">
-                  Next
+                  {t('common.next')}
                 </button>
               </div>
             </div>
@@ -307,7 +314,7 @@ const Providers: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Active Providers
+                    {t('providers.activeProviders')}
                   </p>
                   <p className="text-2xl font-bold text-slate-900">112</p>
                 </div>
@@ -320,7 +327,7 @@ const Providers: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Pending Onboarding
+                    {t('providers.pendingOnboarding')}
                   </p>
                   <p className="text-2xl font-bold text-slate-900">8</p>
                 </div>
@@ -333,7 +340,7 @@ const Providers: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Services Covered
+                    {t('providers.servicesCovered')}
                   </p>
                   <p className="text-2xl font-bold text-slate-900">24</p>
                 </div>
@@ -350,23 +357,22 @@ const Providers: React.FC = () => {
             <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Deactivate Provider?</h3>
+            <h3 className="text-xl font-bold text-slate-900">{t('providers.deactivateProvider')}?</h3>
             <p className="text-slate-500 text-sm mt-2">
-              Are you sure you want to deactivate <span className="font-bold text-slate-900">{selectedProvider}</span>? 
-              They will no longer be able to receive new service requests.
+              {t('providers.deactivateConfirm', { providerName: selectedProvider })}
             </p>
             <div className="mt-8 flex gap-3">
               <button
                 onClick={() => setShowDeactivateModal(false)}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={confirmDeactivate}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl"
               >
-                Deactivate
+                {t('common.deactivate')}
               </button>
             </div>
           </div>

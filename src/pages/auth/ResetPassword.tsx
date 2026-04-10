@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ResetPassword.css';
 
 const ResetPassword: React.FC = () => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,12 +21,12 @@ const ResetPassword: React.FC = () => {
 
   const getStrengthLabel = (strength: number) => {
     switch (strength) {
-      case 0: return 'Weak';
-      case 1: return 'Weak';
-      case 2: return 'Medium';
-      case 3: return 'Strong';
-      case 4: return 'Very Strong';
-      default: return 'Weak';
+      case 0: return t('auth.passwordStrength.weak');
+      case 1: return t('auth.passwordStrength.weak');
+      case 2: return t('auth.passwordStrength.medium');
+      case 3: return t('auth.passwordStrength.strong');
+      case 4: return t('auth.passwordStrength.veryStrong');
+      default: return t('auth.passwordStrength.weak');
     }
   };
 
@@ -74,16 +76,15 @@ const ResetPassword: React.FC = () => {
                 <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center text-success mx-auto mb-8">
                   <i className="fa-solid fa-circle-check text-4xl"></i>
                 </div>
-                <h2 className="text-2xl font-bold text-textMain mb-3">Password Updated</h2>
+                <h2 className="text-2xl font-bold text-textMain mb-3">{t('auth.passwordUpdated')}</h2>
                 <p className="text-textMuted text-sm leading-relaxed mb-10 px-4">
-                  Your administrative credentials have been successfully updated.
-                  You can now use your new password to sign in.
+                  {t('auth.passwordUpdatedDescription')}
                 </p>
                 <button
                   onClick={handleBackToLogin}
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 flex items-center justify-center gap-2 active:scale-[0.98]"
                 >
-                  Return to Admin Login
+                  {t('auth.returnToAdminLogin')}
                   <i className="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
               </div>
@@ -127,9 +128,9 @@ const ResetPassword: React.FC = () => {
                 <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary mb-6">
                   <i className="fa-solid fa-shield-keyhole text-xl"></i>
                 </div>
-                <h1 className="text-2xl font-semibold mb-2">Reset Password</h1>
+                <h1 className="text-2xl font-semibold mb-2">{t('auth.resetPasswordTitle')}</h1>
                 <p className="text-textMuted text-sm leading-relaxed">
-                  Create a strong, unique password to secure your administrative access.
+                  {t('auth.resetPasswordDescription')}
                 </p>
               </div>
 
@@ -137,7 +138,7 @@ const ResetPassword: React.FC = () => {
                 {/* New Password Input */}
                 <div className="space-y-2">
                   <label htmlFor="new-password" className="text-xs font-bold text-textMain uppercase tracking-wider">
-                    New Password
+                    {t('auth.newPassword')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-textMuted">
@@ -181,7 +182,7 @@ const ResetPassword: React.FC = () => {
                 {/* Confirm Password Input */}
                 <div className="space-y-2">
                   <label htmlFor="confirm-password" className="text-xs font-bold text-textMain uppercase tracking-wider">
-                    Confirm New Password
+                    {t('auth.confirmNewPassword')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-textMuted">
@@ -213,7 +214,7 @@ const ResetPassword: React.FC = () => {
                     disabled={password !== confirmPassword || password.length < 12}
                     className="w-full h-12 bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 flex items-center justify-center gap-2 active:scale-[0.98]"
                   >
-                    Update Password
+                    {t('auth.updatePassword')}
                     <i className="fa-solid fa-check-circle text-[10px]"></i>
                   </button>
                 </div>

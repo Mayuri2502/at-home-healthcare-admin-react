@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface KPICard {
   title: string;
@@ -15,9 +16,11 @@ interface KPICard {
 }
 
 const KPICards: React.FC = () => {
+  const { t } = useTranslation();
+  
   const kpiData: KPICard[] = [
     {
-      title: 'Total Doctors',
+      title: t('dashboard.kpi.totalDoctors'),
       value: '1,284',
       change: '12%',
       changeType: 'positive',
@@ -27,17 +30,17 @@ const KPICards: React.FC = () => {
       progress: 75
     },
     {
-      title: 'Pending Approvals',
+      title: t('dashboard.kpi.pendingApprovals'),
       value: '42',
-      change: 'Pending',
+      change: t('dashboard.kpi.pending'),
       changeType: 'neutral',
       icon: 'fa-clock-rotate-left',
       iconBg: 'bg-amber-50',
       iconColor: 'text-amber-600',
-      subtitle: '8 requiring urgent review'
+      subtitle: t('dashboard.kpi.urgentReview')
     },
     {
-      title: 'Active Requests',
+      title: t('dashboard.kpi.activeRequests'),
       value: '3,592',
       change: '5.4%',
       changeType: 'positive',
@@ -51,14 +54,14 @@ const KPICards: React.FC = () => {
       ]
     },
     {
-      title: 'Providers',
+      title: t('dashboard.kpi.providers'),
       value: '156',
-      change: 'Stable',
+      change: t('dashboard.kpi.stable'),
       changeType: 'neutral',
       icon: 'fa-building-columns',
       iconBg: 'bg-purple-50',
       iconColor: 'text-purple-600',
-      subtitle: '98% service uptime'
+      subtitle: t('dashboard.kpi.serviceUptime')
     }
   ];
 

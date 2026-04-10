@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ServiceListPanel } from './ServiceListPanel';
 import { FormStructureViewer } from './FormStructureViewer';
 import { UnmapModal } from './UnmapModal';
 import { Service } from './FormTypes';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Forms: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isUnmapModalOpen, setIsUnmapModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState(false);
 
-  const services: Service[] = [
+  const services = useMemo((): Service[] => [
     {
       id: '1',
-      name: 'Blood Test (Comprehensive)',
+      name: t('servicesData.bloodTest.name'),
       formName: 'Diagnostic_Intake_V2',
       status: 'mapped'
     },
     {
       id: '2',
-      name: 'Physical Therapy',
+      name: t('servicesData.physicalTherapy.name'),
       status: 'unmapped'
     },
     {
       id: '3',
-      name: 'Post-Op Nursing Care',
+      name: t('servicesData.postOpNursing.name'),
       formName: 'Nursing_Care_Standard',
       status: 'mapped'
     },
     {
       id: '4',
-      name: 'Elderly Home Checkup',
+      name: t('servicesData.elderlyHomeCheckup.name'),
       status: 'unmapped'
     },
     {
       id: '5',
-      name: 'Wound Care Management',
+      name: t('servicesData.woundCareManagement.name'),
       formName: 'Wound_Care_Form_V1',
       status: 'mapped'
     }
-  ];
+  ], [t]);
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
@@ -47,17 +50,17 @@ const Forms: React.FC = () => {
 
   const handleMapService = () => {
     // Logic to open mapping modal would go here
-    showNotification('Mapping functionality would open here');
+    showNotification(t('forms.mappingFunctionality'));
   };
 
   const handleExport = () => {
-    showNotification('Form exported successfully');
+    showNotification(t('forms.exportSuccess'));
   };
 
   
   const confirmUnmap = () => {
     setIsUnmapModalOpen(false);
-    showNotification('Form successfully unmapped');
+    showNotification(t('forms.unmapSuccess'));
     // Update the service status
     if (selectedService) {
       setSelectedService({
@@ -90,31 +93,31 @@ const Forms: React.FC = () => {
         </div>
         <nav className="flex-1 mt-4 overflow-y-auto px-4 space-y-1">
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-chart-pie w-5"></i> Dashboard Overview
+            <i className="fa-solid fa-chart-pie w-5"></i> {t('navigation.dashboard')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-user-doctor w-5"></i> Doctors
+            <i className="fa-solid fa-user-doctor w-5"></i> {t('navigation.doctors')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hospital w-5"></i> Providers
+            <i className="fa-solid fa-hospital w-5"></i> {t('navigation.providers')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hand-holding-medical w-5"></i> Services
+            <i className="fa-solid fa-hand-holding-medical w-5"></i> {t('navigation.services')}
           </button>
           <button className="sidebar-item-active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-colors w-full text-left">
-            <i className="fa-solid fa-file-lines w-5"></i> Forms
+            <i className="fa-solid fa-file-lines w-5"></i> {t('navigation.forms')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-clipboard-list w-5"></i> Requests
+            <i className="fa-solid fa-clipboard-list w-5"></i> {t('navigation.requests')}
           </button>
           <div className="pt-4 pb-2">
-            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">System</p>
+            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('navigation.system')}</p>
           </div>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-shield-halved w-5"></i> Audit Logs
+            <i className="fa-solid fa-shield-halved w-5"></i> {t('navigation.auditLogs')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-gear w-5"></i> Settings
+            <i className="fa-solid fa-gear w-5"></i> {t('navigation.settings')}
           </button>
         </nav>
         <div className="p-4 border-t border-slate-100">
@@ -125,8 +128,8 @@ const Forms: React.FC = () => {
               className="w-10 h-10 rounded-lg object-cover"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Alexander Wright</p>
-              <p className="text-[10px] text-slate-500 truncate">Senior Admin</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{t('navigation.adminName')}</p>
+              <p className="text-[10px] text-slate-500 truncate">{t('navigation.adminRole')}</p>
             </div>
             <button className="text-slate-400 hover:text-danger p-1">
               <i className="fa-solid fa-arrow-right-from-bracket"></i>
@@ -141,8 +144,8 @@ const Forms: React.FC = () => {
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20 pt-10 pb-10">
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-lg font-bold text-slate-900">Form Configuration Hub</h1>
-              <p className="text-[11px] text-slate-500 font-medium">Map services to intake forms and review data structures.</p>
+              <h1 className="text-lg font-bold text-slate-900">{t('forms.title')}</h1>
+              <p className="text-[11px] text-slate-500 font-medium">{t('forms.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -150,6 +153,10 @@ const Forms: React.FC = () => {
               <i className="fa-regular fa-bell text-lg"></i>
               <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-white"></span>
             </button>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
