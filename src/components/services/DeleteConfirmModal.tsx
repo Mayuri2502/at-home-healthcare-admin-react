@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onConfirm,
   serviceName
 }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -23,7 +25,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
               <i className="fa-solid fa-triangle-exclamation text-danger"></i>
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Delete Service</h3>
+            <h3 className="text-lg font-bold text-slate-900">{t('services.deleteService')}</h3>
           </div>
           <button
             onClick={onClose}
@@ -35,12 +37,12 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
         <div className="p-8 space-y-4">
           <p className="text-sm text-slate-600 leading-relaxed">
-            Are you sure you want to delete <span className="font-bold text-slate-900">{serviceName}</span>? This action cannot be undone.
+            {t('services.deleteConfirmMessage', { serviceName })}
           </p>
           <div className="p-4 bg-red-50 rounded-xl border border-red-100">
             <p className="text-xs text-red-700 font-medium">
               <i className="fa-solid fa-circle-exclamation mr-2"></i>
-              All associated form mappings and provider assignments will be removed.
+              {t('services.deleteWarningMessage')}
             </p>
           </div>
         </div>
@@ -50,13 +52,13 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             onClick={onClose}
             className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-all"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
             className="px-6 py-2.5 bg-danger text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all shadow-md"
           >
-            Delete Service
+            {t('services.deleteService')}
           </button>
         </div>
       </div>

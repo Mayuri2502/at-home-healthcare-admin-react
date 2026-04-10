@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ActivityItem {
   id: number;
@@ -9,27 +10,29 @@ interface ActivityItem {
 }
 
 const RecentActivity: React.FC = () => {
+  const { t } = useTranslation();
+  
   const activities: ActivityItem[] = [
     {
       id: 1,
       type: 'completed',
-      title: 'Service Completed',
-      description: 'Home visit request #8942 was marked as completed.',
-      time: '2 minutes ago'
+      title: t('dashboard.recentActivity.serviceCompleted') || 'Service Completed',
+      description: t('dashboard.recentActivity.serviceCompletedDesc') || 'Home visit request #8942 was marked as completed.',
+      time: t('dashboard.recentActivity.twoMinutesAgo') || '2 minutes ago'
     },
     {
       id: 2,
       type: 'returned',
-      title: 'Form Returned',
-      description: 'Dr. Sarah Jenkins returned Patient Intake Form for correction.',
-      time: '15 minutes ago'
+      title: t('dashboard.recentActivity.formReturned') || 'Form Returned',
+      description: t('dashboard.recentActivity.formReturnedDesc') || 'Dr. Sarah Jenkins returned Patient Intake Form for correction.',
+      time: t('dashboard.recentActivity.fifteenMinutesAgo') || '15 minutes ago'
     },
     {
       id: 3,
       type: 'registration',
-      title: 'New Doctor Registration',
-      description: 'Dr. Michael Chen submitted registration for approval.',
-      time: '1 hour ago'
+      title: t('dashboard.recentActivity.newDoctorRegistration') || 'New Doctor Registration',
+      description: t('dashboard.recentActivity.newDoctorRegistrationDesc') || 'Dr. Michael Chen submitted registration for approval.',
+      time: t('dashboard.recentActivity.oneHourAgo') || '1 hour ago'
     }
   ];
 
@@ -64,9 +67,9 @@ const RecentActivity: React.FC = () => {
 
   return (
     <div id="ijax57" className="bg-white p-6 rounded-2xl border border-slate-100 tradingview-shadow w-full">
-      <div id="i6lfll" className="flex justify-between items-center mb-6 w-full">
-        <h4 className="font-bold text-slate-800">Recent Activity</h4>
-        <button className="text-primary text-xs font-bold hover:underline">View All</button>
+      <div className="flex justify-between items-center mb-6 w-full">
+        <h4 className="font-bold text-slate-800">{t('dashboard.recentActivity.title') || 'Recent Activity'}</h4>
+        <button className="text-primary text-xs font-bold hover:underline">{t('dashboard.recentActivity.viewAll') || 'View All'}</button>
       </div>
       <div className="space-y-6">
         {activities.map((activity) => {

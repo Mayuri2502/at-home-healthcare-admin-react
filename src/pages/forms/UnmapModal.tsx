@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface UnmapModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export const UnmapModal: React.FC<UnmapModalProps> = ({
   formName,
   serviceName
 }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -24,10 +26,9 @@ export const UnmapModal: React.FC<UnmapModalProps> = ({
           <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto mb-6">
             <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">Unmap Form?</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-2">{t('forms.unmapForm')}</h3>
           <p className="text-sm text-slate-500 leading-relaxed">
-            This will disconnect <span className="font-bold">{formName}</span> from the{' '}
-            <span className="font-bold">{serviceName}</span> service. Future requests for this service will require a new mapping.
+            {t('forms.unmapConfirmMessage', { formName, serviceName })}
           </p>
         </div>
         <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-center gap-3">
@@ -35,13 +36,13 @@ export const UnmapModal: React.FC<UnmapModalProps> = ({
             onClick={onClose}
             className="px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-all"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
             className="px-6 py-2.5 bg-danger text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all shadow-md"
           >
-            Confirm Unmap
+            {t('forms.confirmUnmap')}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Service } from './FormTypes';
 
 interface ServiceListPanelProps {
@@ -12,6 +13,7 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
   selectedService,
   onServiceSelect
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredServices = services.filter(service =>
@@ -71,7 +73,7 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
                 {getStatusBadge(service.status)}
               </div>
               <p className="text-[11px] text-slate-500 line-clamp-1">
-                {service.formName ? `Form: ${service.formName}` : 'No form assigned yet'}
+                {service.formName ? `${t('forms.form')}: ${service.formName}` : t('forms.noFormAssigned')}
               </p>
             </div>
           ))}

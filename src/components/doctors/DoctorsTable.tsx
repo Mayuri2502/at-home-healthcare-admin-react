@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 interface Doctor {
@@ -18,23 +19,24 @@ interface DoctorsTableProps {
 }
 
 const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
 
   const pendingDoctors: Doctor[] = [
     {
       id: '1',
-      name: 'Dr. Sarah Jenkins',
-      email: 's.jenkins@medical-hub.fr',
-      specialty: 'General Medicine',
+      name: t('doctorsData.dr1.name'),
+      email: t('doctorsData.dr1.email'),
+      specialty: t('doctorsData.dr1.specialty'),
       status: 'pending',
       avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
     },
     {
       id: '2',
-      name: 'Dr. Marc Lefebvre',
-      email: 'm.lefebvre@clinique.fr',
-      specialty: 'Cardiology',
+      name: t('doctorsData.dr2.name'),
+      email: t('doctorsData.dr2.email'),
+      specialty: t('doctorsData.dr2.specialty'),
       status: 'pending',
       avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg'
     }
@@ -43,11 +45,27 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
   const approvedDoctors: Doctor[] = [
     {
       id: '3',
-      name: 'Dr. Robert Chen',
-      specialty: 'Neurology',
+      name: t('doctorsData.dr3.name'),
+      specialty: t('doctorsData.dr3.specialty'),
       status: 'active',
       avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg',
-      rpps: 'RPPS: 10100234567'
+      rpps: `RPPS: ${t('doctorsData.dr3.rpps')}`
+    },
+    {
+      id: '4',
+      name: t('doctorsData.dr4.name'),
+      specialty: t('doctorsData.dr4.specialty'),
+      status: 'active',
+      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
+      rpps: `RPPS: ${t('doctorsData.dr4.rpps')}`
+    },
+    {
+      id: '5',
+      name: t('doctorsData.dr5.name'),
+      specialty: t('doctorsData.dr5.specialty'),
+      status: 'active',
+      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg',
+      rpps: `RPPS: ${t('doctorsData.dr5.rpps')}`
     }
   ];
 
@@ -57,14 +75,14 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
-            Pending
+            {t('status.pending')}
           </span>
         );
       case 'active':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
-            Active
+            {t('status.active')}
           </span>
         );
       default:
@@ -78,17 +96,17 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
       <div className="p-4 border-b border-slate-100 flex flex-wrap gap-4 items-center justify-between bg-slate-50/50">
         <div className="flex gap-2">
           <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/10">
-            <option>All Specialties</option>
-            <option>General Medicine</option>
-            <option>Cardiology</option>
-            <option>Pediatrics</option>
+            <option>{t('doctors.allSpecialties')}</option>
+            <option>{t('doctors.generalMedicine')}</option>
+            <option>{t('doctors.cardiology')}</option>
+            <option>{t('doctors.pediatrics')}</option>
           </select>
           <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
-            <i className="fa-solid fa-filter mr-1"></i> More Filters
+            <i className="fa-solid fa-filter mr-1"></i> {t('doctors.moreFilters')}
           </button>
         </div>
         <div className="text-xs text-slate-500">
-          Showing 1-10 of 128 doctors
+          {t('doctors.showingDoctors', { start: 1, end: 10, total: 128 })}
         </div>
       </div>
 

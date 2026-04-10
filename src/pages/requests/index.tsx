@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequestDetailModal } from './RequestDetailModal';
 import { RequestData } from './RequestTypes';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Requests: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedRequest, setSelectedRequest] = useState<RequestData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const requestsData: RequestData[] = [
+  const requestsData = useMemo((): RequestData[] => [
     {
       id: 'REQ-9421',
       doctor: {
-        name: 'Dr. Julian Moore',
-        specialty: 'Cardiology',
+        name: t('requestsData.dr1.name'),
+        specialty: t('requestsData.dr1.specialty'),
         avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg'
       },
-      patient: 'Robert Jenkins',
-      serviceType: 'Comprehensive Blood Panel',
+      patient: t('requestsData.dr1.patient'),
+      serviceType: t('requestsData.dr1.serviceType'),
       status: 'inprogress',
       dateCreated: 'Oct 26, 2023 14:20',
       serviceColor: 'blue'
@@ -23,12 +26,12 @@ const Requests: React.FC = () => {
     {
       id: 'REQ-9418',
       doctor: {
-        name: 'Dr. Sarah Chen',
-        specialty: 'General Medicine',
+        name: t('requestsData.dr2.name'),
+        specialty: t('requestsData.dr2.specialty'),
         avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg'
       },
-      patient: 'Alice Thompson',
-      serviceType: 'Elderly Home Checkup',
+      patient: t('requestsData.dr2.patient'),
+      serviceType: t('requestsData.dr2.serviceType'),
       status: 'completed',
       dateCreated: 'Oct 25, 2023 09:15',
       serviceColor: 'emerald'
@@ -36,12 +39,12 @@ const Requests: React.FC = () => {
     {
       id: 'REQ-9415',
       doctor: {
-        name: 'Dr. Marc Dupont',
-        specialty: 'Orthopedics',
+        name: t('requestsData.dr3.name'),
+        specialty: t('requestsData.dr3.specialty'),
         avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg'
       },
-      patient: 'George Miller',
-      serviceType: 'Physical Therapy',
+      patient: t('requestsData.dr3.patient'),
+      serviceType: t('requestsData.dr3.serviceType'),
       status: 'pending',
       dateCreated: 'Oct 25, 2023 16:45',
       serviceColor: 'amber'
@@ -49,17 +52,17 @@ const Requests: React.FC = () => {
     {
       id: 'REQ-9412',
       doctor: {
-        name: 'Dr. Lucas Vance',
-        specialty: 'Neurology',
+        name: t('requestsData.dr4.name'),
+        specialty: t('requestsData.dr4.specialty'),
         avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg'
       },
-      patient: 'Emma Watson',
-      serviceType: 'Post-Op Nursing Care',
+      patient: t('requestsData.dr4.patient'),
+      serviceType: t('requestsData.dr4.serviceType'),
       status: 'returned',
       dateCreated: 'Oct 24, 2023 11:30',
       serviceColor: 'red'
     }
-  ];
+  ], [t]);
 
   const getStatusChipClass = (status: string): string => {
     const statusClasses = {
@@ -73,10 +76,10 @@ const Requests: React.FC = () => {
 
   const getStatusText = (status: string): string => {
     const statusTexts = {
-      pending: 'Pending Approval',
-      completed: 'Completed',
-      inprogress: 'In Progress',
-      returned: 'Returned'
+      pending: t('requests.pending'),
+      completed: t('requests.completed'),
+      inprogress: t('requests.inProgress'),
+      returned: t('requests.returned')
     };
     return statusTexts[status as keyof typeof statusTexts] || status;
   };
@@ -105,31 +108,31 @@ const Requests: React.FC = () => {
         </div>
         <nav className="flex-1 mt-4 overflow-y-auto px-4 space-y-1">
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-chart-pie w-5"></i> Dashboard Overview
+            <i className="fa-solid fa-chart-pie w-5"></i> {t('navigation.dashboard')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-user-doctor w-5"></i> Doctors
+            <i className="fa-solid fa-user-doctor w-5"></i> {t('navigation.doctors')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hospital w-5"></i> Providers
+            <i className="fa-solid fa-hospital w-5"></i> {t('navigation.providers')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hand-holding-medical w-5"></i> Services
+            <i className="fa-solid fa-hand-holding-medical w-5"></i> {t('navigation.services')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-file-lines w-5"></i> Forms
+            <i className="fa-solid fa-file-lines w-5"></i> {t('navigation.forms')}
           </button>
           <button className="sidebar-item-active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-colors w-full text-left">
-            <i className="fa-solid fa-clipboard-list w-5"></i> Requests
+            <i className="fa-solid fa-clipboard-list w-5"></i> {t('navigation.requests')}
           </button>
           <div className="pt-4 pb-2">
-            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">System</p>
+            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('navigation.system')}</p>
           </div>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-shield-halved w-5"></i> Audit Logs
+            <i className="fa-solid fa-shield-halved w-5"></i> {t('navigation.auditLogs')}
           </button>
           <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-gear w-5"></i> Settings
+            <i className="fa-solid fa-gear w-5"></i> {t('navigation.settings')}
           </button>
         </nav>
         <div className="p-4 border-t border-slate-100">
@@ -140,8 +143,8 @@ const Requests: React.FC = () => {
               className="w-10 h-10 rounded-lg object-cover"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Alexander Wright</p>
-              <p className="text-[10px] text-slate-500 truncate">Senior Admin</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{t('navigation.adminName')}</p>
+              <p className="text-[10px] text-slate-500 truncate">{t('navigation.adminRole')}</p>
             </div>
             <button className="text-slate-400 hover:text-danger p-1">
               <i className="fa-solid fa-arrow-right-from-bracket"></i>
@@ -155,10 +158,10 @@ const Requests: React.FC = () => {
         {/* Topbar */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 flex-shrink-0 z-20 pt-10 pb-10">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-slate-900">All Service Requests</h1>
+            <h1 className="text-lg font-bold text-slate-900">{t('requests.title')}</h1>
             <div className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              <span className="text-[11px] font-bold text-slate-600">12 New Today</span>
+              <span className="text-[11px] font-bold text-slate-600">{t('requests.newToday')}</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -166,7 +169,7 @@ const Requests: React.FC = () => {
               <i className="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
               <input
                 type="text"
-                placeholder="Search Request ID, Patient or Doctor..."
+                placeholder={t('requests.searchPlaceholder')}
                 className="bg-transparent border-none outline-none text-xs w-64 text-slate-700"
               />
             </div>
@@ -174,12 +177,16 @@ const Requests: React.FC = () => {
               <i className="fa-solid fa-bell text-sm"></i>
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] flex items-center justify-center rounded-full font-bold">5</span>
             </button>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
             <button className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-all relative">
               <i className="fa-solid fa-filter text-sm"></i>
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[9px] flex items-center justify-center rounded-full font-bold">2</span>
             </button>
             <button className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-800 transition-all">
-              <i className="fa-solid fa-download"></i> Export
+              <i className="fa-solid fa-download"></i> {t('common.export')}
             </button>
           </div>
         </header>
@@ -189,24 +196,24 @@ const Requests: React.FC = () => {
           {/* Filters & Views Section */}
           <section className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-primary shadow-sm">All Requests</button>
-              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">Pending Review</button>
-              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">High Priority</button>
+              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-primary shadow-sm">{t('requests.allRequests')}</button>
+              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.pendingReview')}</button>
+              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.highPriority')}</button>
               <div className="h-6 w-px bg-slate-200 mx-2"></div>
               <button className="px-3 py-2 text-xs font-bold text-slate-400 hover:text-primary">
-                <i className="fa-solid fa-plus mr-1"></i> Save View
+                <i className="fa-solid fa-plus mr-1"></i> {t('requests.saveView')}
               </button>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2">
                 <i className="fa-solid fa-calendar text-slate-400 text-xs"></i>
-                <span className="text-xs font-medium text-slate-600">Oct 20, 2023 - Oct 27, 2023</span>
+                <span className="text-xs font-medium text-slate-600">{t('requests.dateRange')}</span>
                 <i className="fa-solid fa-chevron-down text-slate-400 text-[10px] ml-2"></i>
               </div>
               <select className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-600 outline-none focus:ring-2 focus:ring-primary/20 pr-3 items-start text-left">
-                <option>All Services</option>
-                <option>Blood Test</option>
-                <option>Physical Therapy</option>
+                <option>{t('requests.allServices')}</option>
+                <option>{t('servicesData.bloodTest.name')}</option>
+                <option>{t('servicesData.physicalTherapy.name')}</option>
               </select>
             </div>
           </section>
@@ -219,15 +226,15 @@ const Requests: React.FC = () => {
                   <tr className="bg-slate-50/50 border-b border-slate-100">
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       <div className="flex items-center gap-2 cursor-pointer hover:text-slate-600">
-                        Request ID <i className="fa-solid fa-sort"></i>
+                        {t('requests.requestId')} <i className="fa-solid fa-sort"></i>
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doctor</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Patient</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Service Type</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date Created</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.doctor')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.patient')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.serviceType')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.status')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.dateCreated')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">{t('requests.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -265,7 +272,7 @@ const Requests: React.FC = () => {
                       <td className="px-6 py-4 text-xs text-slate-500">{request.dateCreated}</td>
                       <td className="px-6 py-4 text-right">
                         <button className="px-3 py-1.5 text-[11px] font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all">
-                          View Detail
+                          {t('requests.viewDetail')}
                         </button>
                       </td>
                     </tr>
@@ -277,7 +284,7 @@ const Requests: React.FC = () => {
             {/* Pagination */}
             <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
               <p className="text-xs text-slate-500 font-medium">
-                Showing <span className="text-slate-900 font-bold">1-10</span> of <span className="text-slate-900 font-bold">124</span> results
+                {t('requests.showingResults', { start: 1, end: 10, total: 124 })}
               </p>
               <div className="flex items-center m-0 gap-1.5 justify-between p-0.5">
                 <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 transition-all">
