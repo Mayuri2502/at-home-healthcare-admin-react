@@ -1,0 +1,10 @@
+body {
+  background-color: #F8F9FB;
+  font-family: 'Inter', sans-serif;
+  color: #131722;
+}
+
+.tradingview-input:focus {
+  border-color: #2962FF;
+  box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.1);
+}

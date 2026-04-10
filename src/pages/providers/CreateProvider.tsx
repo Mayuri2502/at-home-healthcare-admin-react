@@ -1,0 +1,392 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import Sidebar from '../../components/dashboard/Sidebar';
+
+interface Service {
+  id: string;
+  name: string;
+}
+
+const CreateProvider: React.FC = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+
+  const [formData, setFormData] = useState({
+    providerName: '',
+    email: '',
+    contact: '',
+    registrationId: '',
+    status: true,
+    services: ['Diagnostics', 'Home Care']
+  });
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
+
+  const availableServices: Service[] = [
+    { id: '1', name: 'Pharmacy Delivery' },
+    { id: '2', name: 'Radiology' },
+    { id: '3', name: 'Physical Therapy' },
+    { id: '4', name: 'Elderly Care' },
+    { id: '5', name: 'Wound Dressing' },
+    { id: '6', name: 'Blood Test' },
+    { id: '7', name: 'Home Nursing' },
+    { id: '8', name: 'Post-Op Care' },
+    { id: '9', name: 'Medication Management' }
+  ];
+
+  useEffect(() => {
+    if (isEditMode) {
+      // Simulate loading existing provider data
+      setFormData({
+        providerName: 'BioHealth Labs',
+        email: 'contact@biohealth.fr',
+        contact: '+33 1 45 67 89 00',
+        registrationId: 'PRV-9021',
+        status: true,
+        services: ['Diagnostics', 'Blood Test']
+      });
+    }
+  }, [isEditMode]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleStatusToggle = () => {
+    setFormData(prev => ({
+      ...prev,
+      status: !prev.status
+    }));
+  };
+
+  const handleAddService = (serviceName: string) => {
+    if (formData.services.indexOf(serviceName) === -1) {
+      setFormData(prev => ({
+        ...prev,
+        services: [...prev.services, serviceName]
+      }));
+    }
+  };
+
+  const handleRemoveService = (serviceName: string) => {
+    setFormData(prev => ({
+      ...prev,
+      services: prev.services.filter(service => service !== serviceName)
+    }));
+  };
+
+  const handleCancel = () => {
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmLeave = () => {
+    setShowConfirmModal(false);
+    navigate('/providers');
+  };
+
+  const handleStay = () => {
+    setShowConfirmModal(false);
+  };
+
+  const handleSubmit = () => {
+    if (!formData.providerName) {
+      showToastMessage('Please enter a provider name.', 'error');
+      return;
+    }
+
+    if (!formData.email) {
+      showToastMessage('Please enter an email address.', 'error');
+      return;
+    }
+
+    const action = isEditMode ? 'updated' : 'created';
+    showToastMessage(`Provider successfully ${action}!`, 'success');
+
+    // Redirect after delay
+    setTimeout(() => {
+      navigate('/providers');
+    }, 2000);
+  };
+
+  const showToastMessage = (message: string, type: 'success' | 'error' | 'info') => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const getToastIcon = () => {
+    switch (toastType) {
+      case 'success':
+        return 'fa-solid fa-circle-check text-emerald-400';
+      case 'error':
+        return 'fa-solid fa-circle-xmark text-red-400';
+      case 'info':
+        return 'fa-solid fa-circle-info text-blue-400';
+      default:
+        return 'fa-solid fa-circle-check text-emerald-400';
+    }
+  };
+
+  return (
+    <div className="flex h-[1024px] overflow-hidden">
+      <Sidebar />
+      <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+        {/* Topbar */}
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20 pt-10 pb-10">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleCancel}
+              className="p-2 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all"
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900">
+                {isEditMode ? 'Edit Provider Details' : 'Create New Provider'}
+              </h1>
+              <p className="text-[11px] text-slate-500 font-medium">
+                {isEditMode ? 'Update provider information and services.' : 'Fill in the details to register a healthcare service provider.'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {isEditMode && (
+              <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold border border-amber-100 uppercase tracking-wider">
+                Editing Mode
+              </span>
+            )}
+            <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
+            <button 
+              onClick={handleCancel}
+              className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleSubmit}
+              className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
+            >
+              {isEditMode ? 'Save Changes' : 'Create Provider'}
+            </button>
+          </div>
+        </header>
+
+        <div className="p-8 max-w-4xl mx-auto w-full space-y-8">
+          {/* Section 1: Basic Information */}
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
+                  <i className="fa-solid fa-id-card"></i>
+                </div>
+                <h2 className="text-sm font-bold text-slate-800">Basic Information</h2>
+              </div>
+              {isEditMode && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-slate-500">Provider Status:</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.status}
+                      onChange={handleStatusToggle}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"></div>
+                  </label>
+                  <span className={`text-xs font-bold ${formData.status ? 'text-emerald-600' : 'text-slate-400'}`}>
+                    {formData.status ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Provider Name</label>
+                <div className="relative">
+                  <i className="fa-solid fa-building absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                  <input
+                    type="text"
+                    name="providerName"
+                    value={formData.providerName}
+                    onChange={handleInputChange}
+                    placeholder="e.g. BioHealth Labs"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
+                <div className="relative">
+                  <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="contact@provider.com"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Contact Number</label>
+                <div className="relative">
+                  <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                  <input
+                    type="text"
+                    name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
+                    placeholder="+33 X XX XX XX XX"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Registration ID (Optional)</label>
+                <div className="relative">
+                  <i className="fa-solid fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                  <input
+                    type="text"
+                    name="registrationId"
+                    value={formData.registrationId}
+                    onChange={handleInputChange}
+                    placeholder="PRV-XXXX"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2: Service Assignment */}
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
+                  <i className="fa-solid fa-briefcase-medical"></i>
+                </div>
+                <h2 className="text-sm font-bold text-slate-800">Assign Services</h2>
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">MULTI-SELECT</span>
+            </div>
+            <div className="p-8 space-y-6">
+              <div className="relative">
+                <div className="absolute left-4 top-3.5 text-slate-400">
+                  <i className="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search and add services (e.g. Blood Test, Nursing...)"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+                
+                {/* Selected Services Chips */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {formData.services.map((service, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 bg-primary/5 text-primary border border-primary/10 px-3 py-1.5 rounded-lg text-xs font-bold"
+                    >
+                      {service}
+                      <button 
+                        onClick={() => handleRemoveService(service)}
+                        className="hover:text-danger"
+                      >
+                        <i className="fa-solid fa-xmark"></i>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Service Suggestions */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {availableServices.slice(0, 5).map((service) => (
+                  <button
+                    key={service.id}
+                    onClick={() => handleAddService(service.name)}
+                    className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:border-primary/30 hover:bg-slate-50 transition-all text-left"
+                  >
+                    <span className="text-xs font-medium text-slate-600">{service.name}</span>
+                    <i className="fa-solid fa-plus text-[10px] text-slate-300"></i>
+                  </button>
+                ))}
+                <button className="flex items-center justify-center p-3 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-all group">
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-primary tracking-widest">VIEW ALL SERVICES</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Notification Preferences */}
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                <i className="fa-solid fa-bell"></i>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-800">Operational Alerts</h3>
+                <p className="text-[11px] text-slate-500">Provider will receive automated request emails.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+              <i className="fa-solid fa-toggle-on text-emerald-500"></i>
+              <span className="text-xs font-bold text-slate-600">Email Notifications Enabled</span>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* Unsaved Changes Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 text-center">
+            <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fa-solid fa-circle-question text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Unsaved Changes</h3>
+            <p className="text-slate-500 text-sm mt-2">
+              You have unsaved changes in form. Are you sure you want to leave? Progress will be lost.
+            </p>
+            <div className="mt-8 flex gap-3">
+              <button
+                onClick={handleStay}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
+              >
+                Stay Here
+              </button>
+              <button
+                onClick={handleConfirmLeave}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-primary hover:bg-slate-800 rounded-xl"
+              >
+                Discard & Leave
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-8 right-8 transform transition-all duration-300 z-[60]">
+          <div className="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <i className={getToastIcon()}></i>
+            <span className="text-sm font-medium">{toastMessage}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CreateProvider;

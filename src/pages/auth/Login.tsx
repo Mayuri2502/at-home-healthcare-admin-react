@@ -1,0 +1,219 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Login.css';
+
+const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: 'admin@at-home.health',
+    password: 'Admin@123'
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  const togglePassword = () => {
+    const input = document.getElementById('password') as HTMLInputElement;
+    const icon = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon?.classList.remove('fa-eye');
+      icon?.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon?.classList.remove('fa-eye-slash');
+      icon?.classList.add('fa-eye');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    // Dummy authentication logic
+    setTimeout(() => {
+      if (formData.email === 'admin@at-home.health' && formData.password === 'Admin@123') {
+        // Store authentication token
+        localStorage.setItem('authToken', 'dummy-jwt-token');
+        localStorage.setItem('user', JSON.stringify({
+          name: 'Alexander Wright',
+          email: formData.email,
+          role: 'Senior Admin'
+        }));
+        navigate('/dashboard');
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <div className="antialiased flex flex-col min-h-screen">
+        {/* Header Section */}
+        <header className="w-full py-8 flex justify-center text-center">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 flex items-center justify-center relative overflow-hidden">
+              <img
+                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/FwWoWvhFRtVXodtR5CK3BVPRcSP2%2F2f63fe4a-2524-441c-b0fb-47972806c27b.png"
+                alt="At-Home Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-primary">At-Home</span>
+          </div>
+        </header>
+
+        {/* Main Content: Login Card */}
+        <main
+          className="flex-grow flex items-start justify-center pt-12 px-4 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url("https://storage.googleapis.com/uxpilot-auth.appspot.com/FwWoWvhFRtVXodtR5CK3BVPRcSP2%2Ff6225975-b1ed-4bc8-bb0d-6acd994b01df.png")'
+          }}
+        >
+          <section className="w-full max-w-[440px]">
+            <div className="bg-surface rounded-2xl shadow-soft border border-border p-8 md:p-10">
+              <div className="mb-8">
+                <h1 className="text-2xl font-semibold mb-2">Admin Login</h1>
+                <p className="text-textMuted text-sm">
+                  Welcome back. Please enter your credentials to access the healthcare dashboard.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-textMuted">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-textMuted/60">
+                      <i className="fa-regular fa-envelope"></i>
+                    </span>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="admin@at-home.health"
+                      required
+                      className="tradingview-input w-full h-12 pl-11 pr-4 bg-white border border-border rounded-xl text-sm transition-all outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-textMuted">
+                      Password
+                    </label>
+                    <a href="/forgot-password" className="text-xs font-semibold text-accent hover:underline">
+                      Forgot password?
+                    </a>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-textMuted/60">
+                      <i className="fa-solid fa-lock text-sm"></i>
+                    </span>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                      required
+                      className="tradingview-input w-full h-12 pl-11 pr-12 bg-white border border-border rounded-xl text-sm transition-all outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePassword}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-textMuted hover:text-textMain transition-colors"
+                    >
+                      <i id="eye-icon" className="fa-regular fa-eye text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Remember Me */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
+                  />
+                  <label htmlFor="remember" className="text-sm text-textMuted select-none">
+                    Remember me
+                  </label>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 active:scale-[0.98] disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        Logging in...
+                      </span>
+                    ) : (
+                      'Login to Dashboard'
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              {/* Security Microcopy */}
+              <div className="mt-8 pt-6 border-t border-border flex items-start gap-3">
+                <div className="mt-0.5 text-textMuted/40">
+                  <i className="fa-solid fa-shield-halved"></i>
+                </div>
+                <p className="text-[11px] leading-relaxed text-textMuted uppercase tracking-tight">
+                  Secure administrative portal. All activities are logged and monitored for HIPAA compliance.
+                  Unauthorized access is strictly prohibited.
+                </p>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        {/* Footer Copyright */}
+        <footer className="py-8 text-center opacity-100 pt-0 pb-0">
+          <p className="text-xs text-textMuted/60 font-mono text-center">
+            © 2026 AT-HOME HEALTHCARE SYSTEMS V2.4.0
+          </p>
+        </footer>
+    </div>
+  );
+};
+
+export default Login;
