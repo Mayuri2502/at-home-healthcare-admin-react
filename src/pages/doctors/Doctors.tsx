@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import DoctorsTable from '../../components/doctors/DoctorsTable';
 import Modal from '../../components/doctors/Modal';
