@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import DoctorsTable from '../../components/doctors/DoctorsTable';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
 
 const Doctors: React.FC = () => {
-    const [modalState, setModalState] = useState<{
+  const navigate = useNavigate();
+  
+  const [modalState, setModalState] = useState<{
     isOpen: boolean;
     type: 'approve' | 'reject' | null;
     doctorName: string;
@@ -37,7 +40,7 @@ const Doctors: React.FC = () => {
   };
 
   const handleView = (doctor: any) => {
-    // Navigation will be handled by Link components in the table
+    navigate(`/doctors/${doctor.id}`);
   };
 
   const hideModal = () => {
