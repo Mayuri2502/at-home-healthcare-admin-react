@@ -176,7 +176,7 @@ const Providers: React.FC = () => {
                 onChange={(e) => setSelectedService(e.target.value)}
                 className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-600 focus:outline-none shadow-sm"
               >
-                <option value="all">{t('services.serviceName')}</option>
+                <option value="all">{t('services.allServices')}</option>
                 <option value="home-care">{t('services.homeCare')}</option>
                 <option value="diagnostics">{t('services.diagnostics')}</option>
                 <option value="pharmacy">{t('services.pharmacy')}</option>

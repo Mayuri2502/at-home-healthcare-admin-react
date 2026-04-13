@@ -215,7 +215,7 @@
   "services": {
     "title": "Services",
     "subtitle": "Available healthcare services",
-    "serviceName": "Service Name",
+    "serviceName": "All Services",
     "description": "Description",
     "duration": "Duration",
     "price": "Price",
