@@ -334,19 +334,27 @@ const CreateProvider: React.FC = () => {
           </section>
 
           {/* Section 3: Notification Preferences */}
-          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
-                <i className="fa-solid fa-bell"></i>
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 text-sm">
+                  <i className="fa-solid fa-bell"></i>
+                </div>
+                <h2 className="text-sm font-bold text-slate-800">Operational Alerts</h2>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-800">Operational Alerts</h3>
-                <p className="text-[11px] text-slate-500">Provider will receive automated request emails.</p>
-              </div>
+              <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">AUTOMATED</span>
             </div>
-            <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
-              <i className="fa-solid fa-toggle-on text-emerald-500"></i>
-              <span className="text-xs font-bold text-slate-600">Email Notifications Enabled</span>
+            <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Provider will receive automated request emails.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Manage notification preferences and alert settings.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+                <i className="fa-solid fa-toggle-on text-emerald-500"></i>
+                <span className="text-xs font-bold text-slate-600">Email Notifications Enabled</span>
+              </div>
             </div>
           </section>
         </div>
