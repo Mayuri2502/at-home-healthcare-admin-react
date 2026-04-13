@@ -194,7 +194,7 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
                   <i className="fa-solid fa-id-card"></i>
                 </div>
-                <h2 className="text-sm font-bold text-slate-800">{t('providers.basicInformation')}</h2>
+                <h2 className="text-sm font-semibold text-slate-800">{t('providers.basicInformation')}</h2>
               </div>
               {isEditMode && (
                 <div className="flex items-center gap-3">
@@ -214,7 +214,7 @@ const CreateProvider: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('providers.providerName')}</label>
                 <div className="relative">
@@ -281,11 +281,11 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
                   <i className="fa-solid fa-briefcase-medical"></i>
                 </div>
-                <h2 className="text-sm font-bold text-slate-800">Assign Services</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Assign Services</h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">MULTI-SELECT</span>
             </div>
-            <div className="p-8 space-y-6">
+            <div className="p-6 space-y-6">
               <div className="relative">
                 <div className="absolute left-4 top-3.5 text-slate-400">
                   <i className="fa-solid fa-magnifying-glass text-sm"></i>
@@ -293,7 +293,7 @@ const CreateProvider: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search and add services (e.g. Blood Test, Nursing...)"
-                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
                 
                 {/* Selected Services Chips */}
@@ -341,11 +341,11 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 text-sm">
                   <i className="fa-solid fa-bell"></i>
                 </div>
-                <h2 className="text-sm font-bold text-slate-800">Operational Alerts</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Operational Alerts</h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">AUTOMATED</span>
             </div>
-            <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-sm font-medium text-slate-700">Provider will receive automated request emails.</p>
