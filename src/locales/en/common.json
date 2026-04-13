@@ -111,8 +111,8 @@
     }
   },
   "doctors": {
-    "title": "Doctors",
-    "subtitle": "Manage and view all healthcare providers",
+    "title": "Doctor Management",
+    "subtitle": "Review registrations and manage active medical professionals.",
     "addDoctor": "Add Doctor",
     "searchDoctors": "Search doctors...",
     "doctorName": "Doctor Name",
