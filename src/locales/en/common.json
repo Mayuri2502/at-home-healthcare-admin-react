@@ -182,7 +182,7 @@
     "serviceType": "Service Type",
     "rating": "Rating",
     "verified": "Verified",
-    "createProvider": "Create Provider",
+    "createProvider": "Create New Provider",
     "editProvider": "Edit Provider",
     "providerDetails": "Provider Details",
     "allProviders": "All Providers",

@@ -178,7 +178,7 @@
     "serviceType": "Type de service",
     "rating": "Évaluation",
     "verified": "Vérifié",
-    "createProvider": "Créer un prestataire",
+    "createProvider": "Créer un nouveau prestataire",
     "editProvider": "Modifier le prestataire",
     "providerDetails": "Détails du prestataire",
     "allProviders": "Tous les prestataires",
@@ -211,7 +211,7 @@
   "services": {
     "title": "Services",
     "subtitle": "Services de santé disponibles",
-    "serviceName": "Nom du service",
+    "serviceName": "Tous les services",
     "description": "Description",
     "duration": "Durée",
     "price": "Prix",
