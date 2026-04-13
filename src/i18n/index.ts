@@ -19,13 +19,15 @@ const resources = {
 // Clear any existing language settings
 localStorage.removeItem('i18nextLng');
 
-i18n
-  // Detect user language
-  .use(LanguageDetector)
-  // Pass the i18n instance to react-i18next
-  .use(initReactI18next)
-  // Init i18next
-  .init({
+// Prevent multiple initializations
+if (!i18n.isInitialized) {
+  i18n
+    // Detect user language
+    .use(LanguageDetector)
+    // Pass the i18n instance to react-i18next
+    .use(initReactI18next)
+    // Init i18next
+    .init({
     resources,
     fallbackLng: 'en', // Default language
     lng: 'en', // Force initial language to English
@@ -47,5 +49,6 @@ i18n
       useSuspense: false,
     }
   });
+}
 
 export default i18n;

@@ -56,6 +56,10 @@
     "bulkDeactivate": "Bulk Deactivate",
     "deactivate": "Deactivate"
   },
+  "status": {
+    "pending": "Pending",
+    "active": "Active"
+  },
   "dashboard": {
     "title": "Dashboard Overview",
     "subtitle": "Welcome back! Here's what's happening with your healthcare platform today.",
@@ -333,6 +337,7 @@
     "passwordUpdated": "Password Updated",
     "passwordUpdatedDescription": "Your administrative credentials have been successfully updated. You can now use your new password to sign in.",
     "returnToAdminLogin": "Return to Admin Login",
+    "logout": "Logout",
     "passwordStrength": {
       "weak": "Weak",
       "medium": "Medium",

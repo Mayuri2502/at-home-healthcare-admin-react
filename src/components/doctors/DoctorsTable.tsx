@@ -75,14 +75,14 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
-            {t('status.pending')}
+            {t('status.pending') || 'Pending'}
           </span>
         );
       case 'active':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
-            {t('status.active')}
+            {t('status.active') || 'Active'}
           </span>
         );
       default:
