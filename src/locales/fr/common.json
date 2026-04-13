@@ -372,6 +372,16 @@
     "affectedResources": "Ressources affectées",
     "exportLog": "Exporter le journal"
   },
+  "modal": {
+    "rejectApplication": "Rejeter la demande",
+    "rejectReasonText": "Veuillez fournir une raison pour rejeter la demande de {{doctorName}}. Ceci sera envoyé par e-mail.",
+    "rejectionReason": "Raison du rejet",
+    "rejectPlaceholder": "ex. Document de certification RPPS manquant...",
+    "confirmRejection": "Confirmer le rejet",
+    "confirmApproval": "Confirmer l'approbation?",
+    "approvalText": "{{doctorName}} sera notifié et aura un accès complet aux services de la plateforme.",
+    "approveNow": "Approuver maintenant"
+  },
   "language": {
     "english": "Anglais",
     "french": "Français"

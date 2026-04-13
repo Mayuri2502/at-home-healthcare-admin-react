@@ -379,6 +379,16 @@
     "affectedResources": "Affected Resources",
     "exportLog": "Export Log"
   },
+  "modal": {
+    "rejectApplication": "Reject Application",
+    "rejectReasonText": "Please provide a reason for rejecting {{doctorName}}'s application. This will be sent via email.",
+    "rejectionReason": "Rejection Reason",
+    "rejectPlaceholder": "e.g. Missing RPPS certification document...",
+    "confirmRejection": "Confirm Rejection",
+    "confirmApproval": "Confirm Approval?",
+    "approvalText": "{{doctorName}} will be notified and granted full access to the platform services.",
+    "approveNow": "Approve Now"
+  },
   "language": {
     "english": "English",
     "french": "French"

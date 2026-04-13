@@ -16,8 +16,9 @@ const resources = {
   }
 };
 
-// Clear any existing language settings
+// Clear any existing language settings and cache
 localStorage.removeItem('i18nextLng');
+// Force cache refresh - v2
 
 // Prevent multiple initializations
 if (!i18n.isInitialized) {
