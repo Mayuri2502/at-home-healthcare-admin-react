@@ -153,7 +153,7 @@ const CreateProvider: React.FC = () => {
             </button>
             <div>
               <h1 className="text-lg font-bold text-slate-900">
-                {isEditMode ? t('providers.editProvider') : t('providers.createProvider')}
+                {isEditMode ? t('providers.editProvider') : t('providers.createProviderTitle')}
               </h1>
               <p className="text-[11px] text-slate-500 font-medium">
                 {isEditMode ? t('providers.updateProviderInfo') : t('providers.registerProviderInfo')}
@@ -167,9 +167,6 @@ const CreateProvider: React.FC = () => {
               </span>
             )}
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
-            <div className="ml-2">
-              <LanguageSwitcher />
-            </div>
             <button 
               onClick={handleCancel}
               className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
@@ -182,6 +179,10 @@ const CreateProvider: React.FC = () => {
             >
               {isEditMode ? t('providers.saveChanges') : t('providers.createProvider')}
             </button>
+            <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
