@@ -26,13 +26,6 @@ const RecentActivity: React.FC = () => {
       title: t('dashboard.recentActivity.formReturned') || 'Form Returned',
       description: t('dashboard.recentActivity.formReturnedDesc') || 'Dr. Sarah Jenkins returned Patient Intake Form for correction.',
       time: t('dashboard.recentActivity.fifteenMinutesAgo') || '15 minutes ago'
-    },
-    {
-      id: 3,
-      type: 'registration',
-      title: t('dashboard.recentActivity.newDoctorRegistration') || 'New Doctor Registration',
-      description: t('dashboard.recentActivity.newDoctorRegistrationDesc') || 'Dr. Michael Chen submitted registration for approval.',
-      time: t('dashboard.recentActivity.oneHourAgo') || '1 hour ago'
     }
   ];
 
@@ -49,12 +42,6 @@ const RecentActivity: React.FC = () => {
           icon: 'fa-rotate-left',
           bg: 'bg-amber-50',
           color: 'text-amber-600'
-        };
-      case 'registration':
-        return {
-          icon: 'fa-user-plus',
-          bg: 'bg-blue-50',
-          color: 'text-blue-600'
         };
       default:
         return {
