@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import './i18n'; // Initialize i18n
 import { useTranslation } from 'react-i18next';
+import { useDocumentTitle } from './hooks/useDocumentTitle';
 import { Login, ForgotPassword, ResetPassword } from './pages/auth';
 import { Dashboard } from './pages/dashboard';
 import { Doctors } from './pages/doctors';
@@ -54,7 +55,16 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  useDocumentTitle();
+  
+  return (
+    <div className="App">
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -117,8 +127,7 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
-    </Router>
-  );
+    );
 }
 
 export default App;
