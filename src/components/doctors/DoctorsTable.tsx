@@ -92,24 +92,6 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-      {/* Table Filters */}
-      <div className="p-4 border-b border-slate-100 flex flex-wrap gap-4 items-center justify-between bg-slate-50/50">
-        <div className="flex gap-2">
-          <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/10">
-            <option>{t('doctors.allSpecialties')}</option>
-            <option>{t('doctors.generalMedicine')}</option>
-            <option>{t('doctors.cardiology')}</option>
-            <option>{t('doctors.pediatrics')}</option>
-          </select>
-          <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
-            <i className="fa-solid fa-filter mr-1"></i> {t('doctors.moreFilters')}
-          </button>
-        </div>
-        <div className="text-xs text-slate-500">
-          {t('doctors.showingDoctors', { start: 1, end: 10, total: 128 })}
-        </div>
-      </div>
-
       {/* Tabs */}
       <div className="flex border-b border-slate-200">
         <button
@@ -133,6 +115,24 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
         >
           Approved Doctors
         </button>
+      </div>
+
+      {/* Table Filters */}
+      <div className="p-4 border-b border-slate-100 flex flex-wrap gap-4 items-center justify-between bg-slate-50/50">
+        <div className="flex gap-2">
+          <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/10">
+            <option>{t('doctors.allSpecialties')}</option>
+            <option>{t('doctors.generalMedicine')}</option>
+            <option>{t('doctors.cardiology')}</option>
+            <option>{t('doctors.pediatrics')}</option>
+          </select>
+          <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
+            <i className="fa-solid fa-filter mr-1"></i> {t('doctors.moreFilters')}
+          </button>
+        </div>
+        <div className="text-xs text-slate-500">
+          {t('doctors.showingDoctors', { start: 1, end: 10, total: 128 })}
+        </div>
       </div>
 
       {/* Pending Table */}
