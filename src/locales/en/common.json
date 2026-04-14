@@ -166,11 +166,11 @@
     },
     "steps": {
       "registrationSubmitted": "Registration Submitted",
-      "registrationDate": "Oct 12, 2024 &bull; 09:45 AM",
+      "registrationDate": "Oct 12, 2024 - 09:45 AM",
       "emailVerified": "Email Verified",
-      "emailDate": "Oct 12, 2024 &bull; 09:50 AM",
+      "emailDate": "Oct 12, 2024 - 09:50 AM",
       "adminReview": "Admin Review",
-      "adminReviewStatus": "In Progress &bull; Assigned to Alexander W."
+      "adminReviewStatus": "In Progress - Assigned to Alexander W."
     }
   },
   "providers": {
@@ -258,7 +258,7 @@
     "mapped": "Mapped",
     "unmapped": "Unmapped",
     "selectServiceToView": "Select a service to view form structure",
-    "structuredFieldPreview": "Structured field preview &bull; Read-only layout",
+    "structuredFieldPreview": "Structured field preview - Read-only layout",
     "mapToService": "Map to Service",
     "export": "Export",
     "mappingFunctionality": "Mapping functionality would be implemented here",

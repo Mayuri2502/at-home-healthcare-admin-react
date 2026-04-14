@@ -162,11 +162,11 @@
     },
     "steps": {
       "registrationSubmitted": "Inscription soumise",
-      "registrationDate": "12 oct. 2024 &bull; 09:45",
+      "registrationDate": "12 oct. 2024 - 09:45",
       "emailVerified": "E-mail vérifié",
-      "emailDate": "12 oct. 2024 &bull; 09:50",
+      "emailDate": "12 oct. 2024 - 09:50",
       "adminReview": "Révision administrative",
-      "adminReviewStatus": "En cours &bull; Assigné à Alexandre W."
+      "adminReviewStatus": "En cours - Assigné à Alexandre W."
     }
   },
   "providers": {
@@ -254,7 +254,7 @@
     "mapped": "Mappé",
     "unmapped": "Non mappé",
     "selectServiceToView": "Sélectionnez un service pour voir la structure du formulaire",
-    "structuredFieldPreview": "Aperçu des champs structurés &bull; Mise en page en lecture seule",
+    "structuredFieldPreview": "Aperçu des champs structurés - Mise en page en lecture seule",
     "mapToService": "Mapper au service",
     "export": "Exporter",
     "mappingFunctionality": "La fonctionnalité de mappage serait implémentée ici",

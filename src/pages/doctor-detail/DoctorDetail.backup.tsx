@@ -227,7 +227,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                       <i className="fa-solid fa-check text-xs"></i>
                     </div>
                     <p className="text-xs font-bold text-slate-900">Registration Submitted</p>
-                    <p className="text-[10px] text-slate-500">Oct 12, 2024 &bull; 09:45 AM</p>
+                    <p className="text-[10px] text-slate-500">Oct 12, 2024 - 09:45 AM</p>
                   </div>
 
                   <div className="relative step-line pb-2.5 pl-11">
@@ -235,7 +235,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                       <i className="fa-solid fa-check text-xs"></i>
                     </div>
                     <p className="text-xs font-bold text-slate-900">Email Verified</p>
-                    <p className="text-[10px] text-slate-500">Oct 12, 2024 &bull; 09:50 AM</p>
+                    <p className="text-[10px] text-slate-500">Oct 12, 2024 - 09:50 AM</p>
                   </div>
 
                   <div className="relative pl-11">
@@ -243,7 +243,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                       <i className="fa-solid fa-clock text-xs"></i>
                     </div>
                     <p className="text-xs font-bold text-slate-900">Admin Review</p>
-                    <p className="text-[10px] text-slate-500">In Progress &bull; Assigned to Alexander W.</p>
+                    <p className="text-[10px] text-slate-500">In Progress - Assigned to Alexander W.</p>
                   </div>
                 </div>
               </div>
