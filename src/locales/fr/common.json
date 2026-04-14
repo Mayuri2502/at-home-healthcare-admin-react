@@ -246,8 +246,8 @@
     "formMappingInfo": "Après avoir enregistré, vous pouvez mapper un formulaire d'intake spécifique à ce service dans la section Configuration des formulaires."
   },
   "forms": {
-    "title": "Formulaires",
-    "subtitle": "Configurer et gérer les formulaires de santé",
+    "title": "Centre de Configuration des Formulaires",
+    "subtitle": "Mapper les services aux formulaires d'intake et examiner les structures de données.",
     "healthcareServices": "Services de santé",
     "total": "Total",
     "searchServices": "Rechercher des services...",

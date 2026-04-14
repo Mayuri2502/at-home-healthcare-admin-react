@@ -250,8 +250,8 @@
     "formMappingInfo": "After saving, you can map a specific intake form to this service in the Forms Configuration section."
   },
   "forms": {
-    "title": "Forms",
-    "subtitle": "Configure and manage healthcare forms",
+    "title": "Form Configuration Hub",
+    "subtitle": "Map services to intake forms and review data structures.",
     "healthcareServices": "Healthcare Services",
     "total": "Total",
     "searchServices": "Search services...",
