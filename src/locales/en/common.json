@@ -362,7 +362,8 @@
     "monthlyAuditReport": "Monthly Audit Report Ready",
     "auditReportMessage": "The compliance report for March 2024 has been generated and is ready for download.",
     "viewProfile": "View Profile",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "unread": "UNREAD"
   },
   "audit": {
     "unread": "UNREAD",
@@ -372,12 +373,15 @@
     "action": "Action",
     "type": "Type",
     "ipAddress": "IP Address",
+    "timestamp": "Timestamp",
     "showingLogs": "SHOWING {{start}}-{{end}} OF {{total}} LOGS",
     "auditDetail": "Audit Detail",
+    "logId": "Log ID",
     "actor": "Actor",
     "eventType": "Event Type",
     "dataPayload": "Data Payload (JSON Diff)",
     "affectedResources": "Affected Resources",
+    "doctorRecord": "Doctor Record #DR-442",
     "exportLog": "Export Log"
   },
   "modal": {

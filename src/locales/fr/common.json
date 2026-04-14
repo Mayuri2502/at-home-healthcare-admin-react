@@ -358,19 +358,24 @@
     "auditReportMessage": "Le rapport de conformité pour mars 2024 a été généré et est prêt à être téléchargé.",
     "viewProfile": "Voir le profil",
     "dismiss": "Rejeter",
-    "unread": "NON LU",
+    "unread": "NON LU"
+  },
+  "audit": {
     "searchLogs": "Rechercher des journaux par utilisateur ou action...",
     "allActionTypes": "Tous les types d'action",
     "user": "Utilisateur",
     "action": "Action",
     "type": "Type",
     "ipAddress": "Adresse IP",
+    "timestamp": "Horodatage",
     "showingLogs": "AFFICHAGE {{start}}-{{end}} SUR {{total}} JOURNAUX",
     "auditDetail": "Détail d'audit",
+    "logId": "ID du journal",
     "actor": "Acteur",
     "eventType": "Type d'événement",
     "dataPayload": "Charge de données (JSON Diff)",
     "affectedResources": "Ressources affectées",
+    "doctorRecord": "Enregistrement du médecin #DR-442",
     "exportLog": "Exporter le journal"
   },
   "modal": {

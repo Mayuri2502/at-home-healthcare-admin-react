@@ -342,7 +342,7 @@ const Notifications: React.FC = () => {
                     <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input
                       type="text"
-                      placeholder={t('notifications.searchLogs')}
+                      placeholder={t('audit.searchLogs')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs focus:ring-2 focus:ring-primary/10 outline-none"
@@ -353,7 +353,7 @@ const Notifications: React.FC = () => {
                     onChange={(e) => setActionFilter(e.target.value)}
                     className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-medium text-slate-600 outline-none"
                   >
-                    <option>{t('notifications.allActionTypes')}</option>
+                    <option>{t('audit.allActionTypes')}</option>
                     <option>CREATE</option>
                     <option>UPDATE</option>
                     <option>DELETE</option>
@@ -378,19 +378,19 @@ const Notifications: React.FC = () => {
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {t('notifications.timestamp')}
+                        {t('audit.timestamp')}
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {t('notifications.user')}
+                        {t('audit.user')}
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Action
+                        {t('audit.action')}
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {t('notifications.type')}
+                        {t('audit.type')}
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {t('notifications.ipAddress')}
+                        {t('audit.ipAddress')}
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {t('common.actions')}
@@ -446,7 +446,7 @@ const Notifications: React.FC = () => {
                 {/* Pagination */}
                 <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400">
-                    {t('notifications.showingLogs', { start: 1, end: 10, total: 1422 })}
+                    {t('audit.showingLogs', { start: 1, end: 10, total: 1422 })}
                   </span>
                   <div className="flex gap-2">
                     <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white">
@@ -481,8 +481,8 @@ const Notifications: React.FC = () => {
             <div className="bg-white w-[600px] rounded-2xl shadow-2xl z-10 overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">{t('notifications.auditDetail')}</h3>
-                  <p className="text-xs text-slate-500">Log ID: #{selectedLog.id}</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('audit.auditDetail')}</h3>
+                  <p className="text-xs text-slate-500">{t('audit.logId')}: #{selectedLog.id}</p>
                 </div>
                 <button
                   onClick={closeAuditModal}
@@ -495,7 +495,7 @@ const Notifications: React.FC = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                      {t('notifications.actor')}
+                      {t('audit.actor')}
                     </p>
                     <div className="flex items-center gap-2">
                       {selectedLog.user.avatar ? (
@@ -519,7 +519,7 @@ const Notifications: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                      {t('notifications.eventType')}
+                      {t('audit.eventType')}
                     </p>
                     <span className={`status-chip ${getTypeColor(selectedLog.type)} inline-block`}>
                       {selectedLog.type} ACTION
@@ -527,7 +527,7 @@ const Notifications: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                      Timestamp
+                      {t('audit.timestamp')}
                     </p>
                     <p className="text-xs font-semibold text-slate-700">
                       {new Date(selectedLog.timestamp).toLocaleDateString('en-US', {
@@ -539,7 +539,7 @@ const Notifications: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                      IP Address
+                      {t('audit.ipAddress')}
                     </p>
                     <p className="text-xs font-mono text-slate-700">{selectedLog.ipAddress}</p>
                   </div>
@@ -548,7 +548,7 @@ const Notifications: React.FC = () => {
                 {selectedLog.details && (
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                      {t('notifications.dataPayload')}
+                      {t('audit.dataPayload')}
                     </p>
                     <pre className="text-[11px] font-mono text-slate-700 overflow-x-auto">
                       {JSON.stringify(selectedLog.details, null, 2)}
@@ -558,18 +558,18 @@ const Notifications: React.FC = () => {
 
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                    {t('notifications.affectedResources')}
+                    {t('audit.affectedResources')}
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
                       <div className="flex items-center gap-2">
                         <i className="fa-solid fa-user-doctor text-primary"></i>
                         <span className="text-xs font-bold text-slate-700">
-                          Doctor Record #DR-442
+                          {t('audit.doctorRecord')}
                         </span>
                       </div>
                       <button className="text-[10px] font-bold text-primary hover:underline">
-                        View
+                        {t('common.view')}
                       </button>
                     </div>
                   </div>
@@ -584,7 +584,7 @@ const Notifications: React.FC = () => {
                 </button>
                 <button className="px-6 py-2 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
                   <i className="fa-solid fa-download"></i>
-                  {t('notifications.exportLog')}
+                  {t('audit.exportLog')}
                 </button>
               </div>
             </div>
