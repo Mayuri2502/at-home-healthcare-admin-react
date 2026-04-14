@@ -169,7 +169,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
           <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
             <i className="fa-solid fa-chevron-left text-[10px]"></i>
           </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-bold">1</button>
+          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">1</button>
           <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">2</button>
           <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">3</button>
           <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">

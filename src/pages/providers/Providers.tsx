@@ -294,7 +294,7 @@ const Providers: React.FC = () => {
                   {t('common.previous')}
                 </button>
                 <div className="flex gap-1">
-                  <button className="w-8 h-8 text-xs font-bold bg-primary text-white rounded-lg">1</button>
+                  <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">1</button>
                   <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">2</button>
                   <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">3</button>
                 </div>
