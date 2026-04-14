@@ -62,9 +62,9 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
             <div
               key={service.id}
               onClick={() => onServiceSelect(service)}
-              className={`p-4 hover:bg-slate-50 cursor-pointer transition-colors ${
+              className={`p-4 hover:bg-slate-50 cursor-pointer transition-all ${
                 selectedService?.id === service.id
-                  ? 'bg-primary/5 border-l-4 border-primary'
+                  ? 'bg-blue-50 border-l-4 border-blue-500 shadow-sm'
                   : ''
               }`}
             >
