@@ -5,6 +5,7 @@ import { FormStructureViewer } from './FormStructureViewer';
 import { UnmapModal } from './UnmapModal';
 import { Service } from './FormTypes';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import Sidebar from '../../components/dashboard/Sidebar';
 
 const Forms: React.FC = () => {
   const { t } = useTranslation();
@@ -81,62 +82,7 @@ const Forms: React.FC = () => {
 
   return (
     <div className="flex h-[1024px] overflow-hidden">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-            <div className="static top-0">
-              <i className="fa-solid fa-atom text-primary text-xs animate-pulse"></i>
-            </div>
-          </div>
-          <span className="text-xl font-bold text-slate-800 tracking-tight">At-Home</span>
-        </div>
-        <nav className="flex-1 mt-4 overflow-y-auto px-4 space-y-1">
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-chart-pie w-5"></i> {t('navigation.dashboard')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-user-doctor w-5"></i> {t('navigation.doctors')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hospital w-5"></i> {t('navigation.providers')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-hand-holding-medical w-5"></i> {t('navigation.services')}
-          </button>
-          <button className="sidebar-item-active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-colors w-full text-left">
-            <i className="fa-solid fa-file-lines w-5"></i> {t('navigation.forms')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-clipboard-list w-5"></i> {t('navigation.requests')}
-          </button>
-          <div className="pt-4 pb-2">
-            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('navigation.system')}</p>
-          </div>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-shield-halved w-5"></i> {t('navigation.auditLogs')}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors w-full text-left">
-            <i className="fa-solid fa-gear w-5"></i> {t('navigation.settings')}
-          </button>
-        </nav>
-        <div className="p-4 border-t border-slate-100">
-          <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-xl">
-            <img
-              src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
-              alt="Admin"
-              className="w-10 h-10 rounded-lg object-cover"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">{t('navigation.adminName')}</p>
-              <p className="text-[10px] text-slate-500 truncate">{t('navigation.adminRole')}</p>
-            </div>
-            <button className="text-slate-400 hover:text-danger p-1">
-              <i className="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
