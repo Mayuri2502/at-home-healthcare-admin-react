@@ -43,7 +43,7 @@ const Doctors: React.FC = () => {
   };
 
   const handleView = (doctor: any) => {
-    navigate(`/doctors/${doctor.id}`);
+    navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`);
   };
 
   const hideModal = () => {

@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Cache bust: 2025-04-15-16-37
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
 
-interface DoctorDetailProps {}
+interface DoctorDetailProps {
+  isApproved?: boolean; // Optional prop to pass doctor's approval status
+}
 
-const DoctorDetail: React.FC<DoctorDetailProps> = () => {
+const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved = false }) => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
 
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -24,6 +27,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [rejectComment, setRejectComment] = useState('');
   const [showRejectError, setShowRejectError] = useState(false);
+  const [isApproved, setIsApproved] = useState(propIsApproved || searchParams.get('approved') === 'true'); // Track doctor approval status
 
   const showModal = (type: 'approve' | 'reject') => {
     setModalState({
@@ -54,6 +58,12 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
 
   const handleAction = (status?: string) => {
     hideModal();
+    
+    // Set doctor as approved if status is 'Approved'
+    if (status === 'Approved') {
+      setIsApproved(true);
+    }
+    
     setToast({
       show: true,
       message: t('doctors.statusUpdate', { status: status || '', doctorName: modalState.doctorName })
@@ -84,8 +94,13 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
             <h1 className="text-lg font-bold text-slate-900">{t('doctors.doctorProfileDetail')}</h1>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-700 border border-amber-100 rounded-full text-xs font-bold">
-              <i className="fa-solid fa-clock"></i> {t('doctors.pendingApproval')}
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${
+              isApproved 
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                : 'bg-amber-50 text-amber-700 border border-amber-100'
+            }`}>
+              <i className={`fa-solid ${isApproved ? 'fa-check' : 'fa-clock'}`}></i> 
+              {isApproved ? 'Approved' : t('doctors.pendingApproval')}
             </div>
           </div>
         </header>
@@ -115,10 +130,6 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                         {t('doctorsData.dr1.email')}
                       </div>
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
-                        <i className="fa-solid fa-phone opacity-60"></i>
-                        {t('doctorsData.dr1.phone')}
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-500 text-sm">
                         <i className="fa-solid fa-location-dot opacity-60"></i>
                         {t('doctorsData.dr1.location')}
                       </div>
@@ -145,45 +156,9 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                      {t('doctors.submittedDocuments')}
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <i className="fa-solid fa-file-pdf text-danger"></i>
-                          <span className="text-sm font-medium text-slate-700">{t('doctors.documents.identity')}</span>
-                        </div>
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-[10px] font-bold border border-emerald-100">{t('doctors.status.verified')}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <i className="fa-solid fa-file-pdf text-danger"></i>
-                          <span className="text-sm font-medium text-slate-700">{t('doctors.documents.medicalDiploma')}</span>
-                        </div>
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-[10px] font-bold border border-emerald-100">{t('doctors.status.verified')}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <i className="fa-solid fa-file-pdf text-danger"></i>
-                          <span className="text-sm font-medium text-slate-700">{t('doctors.documents.liabilityInsurance')}</span>
-                        </div>
-                        <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-md text-[10px] font-bold border border-amber-100">{t('doctors.status.reviewing')}</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                      {t('doctors.biography')}
-                    </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      {t('doctorsData.dr1.biography')}
-                    </p>
-                  </div>
 
                   <div>
                     <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
@@ -191,12 +166,12 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
                     </h3>
                     <div className="bg-slate-50 p-4 rounded-xl space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">{t('doctors.address')}</span>
+                        <span className="text-slate-500">Business Address</span>
                         <span className="font-medium text-slate-900 text-right">{t('doctorsData.dr1.address')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">{t('doctors.availability')}</span>
-                        <span className="font-medium text-slate-900">Mon - Fri, 08:00 - 19:00</span>
+                        <span className="text-slate-500">Place of Practice</span>
+                        <span className="font-medium text-slate-900">Paris Medical Center</span>
                       </div>
                     </div>
                   </div>
@@ -207,63 +182,65 @@ const DoctorDetail: React.FC<DoctorDetailProps> = () => {
 
           {/* Right Column: Approval Panel */}
           <section className="lg:w-1/3 space-y-6">
-            {/* Action Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 tradingview-shadow p-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">{t('doctors.verificationStatus')}</h3>
-              
-              <div className="space-y-4 mb-8">
-                <div className="p-4 bg-slate-50 rounded-xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <i className="fa-solid fa-magnifying-glass-chart text-primary"></i>
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('doctors.auditSnippet')}</span>
+            {/* Action Card - Only show for pending approval */}
+            {!isApproved && (
+              <div className="bg-white rounded-2xl border border-slate-200 tradingview-shadow p-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">{t('doctors.verificationStatus')}</h3>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="p-4 bg-slate-50 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <i className="fa-solid fa-magnifying-glass-chart text-primary"></i>
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('doctors.auditSnippet')}</span>
+                    </div>
+                    <p className="text-sm text-slate-600 italic">
+                      {t('doctors.auditSnippetText')}
+                    </p>
                   </div>
-                  <p className="text-sm text-slate-600 italic">
-                    {t('doctors.auditSnippetText')}
-                  </p>
+
+                  <div className="space-y-4 block">
+                    <div className="relative step-line pb-2.5 pl-11">
+                      <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between m-0 p-2.5 gap-1.5">
+                        <i className="fa-solid fa-check text-xs"></i>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.registrationSubmitted')}</p>
+                      <p className="text-[10px] text-slate-500">{t('doctors.steps.registrationDate')}</p>
+                    </div>
+
+                    <div className="relative step-line pb-2.5 pl-11">
+                      <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between p-2.5 gap-1.5">
+                        <i className="fa-solid fa-check text-xs"></i>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.emailVerified')}</p>
+                      <p className="text-[10px] text-slate-500">{t('doctors.steps.emailDate')}</p>
+                    </div>
+
+                    <div className="relative pl-11">
+                      <div className="absolute left-0 top-0 w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center z-10 p-2.5 m-0 gap-1.5">
+                        <i className="fa-solid fa-clock text-xs"></i>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.adminReview')}</p>
+                      <p className="text-[10px] text-slate-500">{t('doctors.steps.adminReviewStatus')}</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-4 block">
-                  <div className="relative step-line pb-2.5 pl-11">
-                    <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between m-0 p-2.5 gap-1.5">
-                      <i className="fa-solid fa-check text-xs"></i>
-                    </div>
-                    <p className="text-xs font-bold text-slate-900">{t('doctors.steps.registrationSubmitted')}</p>
-                    <p className="text-[10px] text-slate-500">{t('doctors.steps.registrationDate')}</p>
-                  </div>
-
-                  <div className="relative step-line pb-2.5 pl-11">
-                    <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between p-2.5 gap-1.5">
-                      <i className="fa-solid fa-check text-xs"></i>
-                    </div>
-                    <p className="text-xs font-bold text-slate-900">{t('doctors.steps.emailVerified')}</p>
-                    <p className="text-[10px] text-slate-500">{t('doctors.steps.emailDate')}</p>
-                  </div>
-
-                  <div className="relative pl-11">
-                    <div className="absolute left-0 top-0 w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center z-10 p-2.5 m-0 gap-1.5">
-                      <i className="fa-solid fa-clock text-xs"></i>
-                    </div>
-                    <p className="text-xs font-bold text-slate-900">{t('doctors.steps.adminReview')}</p>
-                    <p className="text-[10px] text-slate-500">{t('doctors.steps.adminReviewStatus')}</p>
-                  </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => showModal('approve')}
+                    className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                  >
+                    <i className="fa-solid fa-user-check"></i> {t('doctors.approveApplication')}
+                  </button>
+                  <button
+                    onClick={() => showModal('reject')}
+                    className="w-full py-3 bg-white text-danger border border-danger/20 rounded-xl font-bold text-sm hover:bg-danger/5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <i className="fa-solid fa-user-xmark"></i> {t('doctors.rejectNotify')}
+                  </button>
                 </div>
               </div>
-
-              <div className="space-y-3">
-                <button
-                  onClick={() => showModal('approve')}
-                  className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
-                >
-                  <i className="fa-solid fa-user-check"></i> {t('doctors.approveApplication')}
-                </button>
-                <button
-                  onClick={() => showModal('reject')}
-                  className="w-full py-3 bg-white text-danger border border-danger/20 rounded-xl font-bold text-sm hover:bg-danger/5 transition-all flex items-center justify-center gap-2"
-                >
-                  <i className="fa-solid fa-user-xmark"></i> {t('doctors.rejectNotify')}
-                </button>
-              </div>
-            </div>
+            )}
 
             {/* Internal Notes */}
             <div className="bg-white rounded-2xl border border-slate-200 tradingview-shadow p-6">

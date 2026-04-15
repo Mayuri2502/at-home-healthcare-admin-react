@@ -191,7 +191,7 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                         <i className="fa-solid fa-xmark"></i>
                       </button>
                       <button
-                        onClick={() => navigate(`/doctors/${doctor.id}`)}
+                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`)}
                         title="View Details"
                         className="p-2 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
@@ -247,7 +247,7 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => navigate(`/doctors/${doctor.id}`)}
+                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`)}
                         className="px-3 py-1.5 text-xs font-bold text-primary hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         View

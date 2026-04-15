@@ -116,7 +116,7 @@
     "title": "Doctor Management",
     "subtitle": "Review registrations and manage active medical professionals.",
     "addDoctor": "Add Doctor",
-    "searchDoctors": "Search doctors...",
+    "searchDoctors": "Search by name, email or speciality...",
     "doctorName": "Doctor Name",
     "specialization": "Specialization",
     "department": "Department",
