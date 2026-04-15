@@ -1,4 +1,5 @@
 {
+  "_cacheBust": "2025-04-15-15-05",
   "navigation": {
     "dashboard": "Dashboard",
     "doctors": "Doctors",
@@ -62,10 +63,11 @@
   },
   "dashboard": {
     "title": "Dashboard Overview",
-    "subtitle": "Welcome back! Here's what's happening with your healthcare platform today.",
+    "subtitle": "Real-time healthcare operations monitoring and analytics.",
     "exportReport": "Export Report",
     "welcome": "Welcome back",
     "newService": "New Service",
+    "viewRequest": "View Request",
     "kpi": {
       "totalDoctors": "Total Doctors",
       "pendingApprovals": "Pending Approvals",

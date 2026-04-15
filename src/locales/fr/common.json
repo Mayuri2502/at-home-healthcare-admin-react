@@ -1,4 +1,5 @@
 {
+  "_cacheBust": "2025-04-15-15-05",
   "navigation": {
     "dashboard": "Tableau de bord",
     "doctors": "Médecins",
@@ -58,10 +59,11 @@
   },
   "dashboard": {
     "title": "Aperçu du tableau de bord",
-    "subtitle": "Bon retour ! Voici ce qui se passe avec votre plateforme de santé aujourd'hui.",
+    "subtitle": "Surveillance et analyse des opérations de santé en temps réel.",
     "exportReport": "Exporter le rapport",
     "welcome": "Bon retour",
     "newService": "Nouveau service",
+    "viewRequest": "Voir la demande",
     "kpi": {
       "totalDoctors": "Total des médecins",
       "pendingApprovals": "Approbations en attente",

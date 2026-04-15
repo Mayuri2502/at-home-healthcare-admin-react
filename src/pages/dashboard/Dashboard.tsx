@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
               </button>
               <button
                 className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">
-                <i className="fa-solid fa-plus"></i> {t('dashboard.newService') || 'New Service'}
+                <i className="fa-solid fa-eye"></i> {t('dashboard.viewRequest') || 'View Request'}
               </button>
             </div>
           </div>
