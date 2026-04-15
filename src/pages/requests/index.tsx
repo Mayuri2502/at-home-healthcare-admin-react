@@ -124,9 +124,6 @@ const Requests: React.FC = () => {
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] flex items-center justify-center rounded-full font-bold">5</span>
             </button>
             <div className="h-8 w-[1px] bg-slate-200"></div>
-            <div className="ml-2">
-              <LanguageSwitcher />
-            </div>
             <button className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-all relative">
               <i className="fa-solid fa-filter text-sm"></i>
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[9px] flex items-center justify-center rounded-full font-bold">2</span>
@@ -134,6 +131,9 @@ const Requests: React.FC = () => {
             <button className="px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-800 transition-all">
               <i className="fa-solid fa-download"></i> {t('common.export')}
             </button>
+            <div className="ml-2">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
