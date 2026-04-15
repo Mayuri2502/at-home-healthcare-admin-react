@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Cache bust: 2025-04-15-16-37
+import React, { useState } from 'react'; // Cache bust: 2025-04-15-16-37
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
