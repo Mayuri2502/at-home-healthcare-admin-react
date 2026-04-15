@@ -40,3 +40,35 @@ body {
 ::-webkit-scrollbar {
   display: none;
 }
+
+/* Status Chip Styles */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.status-completed {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.status-inprogress {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-returned {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}

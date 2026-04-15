@@ -290,6 +290,7 @@
     "medium": "Medium",
     "low": "Low",
     "pending": "Pending",
+    "pendingApproval": "Pending Approval",
     "approved": "Approved",
     "rejected": "Rejected",
     "completed": "Completed",

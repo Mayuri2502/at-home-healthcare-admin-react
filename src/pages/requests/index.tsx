@@ -77,7 +77,7 @@ const Requests: React.FC = () => {
 
   const getStatusText = (status: string): string => {
     const statusTexts = {
-      pending: t('requests.pending'),
+      pending: t('requests.pendingApproval'),
       completed: t('requests.completed'),
       inprogress: t('requests.inProgress'),
       returned: t('requests.returned')

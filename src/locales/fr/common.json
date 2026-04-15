@@ -286,6 +286,7 @@
     "medium": "Moyenne",
     "low": "Faible",
     "pending": "En attente",
+    "pendingApproval": "En attente d'approbation",
     "approved": "Approuvée",
     "rejected": "Rejetée",
     "completed": "Terminé",
