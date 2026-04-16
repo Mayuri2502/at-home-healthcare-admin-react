@@ -286,6 +286,7 @@
     "serviceType": "Type de service",
     "status": "Statut",
     "dateCreated": "Date de création",
+    "lastUpdated": "Dernière mise à jour",
     "actions": "Actions",
     "patientName": "Nom du patient",
     "requestType": "Type de demande",
@@ -295,6 +296,7 @@
     "low": "Faible",
     "pending": "En attente",
     "pendingApproval": "En attente d'approbation",
+    "submitted": "Soumise",
     "approved": "Approuvée",
     "rejected": "Rejetée",
     "completed": "Terminé",
@@ -320,6 +322,7 @@
     "statusTimeline": "Chronologie du statut",
     "reassignProvider": "Réassigner le prestataire",
     "viewDetail": "Voir les détails",
+    "resetRequest": "Réinitialiser la demande",
     "showingResults": "Affichage {{start}}-{{end}} sur {{total}} résultats"
   },
   "auth": {

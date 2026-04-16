@@ -11,6 +11,7 @@ export interface RequestData {
   serviceType: string;
   status: 'pending' | 'completed' | 'inprogress' | 'returned';
   dateCreated: string;
+  lastUpdated: string;
   serviceColor: string;
 }
 

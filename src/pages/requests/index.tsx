@@ -22,6 +22,7 @@ const Requests: React.FC = () => {
       serviceType: t('requestsData.dr1.serviceType'),
       status: 'inprogress',
       dateCreated: 'Oct 26, 2023 14:20',
+      lastUpdated: 'Oct 26, 2023 16:30',
       serviceColor: 'blue'
     },
     {
@@ -35,6 +36,7 @@ const Requests: React.FC = () => {
       serviceType: t('requestsData.dr2.serviceType'),
       status: 'completed',
       dateCreated: 'Oct 25, 2023 09:15',
+      lastUpdated: 'Oct 25, 2023 17:45',
       serviceColor: 'emerald'
     },
     {
@@ -48,6 +50,7 @@ const Requests: React.FC = () => {
       serviceType: t('requestsData.dr3.serviceType'),
       status: 'pending',
       dateCreated: 'Oct 25, 2023 16:45',
+      lastUpdated: 'Oct 25, 2023 18:20',
       serviceColor: 'amber'
     },
     {
@@ -61,6 +64,7 @@ const Requests: React.FC = () => {
       serviceType: t('requestsData.dr4.serviceType'),
       status: 'returned',
       dateCreated: 'Oct 24, 2023 11:30',
+      lastUpdated: 'Oct 24, 2023 14:15',
       serviceColor: 'red'
     }
   ], [t]);
@@ -77,7 +81,7 @@ const Requests: React.FC = () => {
 
   const getStatusText = (status: string): string => {
     const statusTexts = {
-      pending: t('requests.pendingApproval'),
+      pending: t('requests.submitted'),
       completed: t('requests.completed'),
       inprogress: t('requests.inProgress'),
       returned: t('requests.returned')
@@ -143,12 +147,7 @@ const Requests: React.FC = () => {
           <section className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-primary shadow-sm">{t('requests.allRequests')}</button>
-              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.pendingReview')}</button>
-              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.highPriority')}</button>
-              <div className="h-6 w-px bg-slate-200 mx-2"></div>
-              <button className="px-3 py-2 text-xs font-bold text-slate-400 hover:text-primary">
-                <i className="fa-solid fa-plus mr-1"></i> {t('requests.saveView')}
-              </button>
+              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.submitted')}</button>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2">
@@ -180,6 +179,7 @@ const Requests: React.FC = () => {
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.serviceType')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.status')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.dateCreated')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.lastUpdated')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">{t('requests.actions')}</th>
                   </tr>
                 </thead>
@@ -216,10 +216,25 @@ const Requests: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500">{request.dateCreated}</td>
+                      <td className="px-6 py-4 text-xs text-slate-500">{request.lastUpdated}</td>
                       <td className="px-6 py-4 text-right">
-                        <button className="px-3 py-1.5 text-[11px] font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all">
-                          {t('requests.viewDetail')}
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          {request.status === 'inprogress' && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Handle reset request logic here
+                                alert('Reset request functionality would be implemented here');
+                              }}
+                              className="px-3 py-1.5 text-[11px] font-bold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-all"
+                            >
+                              {t('requests.resetRequest')}
+                            </button>
+                          )}
+                          <button className="px-3 py-1.5 text-[11px] font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all">
+                            {t('requests.viewDetail')}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

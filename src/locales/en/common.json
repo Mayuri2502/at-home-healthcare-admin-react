@@ -290,6 +290,7 @@
     "serviceType": "Service Type",
     "status": "Status",
     "dateCreated": "Date Created",
+    "lastUpdated": "Last Updated",
     "actions": "Actions",
     "patientName": "Patient Name",
     "requestType": "Request Type",
@@ -299,6 +300,7 @@
     "low": "Low",
     "pending": "Pending",
     "pendingApproval": "Pending Approval",
+    "submitted": "Submitted",
     "approved": "Approved",
     "rejected": "Rejected",
     "completed": "Completed",
@@ -324,6 +326,7 @@
     "statusTimeline": "Status Timeline",
     "reassignProvider": "Reassign Provider",
     "viewDetail": "View Detail",
+    "resetRequest": "Reset Request",
     "showingResults": "Showing {{start}}-{{end}} of {{total}} results"
   },
   "auth": {

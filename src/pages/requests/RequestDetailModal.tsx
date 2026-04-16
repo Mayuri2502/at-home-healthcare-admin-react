@@ -28,7 +28,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
 
   const getStatusText = (status: string): string => {
     const statusTexts = {
-      pending: t('requests.pending'),
+      pending: t('requests.submitted'),
       completed: t('requests.completed'),
       inprogress: t('requests.inProgress'),
       returned: t('requests.returned')
