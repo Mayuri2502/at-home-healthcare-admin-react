@@ -15,13 +15,17 @@ interface Service {
 interface ServicesTableProps {
   services: Service[];
   onEdit: (service: Service) => void;
-  onDelete: (service: Service) => void;
+  onView: (service: Service) => void;
+  onMapForm: (service: Service) => void;
+  onViewForm: (service: Service) => void;
 }
 
 export const ServicesTable: React.FC<ServicesTableProps> = ({
   services,
   onEdit,
-  onDelete
+  onView,
+  onMapForm,
+  onViewForm
 }) => {
   const { t } = useTranslation();
   const getIconColorClass = (color: string) => {
@@ -143,17 +147,36 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
                     <button
+                      onClick={() => onView(service)}
+                      className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+                      title="View"
+                    >
+                      <i className="fa-solid fa-eye"></i>
+                    </button>
+                    <button
                       onClick={() => onEdit(service)}
                       className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+                      title="Edit"
                     >
                       <i className="fa-solid fa-pen-to-square"></i>
                     </button>
-                    <button
-                      onClick={() => onDelete(service)}
-                      className="p-2 text-slate-400 hover:text-danger hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
-                    >
-                      <i className="fa-solid fa-trash-can"></i>
-                    </button>
+                    {service.formMapped ? (
+                      <button
+                        onClick={() => onViewForm(service)}
+                        className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+                        title="View Form"
+                      >
+                        <i className="fa-solid fa-file-lines"></i>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onMapForm(service)}
+                        className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+                        title="Map Form"
+                      >
+                        <i className="fa-solid fa-map"></i>
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

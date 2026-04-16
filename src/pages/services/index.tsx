@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import { ServicesTable } from '../../components/services/ServicesTable';
 import { AddServiceModal } from '../../components/services/AddServiceModal';
-import { DeleteConfirmModal } from '../../components/services/DeleteConfirmModal';
+import { ViewServiceModal } from '../../components/services/ViewServiceModal';
+import { MapFormModal } from '../../components/services/MapFormModal';
+import { ViewFormModal } from '../../components/services/ViewFormModal';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 interface Service {
@@ -17,10 +19,18 @@ interface Service {
   iconColor: string;
 }
 
+interface MapFormData {
+  formName: string;
+  formType: string;
+  fields: string[];
+}
+
 export const Services: React.FC = () => {
   const { t } = useTranslation();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isMapFormModalOpen, setIsMapFormModalOpen] = useState(false);
+  const [isViewFormModalOpen, setIsViewFormModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
   const services: Service[] = [
@@ -63,23 +73,35 @@ export const Services: React.FC = () => {
     activeProviders: 142
   };
 
+  const handleViewService = (service: Service) => {
+    setSelectedService(service);
+    setIsViewModalOpen(true);
+  };
+
+  const handleMapForm = (service: Service) => {
+    setSelectedService(service);
+    setIsMapFormModalOpen(true);
+  };
+
+  const handleViewForm = (service: Service) => {
+    setSelectedService(service);
+    setIsViewFormModalOpen(true);
+  };
+
+  const handleMapFormSubmit = (service: Service, formData: MapFormData) => {
+    console.log('Mapping form:', service, formData);
+    // TODO: Implement actual form mapping logic
+    setIsMapFormModalOpen(false);
+    setSelectedService(null);
+  };
+
   const handleEditService = (service: Service) => {
     setSelectedService(service);
     setIsAddModalOpen(true);
   };
 
-  const handleDeleteService = (service: Service) => {
-    setSelectedService(service);
-    setIsDeleteModalOpen(true);
-  };
-
   const handleSaveService = () => {
     setIsAddModalOpen(false);
-    setSelectedService(null);
-  };
-
-  const handleConfirmDelete = () => {
-    setIsDeleteModalOpen(false);
     setSelectedService(null);
   };
 
@@ -142,20 +164,22 @@ export const Services: React.FC = () => {
                 <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">{t('services.actionRequired')}</span>
               </div>
             </div>
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
+            {/* <div className="bg-white p-5 rounded-2xl border border-slate-200 tradingview-shadow">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('services.activeProviders')}</p>
               <div className="flex items-end justify-between">
                 <h3 className="text-2xl font-bold text-slate-800">{stats.activeProviders}</h3>
                 <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded">{t('services.acrossAllServices')}</span>
               </div>
-            </div>
+            </div> */}
           </section>
 
           {/* Services Table */}
           <ServicesTable
             services={services}
             onEdit={handleEditService}
-            onDelete={handleDeleteService}
+            onView={handleViewService}
+            onMapForm={handleMapForm}
+            onViewForm={handleViewForm}
           />
         </div>
       </main>
@@ -171,14 +195,32 @@ export const Services: React.FC = () => {
         service={selectedService}
       />
 
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
+      <ViewServiceModal
+        isOpen={isViewModalOpen}
         onClose={() => {
-          setIsDeleteModalOpen(false);
+          setIsViewModalOpen(false);
           setSelectedService(null);
         }}
-        onConfirm={handleConfirmDelete}
-        serviceName={selectedService?.name || ''}
+        service={selectedService}
+      />
+
+      <MapFormModal
+        isOpen={isMapFormModalOpen}
+        onClose={() => {
+          setIsMapFormModalOpen(false);
+          setSelectedService(null);
+        }}
+        onMap={handleMapFormSubmit}
+        service={selectedService}
+      />
+
+      <ViewFormModal
+        isOpen={isViewFormModalOpen}
+        onClose={() => {
+          setIsViewFormModalOpen(false);
+          setSelectedService(null);
+        }}
+        service={selectedService}
       />
     </div>
   );
