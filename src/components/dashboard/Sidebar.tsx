@@ -17,12 +17,10 @@ const Sidebar: React.FC = () => {
     { icon: 'fa-hospital', label: t('navigation.providers'), path: '/providers' },
     { icon: 'fa-hand-holding-medical', label: t('navigation.services'), path: '/services' },
     { icon: 'fa-file-lines', label: t('navigation.forms'), path: '/forms' },
-    { icon: 'fa-clipboard-list', label: t('navigation.requests'), path: '/requests' },
-    { icon: 'fa-bell', label: t('navigation.notifications'), path: '/notifications' }
+    { icon: 'fa-clipboard-list', label: t('navigation.requests'), path: '/requests' }
   ];
 
   const systemNavItems: SidebarItem[] = [
-    { icon: 'fa-shield-halved', label: t('navigation.auditLogs'), path: '/audit-logs' },
     { icon: 'fa-gear', label: t('navigation.settings'), path: '/settings' }
   ];
 

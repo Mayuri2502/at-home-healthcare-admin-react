@@ -12,7 +12,6 @@ import Providers, { CreateProvider } from './pages/providers';
 import { Services } from './pages/services';
 import Requests from './pages/requests';
 import Forms from './pages/forms';
-import Notifications from './pages/notifications';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Extend Window interface for global logout function
@@ -115,11 +114,6 @@ function AppContent() {
           <Route path="/forms" element={
             <ProtectedRoute>
               <Forms />
-            </ProtectedRoute>
-          } />
-          <Route path="/notifications" element={
-            <ProtectedRoute>
-              <Notifications />
             </ProtectedRoute>
           } />
           

@@ -4,11 +4,63 @@ import { RequestDetailModal } from './RequestDetailModal';
 import { RequestData } from './RequestTypes';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import Sidebar from '../../components/dashboard/Sidebar';
+import NotificationDropdown from '../../components/common/NotificationDropdown';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  isRead: boolean;
+  icon: string;
+  iconColor: string;
+  actions?: {
+    label: string;
+    variant: 'primary' | 'secondary';
+  }[];
+}
 
 const Requests: React.FC = () => {
   const { t } = useTranslation();
   const [selectedRequest, setSelectedRequest] = useState<RequestData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: '1',
+      title: t('notifications.newDoctorRegistration'),
+      message: t('notifications.newDoctorMessage', { name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', rpps: '#82910' }),
+      time: '2 mins ago',
+      isRead: false,
+      icon: 'fa-user-plus',
+      iconColor: 'text-blue-500',
+      actions: [
+        { label: t('notifications.viewProfile'), variant: 'primary' },
+        { label: t('notifications.dismiss'), variant: 'secondary' }
+      ]
+    },
+    {
+      id: '2',
+      title: t('notifications.monthlyAuditReport'),
+      message: t('notifications.auditReportMessage'),
+      time: '3 hours ago',
+      isRead: true,
+      icon: 'fa-file-export',
+      iconColor: 'text-slate-500'
+    }
+  ]);
+
+  const handleNotificationAction = (notificationId: string, action: string) => {
+    if (action === t('notifications.viewProfile')) {
+      console.log('View profile for notification:', notificationId);
+    } else if (action === t('notifications.dismiss')) {
+      setNotifications(notifications.filter(n => n.id !== notificationId));
+    }
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+  };
 
   const requestsData = useMemo((): RequestData[] => [
     {
@@ -123,10 +175,11 @@ const Requests: React.FC = () => {
                 className="bg-transparent border-none outline-none text-xs w-64 text-slate-700"
               />
             </div>
-            <button className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-all relative">
-              <i className="fa-solid fa-bell text-sm"></i>
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] flex items-center justify-center rounded-full font-bold">5</span>
-            </button>
+            <NotificationDropdown
+              notifications={notifications}
+              onNotificationAction={handleNotificationAction}
+              onMarkAllAsRead={markAllAsRead}
+            />
             <div className="h-8 w-[1px] bg-slate-200"></div>
             <button className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-all relative">
               <i className="fa-solid fa-filter text-sm"></i>

@@ -7,6 +7,21 @@ import { ViewServiceModal } from '../../components/services/ViewServiceModal';
 import { MapFormModal } from '../../components/services/MapFormModal';
 import { ViewFormModal } from '../../components/services/ViewFormModal';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import NotificationDropdown from '../../components/common/NotificationDropdown';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  isRead: boolean;
+  icon: string;
+  iconColor: string;
+  actions?: {
+    label: string;
+    variant: 'primary' | 'secondary';
+  }[];
+}
 
 interface Service {
   id: string;
@@ -32,6 +47,43 @@ export const Services: React.FC = () => {
   const [isMapFormModalOpen, setIsMapFormModalOpen] = useState(false);
   const [isViewFormModalOpen, setIsViewFormModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: '1',
+      title: t('notifications.newDoctorRegistration'),
+      message: t('notifications.newDoctorMessage', { name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', rpps: '#82910' }),
+      time: '2 mins ago',
+      isRead: false,
+      icon: 'fa-user-plus',
+      iconColor: 'text-blue-500',
+      actions: [
+        { label: t('notifications.viewProfile'), variant: 'primary' },
+        { label: t('notifications.dismiss'), variant: 'secondary' }
+      ]
+    },
+    {
+      id: '2',
+      title: t('notifications.monthlyAuditReport'),
+      message: t('notifications.auditReportMessage'),
+      time: '3 hours ago',
+      isRead: true,
+      icon: 'fa-file-export',
+      iconColor: 'text-slate-500'
+    }
+  ]);
+
+  const handleNotificationAction = (notificationId: string, action: string) => {
+    if (action === t('notifications.viewProfile')) {
+      console.log('View profile for notification:', notificationId);
+    } else if (action === t('notifications.dismiss')) {
+      setNotifications(notifications.filter(n => n.id !== notificationId));
+    }
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+  };
 
   const services: Service[] = [
     {
@@ -133,6 +185,12 @@ export const Services: React.FC = () => {
               <i className="fa-solid fa-plus"></i>
               {t('services.addService')}
             </button>
+            <div className="h-8 w-[1px] bg-slate-200"></div>
+            <NotificationDropdown
+              notifications={notifications}
+              onNotificationAction={handleNotificationAction}
+              onMarkAllAsRead={markAllAsRead}
+            />
             <div className="h-8 w-[1px] bg-slate-200"></div>
             <div className="ml-2">
               <LanguageSwitcher />
