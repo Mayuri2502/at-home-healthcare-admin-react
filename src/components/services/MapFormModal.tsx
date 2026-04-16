@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface Service {
   id: string;
@@ -31,7 +30,6 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
   onMap,
   service
 }) => {
-  const { t } = useTranslation();
   const [formData, setFormData] = useState<MapFormData>({
     formName: '',
     formType: 'Medical',

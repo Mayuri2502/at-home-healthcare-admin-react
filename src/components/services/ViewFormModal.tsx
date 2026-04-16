@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface Service {
   id: string;
@@ -23,7 +22,6 @@ export const ViewFormModal: React.FC<ViewFormModalProps> = ({
   onClose,
   service
 }) => {
-  const { t } = useTranslation();
 
   if (!isOpen || !service) return null;
 
