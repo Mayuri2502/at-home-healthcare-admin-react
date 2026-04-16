@@ -109,6 +109,11 @@ const CreateProvider: React.FC = () => {
       return;
     }
 
+    if (formData.services.length === 0) {
+      showToastMessage('At least one service must be selected', 'error');
+      return;
+    }
+
     const action = isEditMode ? t('providers.validation.updated') : t('providers.validation.created');
     showToastMessage(t('providers.validation.success', { action }), 'success');
 
@@ -171,7 +176,7 @@ const CreateProvider: React.FC = () => {
               onClick={handleCancel}
               className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
             >
-              {t('common.cancel')}
+              Discard
             </button>
             <button 
               onClick={handleSubmit}
@@ -194,7 +199,7 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
                   <i className="fa-solid fa-id-card"></i>
                 </div>
-                <h2 className="text-sm font-semibold text-slate-800">{t('providers.basicInformation')}</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Provider Details</h2>
               </div>
               {isEditMode && (
                 <div className="flex items-center gap-3">
@@ -281,7 +286,7 @@ const CreateProvider: React.FC = () => {
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">
                   <i className="fa-solid fa-briefcase-medical"></i>
                 </div>
-                <h2 className="text-sm font-semibold text-slate-800">Assign Services</h2>
+                <h2 className="text-sm font-semibold text-slate-800">Service Eligibility</h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">MULTI-SELECT</span>
             </div>
@@ -290,18 +295,23 @@ const CreateProvider: React.FC = () => {
                 <div className="absolute left-4 top-3.5 text-slate-400">
                   <i className="fa-solid fa-magnifying-glass text-sm"></i>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search and add services (e.g. Blood Test, Nursing...)"
-                  className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Search and add services (e.g. Blood Test, Nursing...)"
+                    className="flex-1 pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  />
+                  <button className="flex items-center justify-center px-4 py-2.5 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-all group">
+                    <span className="text-[10px] font-bold text-slate-400 group-hover:text-primary tracking-widest">VIEW ALL SERVICES</span>
+                  </button>
+                </div>
                 
                 {/* Selected Services Chips */}
                 <div className="flex flex-wrap gap-2 mt-4">
                   {formData.services.map((service, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 bg-primary/5 text-primary border border-primary/10 px-3 py-1.5 rounded-lg text-xs font-bold"
+                      className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-bold"
                     >
                       {service}
                       <button 
@@ -317,19 +327,25 @@ const CreateProvider: React.FC = () => {
 
               {/* Service Suggestions */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {availableServices.slice(0, 5).map((service) => (
-                  <button
-                    key={service.id}
-                    onClick={() => handleAddService(service.name)}
-                    className="flex items-center justify-between p-3 border border-slate-100 rounded-xl hover:border-primary/30 hover:bg-slate-50 transition-all text-left"
-                  >
-                    <span className="text-xs font-medium text-slate-600">{service.name}</span>
-                    <i className="fa-solid fa-plus text-[10px] text-slate-300"></i>
-                  </button>
-                ))}
-                <button className="flex items-center justify-center p-3 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-all group">
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-primary tracking-widest">VIEW ALL SERVICES</span>
-                </button>
+                {availableServices.slice(0, 5).map((service) => {
+                  const isSelected = formData.services.includes(service.name);
+                  return (
+                    <button
+                      key={service.id}
+                      onClick={() => handleAddService(service.name)}
+                      className={`flex items-center justify-between p-3 border rounded-xl transition-all text-left ${
+                        isSelected 
+                          ? 'border-primary/30 bg-primary/5 text-primary' 
+                          : 'border-slate-100 hover:border-primary/30 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className={`text-xs font-medium ${isSelected ? 'text-primary font-bold' : 'text-slate-600'}`}>
+                        {service.name}
+                      </span>
+                      <i className="fa-solid fa-plus text-[10px] text-slate-300"></i>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -368,22 +384,22 @@ const CreateProvider: React.FC = () => {
             <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-circle-question text-2xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900">{t('providers.unsavedChanges')}</h3>
+            <h3 className="text-xl font-bold text-slate-900">Discard Changes</h3>
             <p className="text-slate-500 text-sm mt-2">
-              {t('providers.unsavedChangesMessage')}
+              Are you sure you want to discard your changes?
             </p>
             <div className="mt-8 flex gap-3">
               <button
                 onClick={handleStay}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
               >
-                {t('providers.stayHere')}
+                Stay
               </button>
               <button
                 onClick={handleConfirmLeave}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-primary hover:bg-slate-800 rounded-xl"
               >
-                {t('providers.discardAndLeave')}
+                Discard
               </button>
             </div>
           </div>
