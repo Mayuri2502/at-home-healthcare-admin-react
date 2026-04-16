@@ -15,10 +15,13 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState<'all' | 'mapped' | 'unmapped'>('all');
 
-  const filteredServices = services.filter(service =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredServices = services.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filter === 'all' || service.status === filter;
+    return matchesSearch && matchesFilter;
+  });
 
   const getStatusBadge = (status: string) => {
     if (status === 'mapped') {
@@ -40,10 +43,42 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
     <section className="w-[380px] bg-white rounded-2xl border border-slate-200 tradingview-shadow flex flex-col overflow-hidden flex-shrink-0">
       <div className="p-5 border-b border-slate-100 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-800">Healthcare Services</h3>
+          <h3 className="text-sm font-bold text-slate-800">Services</h3>
           <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
             {services.length} Total
           </span>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+              filter === 'all'
+                ? 'bg-primary text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('mapped')}
+            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+              filter === 'mapped'
+                ? 'bg-primary text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Mapped
+          </button>
+          <button
+            onClick={() => setFilter('unmapped')}
+            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+              filter === 'unmapped'
+                ? 'bg-primary text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Unmapped
+          </button>
         </div>
         <div className="relative">
           <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -73,7 +108,7 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
                 {getStatusBadge(service.status)}
               </div>
               <p className="text-[11px] text-slate-500 line-clamp-1">
-                {service.formName ? `${t('forms.form')}: ${service.formName}` : t('forms.noFormAssigned')}
+                {service.formName ? <>{t('forms.form')}: <span className="font-bold">{service.formName}</span></> : t('forms.noFormAssigned')}
               </p>
             </div>
           ))}

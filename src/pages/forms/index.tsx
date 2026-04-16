@@ -54,10 +54,7 @@ const Forms: React.FC = () => {
     showNotification(t('forms.mappingFunctionality'));
   };
 
-  const handleExport = () => {
-    showNotification(t('forms.exportSuccess'));
-  };
-
+  
   
   const confirmUnmap = () => {
     setIsUnmapModalOpen(false);
@@ -119,7 +116,6 @@ const Forms: React.FC = () => {
           <FormStructureViewer
             selectedService={selectedService}
             onMapService={handleMapService}
-            onExport={handleExport}
           />
         </div>
       </main>
