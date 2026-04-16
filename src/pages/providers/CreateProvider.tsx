@@ -334,7 +334,7 @@ const CreateProvider: React.FC = () => {
             </div>
           </section>
 
-          {/* Section 3: Notification Preferences */}
+          {/* Section 3: Notification Preferences
           <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-50 bg-slate-50/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -357,7 +357,7 @@ const CreateProvider: React.FC = () => {
                 <span className="text-xs font-bold text-slate-600">Email Notifications Enabled</span>
               </div>
             </div>
-          </section>
+          </section> */}
         </div>
       </main>
 

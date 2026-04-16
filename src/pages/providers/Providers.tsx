@@ -12,6 +12,7 @@ interface Provider {
   services: string[];
   status: 'active' | 'inactive';
   initials: string;
+  activeRequests: number;
 }
 
 const Providers: React.FC = () => {
@@ -32,7 +33,8 @@ const Providers: React.FC = () => {
       phone: t('providersData.bioHealth.phone'),
       services: [t('servicesData.diagnostics'), t('servicesData.bloodTest.name')],
       status: 'active',
-      initials: 'BH'
+      initials: 'BH',
+      activeRequests: 12
     },
     {
       id: 'PRV-4432',
@@ -41,7 +43,8 @@ const Providers: React.FC = () => {
       phone: t('providersData.swiftCare.phone'),
       services: [t('servicesData.homeNursing'), t('servicesData.postOpCare'), t('servicesData.medicationManagement')],
       status: 'active',
-      initials: 'SC'
+      initials: 'SC',
+      activeRequests: 8
     },
     {
       id: 'PRV-1108',
@@ -50,7 +53,8 @@ const Providers: React.FC = () => {
       phone: t('providersData.medipack.phone'),
       services: [t('servicesData.pharmacyDelivery')],
       status: 'inactive',
-      initials: 'MP'
+      initials: 'MP',
+      activeRequests: 0
     }
   ];
 
@@ -108,7 +112,7 @@ const Providers: React.FC = () => {
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
               <input
                 type="text"
-                placeholder={t('providers.searchProviders')}
+                placeholder="Search providers by name, email or service..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
@@ -207,7 +211,10 @@ const Providers: React.FC = () => {
                     {t('common.contact')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    {t('providers.serviceType')}
+                    Eligible services
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Active requests
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     {t('common.status')}
@@ -251,10 +258,21 @@ const Providers: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-slate-900">{provider.activeRequests}</span>
+                        <span className="text-sm text-slate-500">requests</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
                       {getStatusBadge(provider.status)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <button 
+                          className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
+                        >
+                          <i className="fa-solid fa-eye"></i>
+                        </button>
                         <Link to={`/providers/edit/${provider.id}`} className="inline-block">
                           <button 
                             className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
@@ -306,7 +324,7 @@ const Providers: React.FC = () => {
           </section>
 
           {/* Quick Stats */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
@@ -322,27 +340,14 @@ const Providers: React.FC = () => {
             </div>
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
-                  <i className="fa-solid fa-clock-rotate-left text-xl"></i>
+                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+                  <i className="fa-solid fa-building-circle-xmark text-xl"></i>
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    {t('providers.pendingOnboarding')}
+                    Inactive providers
                   </p>
                   <p className="text-2xl font-bold text-slate-900">8</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-                  <i className="fa-solid fa-briefcase-medical text-xl"></i>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    {t('providers.servicesCovered')}
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900">24</p>
                 </div>
               </div>
             </div>
