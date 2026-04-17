@@ -230,18 +230,40 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
             <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
               {/* Form Preview */}
               <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200 tradingview-shadow flex flex-col overflow-hidden">
-                <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <i className="fa-solid fa-file-waveform text-primary"></i>
-                    <h3 className="text-sm font-bold text-slate-800">Form: Laboratory Prescription V2.1</h3>
+                <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <i className="fa-solid fa-file-waveform text-primary"></i>
+                      <h3 className="text-sm font-bold text-slate-800">Form: Laboratory Prescription V2.1</h3>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 transition-all">
+                        <i className="fa-solid fa-magnifying-glass-plus"></i>
+                      </button>
+                      <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 transition-all">
+                        <i className="fa-solid fa-expand"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 transition-all">
-                      <i className="fa-solid fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-400 transition-all">
-                      <i className="fa-solid fa-expand"></i>
-                    </button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">Form Status:</span>
+                      <span className={`px-2 py-1 text-[10px] font-bold rounded-lg ${
+                        request.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                        request.status === 'inprogress' ? 'bg-blue-50 text-blue-600 border border-blue-200' :
+                        request.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                        'bg-slate-50 text-slate-600 border border-slate-200'
+                      }`}>
+                        {request.status === 'completed' ? 'Completed' :
+                         request.status === 'inprogress' ? 'In Progress' :
+                         request.status === 'pending' ? 'Submitted' :
+                         request.status === 'returned' ? 'Returned' : 'Unknown'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                      <span><i className="fa-solid fa-clock mr-1"></i>Created: Oct 26, 2023</span>
+                      <span><i className="fa-solid fa-calendar-check mr-1"></i>Updated: 2 hours ago</span>
+                    </div>
                   </div>
                 </div>
                 <div className="p-8 bg-slate-100/30 flex-1 min-h-[500px]">
@@ -326,25 +348,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Actions Panel */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 tradingview-shadow">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-                    Admin Controls
-                  </h3>
-                  <div className="space-y-3">
-                    <button 
-                      onClick={() => setShowResetModal(true)}
-                      className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all"
-                    >
-                      <i className="fa-solid fa-rotate-left"></i> Reset Status
-                    </button>
-                    <div className="h-px bg-slate-100 my-2"></div>
-                    <button className="w-full px-4 py-3 bg-danger/5 text-danger rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-danger/10 transition-all">
-                      <i className="fa-solid fa-ban"></i> Cancel Request
-                    </button>
-                  </div>
-                </div>
-
+                
                 {/* Internal Notes */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 tradingview-shadow">
                   <div className="flex items-center justify-between mb-4">

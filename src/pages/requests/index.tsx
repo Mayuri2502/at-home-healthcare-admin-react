@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequestDetailModal } from './RequestDetailModal';
 import { RequestData } from './RequestTypes';
@@ -24,6 +24,10 @@ const Requests: React.FC = () => {
   const { t } = useTranslation();
   const [selectedRequest, setSelectedRequest] = useState<RequestData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedRequestForReset, setSelectedRequestForReset] = useState<RequestData | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -62,7 +66,7 @@ const Requests: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  const requestsData = useMemo((): RequestData[] => [
+  const [requestsData, setRequestsData] = useState<RequestData[]>([
     {
       id: 'REQ-9421',
       doctor: {
@@ -119,7 +123,7 @@ const Requests: React.FC = () => {
       lastUpdated: 'Oct 24, 2023 14:15',
       serviceColor: 'red'
     }
-  ], [t]);
+  ]);
 
   const getStatusChipClass = (status: string): string => {
     const statusClasses = {
@@ -149,6 +153,30 @@ const Requests: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRequest(null);
+  };
+
+  const handleResetRequest = (request: RequestData) => {
+    setSelectedRequestForReset(request);
+    setShowResetModal(true);
+  };
+
+  const handleResetStatus = () => {
+    // Update the request status from inprogress to submitted
+    if (selectedRequestForReset) {
+      setRequestsData(prevData => 
+        prevData.map(req => 
+          req.id === selectedRequestForReset.id 
+            ? { ...req, status: 'pending', serviceColor: 'amber' } // 'pending' corresponds to 'submitted' status
+            : req
+        )
+      );
+    }
+    
+    setToastMessage('Request status reset successfully');
+    setShowToast(true);
+    setShowResetModal(false);
+    setSelectedRequestForReset(null);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
@@ -276,8 +304,7 @@ const Requests: React.FC = () => {
                             <button 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Handle reset request logic here
-                                alert('Reset request functionality would be implemented here');
+                                handleResetRequest(request);
                               }}
                               className="px-3 py-1.5 text-[11px] font-bold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-all"
                             >
@@ -324,6 +351,67 @@ const Requests: React.FC = () => {
         onClose={closeModal}
         request={selectedRequest}
       />
+
+      {/* Reset Status Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-overlay backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden tradingview-shadow">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900">Reset Request Status</h3>
+              <button onClick={() => setShowResetModal(false)} className="text-slate-400 hover:text-slate-600">
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="p-4 bg-warning/5 border border-warning/20 rounded-xl flex gap-3">
+                <i className="fa-solid fa-triangle-exclamation text-warning mt-0.5"></i>
+                <p className="text-xs text-slate-700">
+                  This action will reset the request status to "Submitted". All progress after that point will be lost.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Reason</label>
+                <textarea 
+                  placeholder="Explain the reason for reset..." 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 h-40"
+                />
+              </div>
+            </div>
+            <div className="p-6 bg-slate-50 flex gap-3">
+              <button 
+                onClick={() => setShowResetModal(false)}
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-white transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleResetStatus}
+                className="flex-1 px-4 py-3 bg-danger text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all"
+              >
+                Reset to Submitted
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-8 right-8 z-[70] bg-white border-l-4 border-success rounded-xl shadow-2xl p-4 min-w-[300px] tradingview-shadow">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center flex-shrink-0">
+              <i className="fa-solid fa-circle-check text-success"></i>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-slate-900">Success</p>
+              <p className="text-xs text-slate-500 mt-1">{toastMessage}</p>
+            </div>
+            <button onClick={() => setShowToast(false)} className="text-slate-400 hover:text-slate-600">
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
