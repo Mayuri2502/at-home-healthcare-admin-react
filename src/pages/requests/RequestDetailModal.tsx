@@ -13,7 +13,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   onClose,
   request
 }) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation(); // Commented out as it's not currently used
   const [showResetModal, setShowResetModal] = useState(false);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -156,6 +156,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 <div className="flex items-center gap-4">
                   <img
                     src={request.doctor.avatar || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"}
+                    alt={`${request.doctor.name} - Doctor Avatar`}
                     className="w-14 h-14 rounded-xl object-cover"
                   />
                   <div>
