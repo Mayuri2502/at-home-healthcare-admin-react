@@ -377,7 +377,7 @@ const Providers: React.FC = () => {
           </section>
 
           {/* Quick Stats */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
@@ -404,7 +404,7 @@ const Providers: React.FC = () => {
                 </div>
               </div>
             </div>
-          </section>
+          </section> */}
         </div>
       </main>
 
