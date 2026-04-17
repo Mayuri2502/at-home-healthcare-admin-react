@@ -195,7 +195,7 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                         title="View Details"
                         className="p-2 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
-                        <i className="fa-solid fa-ellipsis-vertical"></i>
+                        <i className="fa-solid fa-eye"></i>
                       </button>
                     </div>
                   </td>
