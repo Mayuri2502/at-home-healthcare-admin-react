@@ -1,12 +1,12 @@
 {
   "_cacheBust": "2025-04-15-15-05",
   "navigation": {
-    "dashboard": "Tableau de bord",
+    "dashboard": "Aperçu du tableau de bord",
     "doctors": "Médecins",
     "providers": "Prestataires",
     "services": "Services",
     "requests": "Demandes",
-    "forms": "Formulaires",
+    "forms": "Configuration des formulaires",
     "notifications": "Notifications",
     "system": "Système",
     "auditLogs": "Journaux d'audit",

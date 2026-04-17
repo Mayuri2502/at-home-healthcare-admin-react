@@ -1,12 +1,12 @@
 {
   "_cacheBust": "2025-04-15-15-05",
   "navigation": {
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboard Overview",
     "doctors": "Doctors",
     "providers": "Providers",
     "services": "Services",
     "requests": "Requests",
-    "forms": "Forms",
+    "forms": "Forms Configuration",
     "notifications": "Notifications",
     "system": "System",
     "auditLogs": "Audit Logs",
