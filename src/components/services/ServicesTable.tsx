@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface Service {
   id: string;
@@ -28,6 +29,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   onViewForm
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const getIconColorClass = (color: string) => {
     const colorMap: { [key: string]: string } = {
       blue: 'bg-blue-50 text-blue-600',
@@ -145,7 +147,18 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                   {getProviderAvatars(service.providers)}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      onClick={() => {
+                        // Navigate to forms page with the specific service
+                        navigate(`/forms?serviceId=${service.id}&serviceName=${encodeURIComponent(service.name)}&formMapped=${service.formMapped}`);
+                      }}
+                      className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+                      title={service.formMapped ? "Change Form" : "Assign Form"}
+                    >
+                      <i className={`fa-solid ${service.formMapped ? 'fa-link' : 'fa-file-lines'}`}></i>
+                    </button>
+                    <div className="w-px h-4 bg-slate-200"></div>
                     <button
                       onClick={() => onView(service)}
                       className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
@@ -160,23 +173,6 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                     >
                       <i className="fa-solid fa-pen-to-square"></i>
                     </button>
-                    {service.formMapped ? (
-                      <button
-                        onClick={() => onViewForm(service)}
-                        className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
-                        title="View Form"
-                      >
-                        <i className="fa-solid fa-file-lines"></i>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => onMapForm(service)}
-                        className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
-                        title="Map Form"
-                      >
-                        <i className="fa-solid fa-map"></i>
-                      </button>
-                    )}
                   </div>
                 </td>
               </tr>

@@ -36,7 +36,7 @@ export const FormStructureViewer: React.FC<FormStructureViewerProps> = ({
               className="px-4 py-2 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm border border-blue-700"
               style={{minWidth: '100px'}}
             >
-              <i className="fa-solid fa-link mr-1.5"></i> Map form
+              <i className="fa-solid fa-link mr-1.5"></i> Assign Form
             </button>
           </div>
         </div>
@@ -71,7 +71,7 @@ export const FormStructureViewer: React.FC<FormStructureViewerProps> = ({
             className="px-4 py-2 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm border border-blue-700"
             style={{minWidth: '100px'}}
           >
-            <i className="fa-solid fa-link mr-1.5"></i> {selectedService.formName ? 'Change form' : 'Map form'}
+            <i className="fa-solid fa-link mr-1.5"></i> {selectedService.formName ? 'Change Form' : 'Assign Form'}
           </button>
         </div>
       </div>
@@ -135,7 +135,7 @@ export const FormStructureViewer: React.FC<FormStructureViewerProps> = ({
                 onClick={onMapService}
                 className="mt-4 px-4 py-2 text-xs font-bold text-white bg-primary rounded-lg hover:bg-primary/90 transition-all shadow-sm"
               >
-                <i className="fa-solid fa-link mr-1.5"></i> Map form
+                <i className="fa-solid fa-link mr-1.5"></i> Assign Form
               </button>
             </div>
           </div>

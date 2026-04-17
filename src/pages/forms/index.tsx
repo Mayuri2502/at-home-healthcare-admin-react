@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { ServiceListPanel } from './ServiceListPanel';
 import { FormStructureViewer } from './FormStructureViewer';
 import { UnmapModal } from './UnmapModal';
@@ -24,6 +25,7 @@ interface Notification {
 
 const Forms: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isUnmapModalOpen, setIsUnmapModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -96,6 +98,30 @@ const Forms: React.FC = () => {
       status: 'mapped'
     }
   ], [t]);
+
+  // Handle URL parameters for service selection from services page
+  useEffect(() => {
+    const serviceId = searchParams.get('serviceId');
+    const serviceName = searchParams.get('serviceName');
+    const formMapped = searchParams.get('formMapped') === 'true';
+    
+    if (serviceId && serviceName) {
+      // Find the service in our services list or create a new one
+      const existingService = services.find(s => s.id === serviceId);
+      if (existingService) {
+        setSelectedService(existingService);
+      } else {
+        // Create a temporary service object for the selected service
+        const tempService: Service = {
+          id: serviceId,
+          name: decodeURIComponent(serviceName),
+          status: formMapped ? 'mapped' : 'unmapped',
+          formName: formMapped ? 'Temp_Form_Name' : undefined
+        };
+        setSelectedService(tempService);
+      }
+    }
+  }, [searchParams, services]);
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
