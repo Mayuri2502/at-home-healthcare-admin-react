@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import KPICards from '../../components/dashboard/KPICards';
 import Charts from '../../components/dashboard/Charts';
@@ -23,6 +24,7 @@ interface Notification {
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -59,6 +61,10 @@ const Dashboard: React.FC = () => {
 
   const markAllAsRead = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+  };
+
+  const handleViewRequest = () => {
+    navigate('/requests');
   };
 
   return (
@@ -102,6 +108,7 @@ const Dashboard: React.FC = () => {
                 <i className="fa-solid fa-download"></i> {t('dashboard.exportReport') || 'Export Report'}
               </button>
               <button
+                onClick={handleViewRequest}
                 className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">
                 <i className="fa-solid fa-eye"></i> {t('dashboard.viewRequest') || 'View Request'}
               </button>
