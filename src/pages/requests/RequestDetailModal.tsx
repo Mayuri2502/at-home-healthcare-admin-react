@@ -259,8 +259,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[10px] text-slate-500">
-                      <span><i className="fa-solid fa-clock mr-1"></i>Created: Oct 26, 2023</span>
-                      <span><i className="fa-solid fa-calendar-check mr-1"></i>Updated: 2 hours ago</span>
+                      <span><i className="fa-solid fa-calendar-check mr-1"></i>Updated: Oct 26, 14:20 by Dr. Moore</span>
                     </div>
                   </div>
                 </div>
