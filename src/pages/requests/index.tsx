@@ -279,8 +279,18 @@ const Requests: React.FC = () => {
               </div>
               <select className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-600 outline-none focus:ring-2 focus:ring-primary/20 pr-3 items-start text-left">
                 <option>{t('requests.allServices')}</option>
-                <option>{t('servicesData.bloodTest.name')}</option>
-                <option>{t('servicesData.physicalTherapy.name')}</option>
+                <option>Generic</option>
+                <option>Wound Care</option>
+                <option>IV Therapy</option>
+                <option>Medical Oxygen</option>
+                <option>Artificial Nutrition</option>
+                <option>Personal Hygiene care</option>
+                <option>PCA(Pain management)</option>
+                <option>Pregnancy related care</option>
+                <option>Parenteral nutrition (central line)</option>
+                <option>CNO</option>
+                <option>Hydration Infusion</option>
+                <option>Antibiothérapy infusion</option>
               </select>
             </div>
           </section>
