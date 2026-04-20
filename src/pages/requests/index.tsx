@@ -424,18 +424,29 @@ const Requests: React.FC = () => {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-warning/5 border border-warning/20 rounded-xl flex gap-3">
-                <i className="fa-solid fa-triangle-exclamation text-warning mt-0.5"></i>
-                <p className="text-xs text-slate-700">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex gap-3">
+                <i className="fa-solid fa-exclamation-triangle text-amber-600 mt-0.5"></i>
+                <p className="text-sm text-amber-800">
                   This action will reset the request status to "Submitted". All progress after that point will be lost.
                 </p>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase">Reason</label>
-                <textarea 
-                  placeholder="Explain the reason for reset..." 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 h-40"
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Reason for Reset *</label>
+                <input 
+                  type="text"
+                  placeholder="" 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/20"
                 />
+              </div>
+              <div className="flex items-start gap-3">
+                <input 
+                  type="checkbox"
+                  id="understand-checkbox"
+                  className="w-4 h-4 text-primary border-slate-300 rounded mt-0.5 focus:ring-primary"
+                />
+                <label htmlFor="understand-checkbox" className="text-sm text-slate-600">
+                  I understand this action cannot be undone
+                </label>
               </div>
             </div>
             <div className="p-6 bg-slate-50 flex gap-3">
@@ -447,9 +458,9 @@ const Requests: React.FC = () => {
               </button>
               <button 
                 onClick={handleResetStatus}
-                className="flex-1 px-4 py-3 bg-danger text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all"
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all"
               >
-                Reset to Submitted
+                Reset Request
               </button>
             </div>
           </div>

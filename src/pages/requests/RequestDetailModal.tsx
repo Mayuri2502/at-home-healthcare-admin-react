@@ -348,6 +348,21 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   </div>
                 </div>
 
+                {/* Admin Controls */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 tradingview-shadow">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+                    Admin Controls
+                  </h3>
+                  <div className="space-y-3">
+                    <button className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
+                      <i className="fa-solid fa-rotate-left"></i> Reset Status
+                    </button>
+                    <div className="h-px bg-slate-100 my-2"></div>
+                    <button className="w-full px-4 py-3 bg-danger/5 text-danger rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-danger/10 transition-all">
+                      <i className="fa-solid fa-ban"></i> Cancel Request
+                    </button>
+                  </div>
+                </div>
                 
                 {/* Internal Notes */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 tradingview-shadow">
@@ -366,7 +381,8 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
+
+                              </div>
             </section>
           </div>
         </div>
