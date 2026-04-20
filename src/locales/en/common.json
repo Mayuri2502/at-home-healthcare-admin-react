@@ -6,7 +6,7 @@
     "providers": "Providers",
     "services": "Services",
     "requests": "Requests",
-    "forms": "Forms Configuration",
+    "forms": "Form Configuration",
     "notifications": "Notifications",
     "system": "System",
     "auditLogs": "Audit Logs",
