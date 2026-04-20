@@ -181,6 +181,20 @@ const Requests: React.FC = () => {
     setShowResetModal(true);
   };
 
+  const handleCancelRequest = (request: RequestData) => {
+    // Update the request status to cancelled (using returned status for now)
+    setRequestsData(prevData => 
+      prevData.map(req => 
+        req.id === request.id 
+          ? { ...req, status: 'returned', serviceColor: 'red', formStatus: 'CANCELLED' }
+          : req
+      )
+    );
+    setToastMessage('Request cancelled successfully');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   const handleResetStatus = () => {
     // Update the request status from inprogress to submitted
     if (selectedRequestForReset) {
@@ -337,13 +351,29 @@ const Requests: React.FC = () => {
                                 e.stopPropagation();
                                 handleResetRequest(request);
                               }}
-                              className="px-3 py-1.5 text-[11px] font-bold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-all"
+                              className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all"
+                              title={t('requests.resetRequest')}
                             >
-                              {t('requests.resetRequest')}
+                              <i className="fa-solid fa-undo text-sm"></i>
                             </button>
                           )}
-                          <button className="px-3 py-1.5 text-[11px] font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all">
-                            {t('requests.viewDetail')}
+                          {request.status !== 'completed' && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancelRequest(request);
+                              }}
+                              className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all"
+                              title={t('requests.cancelRequest')}
+                            >
+                              <i className="fa-solid fa-times text-sm"></i>
+                            </button>
+                          )}
+                          <button 
+                            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-primary transition-all"
+                            title={t('requests.viewDetail')}
+                          >
+                            <i className="fa-solid fa-eye text-sm"></i>
                           </button>
                         </div>
                       </td>

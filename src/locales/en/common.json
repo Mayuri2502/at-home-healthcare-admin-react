@@ -329,6 +329,7 @@
     "viewDetail": "View Detail",
     "draft": "Draft",
     "resetRequest": "Reset Request",
+    "cancelRequest": "Cancel Request",
     "showingResults": "Showing {{start}}-{{end}} of {{total}} results"
   },
   "auth": {
