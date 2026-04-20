@@ -39,6 +39,8 @@ const Providers: React.FC = () => {
   const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingProvider, setViewingProvider] = useState<Provider | null>(null);
 
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -120,6 +122,11 @@ const Providers: React.FC = () => {
     setToastMessage(t('providers.deactivatedSuccessfully'));
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const handleViewProvider = (provider: Provider) => {
+    setViewingProvider(provider);
+    setShowViewModal(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -322,6 +329,7 @@ const Providers: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button 
+                          onClick={() => handleViewProvider(provider)}
                           className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
                         >
                           <i className="fa-solid fa-eye"></i>
@@ -443,6 +451,144 @@ const Providers: React.FC = () => {
           <div className="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
             <i className="fa-solid fa-circle-check text-emerald-400"></i>
             <span className="text-sm font-medium">{toastMessage}</span>
+          </div>
+        </div>
+      )}
+
+      {/* View Provider Modal */}
+      {showViewModal && viewingProvider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-primary/5 to-slate-50 p-6 border-b border-slate-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {getInitialsBadge(viewingProvider.initials, viewingProvider.status)}
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">{viewingProvider.name}</h2>
+                    <p className="text-sm text-slate-500">ID: {viewingProvider.id}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                >
+                  <i className="fa-solid fa-times text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Status Badge */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Status</h3>
+                {getStatusBadge(viewingProvider.status)}
+              </div>
+
+              {/* Contact Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Contact Information</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                        <i className="fa-solid fa-envelope text-slate-500 text-sm"></i>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500">Email</p>
+                        <p className="text-sm font-medium text-slate-900">{viewingProvider.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                        <i className="fa-solid fa-phone text-slate-500 text-sm"></i>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500">Phone</p>
+                        <p className="text-sm font-medium text-slate-900">{viewingProvider.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Activity</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <i className="fa-solid fa-clipboard-list text-primary text-sm"></i>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500">Active Requests</p>
+                        <p className="text-sm font-medium text-slate-900">{viewingProvider.activeRequests} requests</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+                        <i className="fa-solid fa-check-circle text-emerald-500 text-sm"></i>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500">Account Status</p>
+                        <p className="text-sm font-medium text-slate-900 capitalize">{viewingProvider.status}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Services */}
+              <div>
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Eligible Services</h3>
+                <div className="flex flex-wrap gap-2">
+                  {viewingProvider.services.map((service, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-primary/5 text-primary rounded-lg text-xs font-bold border border-primary/10"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="bg-slate-50 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i className="fa-solid fa-info-circle text-blue-500 text-sm"></i>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-slate-600 mb-1">Provider Information</p>
+                    <p className="text-xs text-slate-500">
+                      This provider has been verified and meets all quality standards. 
+                      {viewingProvider.status === 'active' 
+                        ? ' Currently accepting new service requests.' 
+                        : ' Currently not accepting new service requests.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-slate-50 p-6 border-t border-slate-100 flex gap-3">
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all"
+              >
+                Close
+              </button>
+              <Link 
+                to={`/providers/edit/${viewingProvider.id}`}
+                className="inline-block"
+                onClick={() => setShowViewModal(false)}
+              >
+                <button className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-primary hover:bg-slate-800 rounded-xl transition-all">
+                  Edit Provider
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       )}
