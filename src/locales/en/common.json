@@ -70,7 +70,7 @@
     "viewRequest": "View Request",
     "kpi": {
       "totalDoctors": "Total Doctors",
-      "pendingApprovals": "Pending Approvals",
+      "pendingApprovals": "Doctors Pending Approvals",
       "pending": "Pending",
       "urgentReview": "8 requiring urgent review",
       "activeRequests": "Active Requests",
