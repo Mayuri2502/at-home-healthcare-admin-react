@@ -189,8 +189,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">INSURED</span>
+                <div className="mt-4 pt-4 border-t border-slate-50 flex justify-end items-center">
                   <button className="text-slate-400 hover:text-primary">
                     <i className="fa-solid fa-phone"></i>
                   </button>
@@ -218,11 +217,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                       <i className="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs text-slate-500">Priority</span>
-                    <span className="text-[10px] font-bold text-danger bg-danger/5 px-2 py-0.5 rounded">URGENT</span>
-                  </div>
-                </div>
+                                  </div>
               </div>
             </section>
 
@@ -252,12 +247,15 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                         request.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
                         request.status === 'inprogress' ? 'bg-blue-50 text-blue-600 border border-blue-200' :
                         request.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                        request.status === 'returned' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                        request.status === 'draft' ? 'bg-gray-50 text-gray-600 border border-gray-200' :
                         'bg-slate-50 text-slate-600 border border-slate-200'
                       }`}>
-                        {request.status === 'completed' ? 'Completed' :
-                         request.status === 'inprogress' ? 'In Progress' :
-                         request.status === 'pending' ? 'Submitted' :
-                         request.status === 'returned' ? 'Returned' : 'Unknown'}
+                        {request.status === 'completed' ? 'SIGNED' :
+                         request.status === 'inprogress' ? 'AWAITING SIGNATURE' :
+                         request.status === 'pending' ? 'SUBMITTED' :
+                         request.status === 'returned' ? 'RETURNED' :
+                         request.status === 'draft' ? 'NOT STARTED' : 'Unknown'}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[10px] text-slate-500">
