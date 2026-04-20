@@ -79,7 +79,8 @@ const Requests: React.FC = () => {
       status: 'inprogress',
       dateCreated: 'Oct 26, 2023 14:20',
       lastUpdated: 'Oct 26, 2023 16:30',
-      serviceColor: 'blue'
+      serviceColor: 'blue',
+      formStatus: 'AWAITING SIGNATURE'
     },
     {
       id: 'REQ-9418',
@@ -93,7 +94,8 @@ const Requests: React.FC = () => {
       status: 'completed',
       dateCreated: 'Oct 25, 2023 09:15',
       lastUpdated: 'Oct 25, 2023 17:45',
-      serviceColor: 'emerald'
+      serviceColor: 'emerald',
+      formStatus: 'SIGNED'
     },
     {
       id: 'REQ-9415',
@@ -107,7 +109,8 @@ const Requests: React.FC = () => {
       status: 'pending',
       dateCreated: 'Oct 25, 2023 16:45',
       lastUpdated: 'Oct 25, 2023 18:20',
-      serviceColor: 'amber'
+      serviceColor: 'amber',
+      formStatus: 'SUBMITTED'
     },
     {
       id: 'REQ-9412',
@@ -121,7 +124,8 @@ const Requests: React.FC = () => {
       status: 'returned',
       dateCreated: 'Oct 24, 2023 11:30',
       lastUpdated: 'Oct 24, 2023 14:15',
-      serviceColor: 'red'
+      serviceColor: 'red',
+      formStatus: 'RETURNED'
     }
   ]);
 
@@ -259,6 +263,7 @@ const Requests: React.FC = () => {
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.patient')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.serviceType')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.status')}</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.formStatus')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.dateCreated')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.lastUpdated')}</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">{t('requests.actions')}</th>
@@ -295,6 +300,9 @@ const Requests: React.FC = () => {
                         <span className={getStatusChipClass(request.status)}>
                           {getStatusText(request.status)}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-xs text-slate-500">
+                        {request.formStatus || 'No form'}
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500">{request.dateCreated}</td>
                       <td className="px-6 py-4 text-xs text-slate-500">{request.lastUpdated}</td>

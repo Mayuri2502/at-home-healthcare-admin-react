@@ -13,6 +13,7 @@ export interface RequestData {
   dateCreated: string;
   lastUpdated: string;
   serviceColor: string;
+  formStatus?: string;
 }
 
 export interface TimelineEvent {
