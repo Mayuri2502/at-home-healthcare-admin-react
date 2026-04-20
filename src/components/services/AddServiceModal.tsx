@@ -67,15 +67,27 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
               {t('services.serviceName')}
             </label>
-            <input
-              type="text"
+            <select
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="e.g. PCR Testing"
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               required
-            />
+            >
+              <option value="">Select a service...</option>
+              <option value="Generic">Generic</option>
+              <option value="Wound Care">Wound Care</option>
+              <option value="IV Therapy">IV Therapy</option>
+              <option value="Medical Oxygen">Medical Oxygen</option>
+              <option value="Artificial Nutrition">Artificial Nutrition</option>
+              <option value="Personal Hygiene care">Personal Hygiene care</option>
+              <option value="PCA(Pain management)">PCA(Pain management)</option>
+              <option value="Pregnancy related care">Pregnancy related care</option>
+              <option value="Parenteral nutrition (central line)">Parenteral nutrition (central line)</option>
+              <option value="CNO">CNO</option>
+              <option value="Hydration Infusion">Hydration Infusion</option>
+              <option value="Antibiothérapy infusion">Antibiothérapy infusion</option>
+            </select>
           </div>
 
           <div className="space-y-2">
@@ -93,7 +105,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             />
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
               {t('services.category')}
             </label>
@@ -108,7 +120,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               <option value="Rehabilitation">{t('servicesData.rehabilitation')}</option>
               <option value="Pharmacy">{t('servicesData.pharmacy')}</option>
             </select>
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100">
             <i className="fa-solid fa-circle-info text-amber-500"></i>
