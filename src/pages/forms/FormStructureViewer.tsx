@@ -131,12 +131,12 @@ export const FormStructureViewer: React.FC<FormStructureViewerProps> = ({
               <i className="fa-solid fa-file-circle-question text-4xl mb-4"></i>
               <p className="text-sm font-medium">No form mapped for this service</p>
               <p className="text-xs text-slate-500 mt-2">This service cannot be used until a form is assigned</p>
-              <button
+              {/* <button
                 onClick={onMapService}
                 className="mt-4 px-4 py-2 text-xs font-bold text-white bg-primary rounded-lg hover:bg-primary/90 transition-all shadow-sm"
               >
                 <i className="fa-solid fa-link mr-1.5"></i> Assign Form
-              </button>
+              </button> */}
             </div>
           </div>
         )}
