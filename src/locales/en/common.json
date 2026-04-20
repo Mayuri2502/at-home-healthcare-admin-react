@@ -288,7 +288,7 @@
     "doctor": "Doctor",
     "patient": "Patient",
     "serviceType": "Service Type",
-    "status": "Status",
+    "status": "Request Status",
     "dateCreated": "Date Created",
     "lastUpdated": "Last Updated",
     "actions": "Actions",
