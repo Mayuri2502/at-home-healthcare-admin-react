@@ -9,7 +9,7 @@ export interface RequestData {
   doctor: Doctor;
   patient: string;
   serviceType: string;
-  status: 'pending' | 'completed' | 'inprogress' | 'returned';
+  status: 'pending' | 'completed' | 'inprogress' | 'returned' | 'draft';
   dateCreated: string;
   lastUpdated: string;
   serviceColor: string;

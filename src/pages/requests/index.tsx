@@ -126,6 +126,21 @@ const Requests: React.FC = () => {
       lastUpdated: 'Oct 24, 2023 14:15',
       serviceColor: 'red',
       formStatus: 'RETURNED'
+    },
+    {
+      id: 'REQ-9410',
+      doctor: {
+        name: t('requestsData.dr1.name'),
+        specialty: t('requestsData.dr1.specialty'),
+        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
+      },
+      patient: 'John Smith',
+      serviceType: t('servicesData.bloodTest.name'),
+      status: 'draft',
+      dateCreated: 'Oct 23, 2023 10:15',
+      lastUpdated: 'Oct 23, 2023 10:15',
+      serviceColor: 'gray',
+      formStatus: 'NOT STARTED'
     }
   ]);
 
@@ -134,7 +149,8 @@ const Requests: React.FC = () => {
       pending: 'status-chip status-pending',
       completed: 'status-chip status-completed',
       inprogress: 'status-chip status-inprogress',
-      returned: 'status-chip status-returned'
+      returned: 'status-chip status-returned',
+      draft: 'status-chip status-draft'
     };
     return statusClasses[status as keyof typeof statusClasses] || 'status-chip';
   };
@@ -144,7 +160,8 @@ const Requests: React.FC = () => {
       pending: t('requests.submitted'),
       completed: t('requests.completed'),
       inprogress: t('requests.inProgress'),
-      returned: t('requests.returned')
+      returned: t('requests.returned'),
+      draft: t('requests.draft')
     };
     return statusTexts[status as keyof typeof statusTexts] || status;
   };
@@ -231,8 +248,14 @@ const Requests: React.FC = () => {
           {/* Filters & Views Section */}
           <section className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-primary shadow-sm">{t('requests.allRequests')}</button>
-              <button className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl">{t('requests.submitted')}</button>
+              <select className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-primary shadow-sm outline-none focus:ring-2 focus:ring-primary/20">
+                <option>{t('requests.allRequests')}</option>
+                <option>{t('requests.submitted')}</option>
+                <option>{t('requests.inProgress')}</option>
+                <option>{t('requests.completed')}</option>
+                <option>{t('requests.returned')}</option>
+                <option>{t('requests.draft')}</option>
+              </select>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2">

@@ -327,6 +327,7 @@
     "statusTimeline": "Status Timeline",
     "reassignProvider": "Reassign Provider",
     "viewDetail": "View Detail",
+    "draft": "Draft",
     "resetRequest": "Reset Request",
     "showingResults": "Showing {{start}}-{{end}} of {{total}} results"
   },

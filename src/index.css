@@ -72,3 +72,8 @@ body {
   background-color: #FEE2E2;
   color: #991B1B;
 }
+
+.status-draft {
+  background-color: #E5E7EB;
+  color: #6B7280;
+}
