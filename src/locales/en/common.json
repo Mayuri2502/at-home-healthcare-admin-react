@@ -216,8 +216,8 @@
     "discardAndLeave": "Discard & Leave"
   },
   "services": {
-    "title": "Services",
-    "subtitle": "Available healthcare services",
+    "title": "Services Management",
+    "subtitle": "Configure and manage healthcare services offered to patients.",
     "serviceName": "All Services",
     "description": "Description",
     "duration": "Duration",

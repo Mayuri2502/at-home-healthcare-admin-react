@@ -212,8 +212,8 @@
     "discardAndLeave": "Abandonner et partir"
   },
   "services": {
-    "title": "Services",
-    "subtitle": "Services de santé disponibles",
+    "title": "Gestion des Services",
+    "subtitle": "Configurer et gérer les services de santé offerts aux patients.",
     "serviceName": "Tous les services",
     "description": "Description",
     "duration": "Durée",

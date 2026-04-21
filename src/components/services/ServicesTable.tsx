@@ -156,7 +156,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                       className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
                       title={service.formMapped ? "Change Form" : "Assign Form"}
                     >
-                      <i className={`fa-solid ${service.formMapped ? 'fa-link' : 'fa-file-lines'}`}></i>
+                      <i className={`fa-solid ${service.formMapped ? 'fa-file-lines' : 'fa-link'}`}></i>
                     </button>
                     <div className="w-px h-4 bg-slate-200"></div>
                     <button
