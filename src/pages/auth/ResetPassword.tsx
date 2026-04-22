@@ -124,6 +124,17 @@ const ResetPassword: React.FC = () => {
           {/* Reset Form State */}
           <div className="bg-surface rounded-2xl shadow-soft border border-border p-8 md:p-10 transition-all duration-300">
             <div id="form-content" style={{ transition: 'opacity 0.3s ease' }}>
+              {/* Back Link */}
+              <div className="mb-8">
+                <button 
+                  onClick={handleBackToLogin}
+                  className="text-xs font-semibold text-textMuted hover:text-primary flex items-center gap-2 transition-colors"
+                >
+                  <i className="fa-solid fa-arrow-left"></i>
+                  {t('auth.backToAdminLogin')}
+                </button>
+              </div>
+
               <div className="mb-8">
                 <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary mb-6">
                   <i className="fa-solid fa-shield-keyhole text-xl"></i>
