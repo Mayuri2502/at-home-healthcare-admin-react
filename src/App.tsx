@@ -6,7 +6,7 @@ import './App.css';
 import './i18n'; // Initialize i18n
 import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from './hooks/useDocumentTitle';
-import { Login, ForgotPassword, ResetPassword } from './pages/auth';
+import { Login /*, ForgotPassword, ResetPassword */ } from './pages/auth';
 import { Dashboard } from './pages/dashboard';
 import { Doctors } from './pages/doctors';
 import { DoctorDetail } from './pages/doctor-detail';
@@ -71,8 +71,9 @@ function AppContent() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          {/* Forgot password and reset password routes commented out for now */}
+          {/* <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> */}
           
           {/* Protected Routes */}
           <Route path="/dashboard" element={
