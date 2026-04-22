@@ -10,6 +10,7 @@ const Login: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -20,17 +21,7 @@ const Login: React.FC = () => {
   }, []);
 
   const togglePassword = () => {
-    const input = document.getElementById('password') as HTMLInputElement;
-    const icon = document.getElementById('eye-icon');
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon?.classList.remove('fa-eye');
-      icon?.classList.add('fa-eye-slash');
-    } else {
-      input.type = 'password';
-      icon?.classList.remove('fa-eye-slash');
-      icon?.classList.add('fa-eye');
-    }
+    setShowPassword(!showPassword);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +126,7 @@ const Login: React.FC = () => {
                       <i className="fa-solid fa-lock text-sm"></i>
                     </span>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       id="password"
                       name="password"
                       value={formData.password}
@@ -147,9 +138,21 @@ const Login: React.FC = () => {
                     <button
                       type="button"
                       onClick={togglePassword}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-textMuted hover:text-textMain transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      <i id="eye-icon" className="fa-regular fa-eye text-sm"></i>
+                      {showPassword ? (
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                          <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                          <path d="M2.293 14.707a1 1 0 010-1.414l12-12a1 1 0 111.414 1.414l-12 12a1 1 0 01-1.414 0z"/>
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                          <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                        </svg>
+                      )}
                     </button>
                   </div>
                 </div>
