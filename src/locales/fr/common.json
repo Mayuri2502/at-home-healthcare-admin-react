@@ -310,6 +310,7 @@
     "allServices": "Tous les services",
     "inProgress": "En cours",
     "returned": "Retourné",
+    "draft": "Brouillon",
     "requestSubmitted": "Demande soumise",
     "request": "Demande",
     "submittedOn": "Soumise le",

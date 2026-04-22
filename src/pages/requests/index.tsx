@@ -80,7 +80,7 @@ const Requests: React.FC = () => {
       dateCreated: 'Oct 26, 2023 14:20',
       lastUpdated: 'Oct 26, 2023 16:30',
       serviceColor: 'blue',
-      formStatus: 'AWAITING SIGNATURE'
+      formStatus: 'SIGNED'
     },
     {
       id: 'REQ-9418',
@@ -140,7 +140,7 @@ const Requests: React.FC = () => {
       dateCreated: 'Oct 23, 2023 10:15',
       lastUpdated: 'Oct 23, 2023 10:15',
       serviceColor: 'gray',
-      formStatus: 'NOT STARTED'
+      formStatus: 'DRAFT'
     }
   ]);
 
