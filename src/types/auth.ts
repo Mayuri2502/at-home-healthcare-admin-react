@@ -3,6 +3,21 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  status: number;
+  message: string;
+  data: {
+    fName: string;
+    lName: string;
+    id: string;
+  };
+  timestamp: string;
+}
+
 export interface User {
   assignedServices: any[];
   digitalSignatureKey: null;

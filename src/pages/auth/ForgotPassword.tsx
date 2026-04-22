@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForgotPasswordMutation } from '../../services/api';
 import './ForgotPassword.css';
 
 const ForgotPassword: React.FC = () => {
   const { t } = useTranslation();
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [forgotPassword] = useForgotPasswordMutation();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle forgot password logic here
-    console.log('Password reset requested');
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      await forgotPassword({ email }).unwrap();
+      setSuccess(true);
+      setEmail('');
+    } catch (err: any) {
+      const errorMessage = err.data?.message || 'Failed to send reset instructions. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToLogin = () => {
@@ -55,37 +72,77 @@ const ForgotPassword: React.FC = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Input */}
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-xs font-bold text-textMain uppercase tracking-wider">
-                  {t('auth.workEmailAddress')}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-textMuted">
-                    <i className="fa-regular fa-envelope"></i>
+            {success ? (
+              <div className="space-y-6">
+                <div className="bg-success/10 border border-success/20 text-success p-4 rounded-xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <i className="fa-solid fa-check-circle text-lg"></i>
+                    <h3 className="font-semibold">Reset Instructions Sent</h3>
                   </div>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="name@at-home.health"
-                    required
-                    className="input-field w-full h-12 pl-11 pr-4 border border-border rounded-xl bg-white outline-none transition-all text-sm font-medium"
-                  />
+                  <p className="text-sm">
+                    Password reset instructions have been sent to your email address. Please check your inbox and follow the instructions to reset your password.
+                  </p>
                 </div>
-              </div>
-
-              {/* CTA Button */}
-              <div className="pt-2">
                 <button
-                  type="submit"
+                  onClick={() => window.location.href = '/reset-password'}
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 flex items-center justify-center gap-2 active:scale-[0.98]"
                 >
-                  {t('auth.sendResetInstructions')}
-                  <i className="fa-solid fa-paper-plane text-[10px]"></i>
+                  Reset Password
+                  <i className="fa-solid fa-key text-[10px]"></i>
                 </button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Email Input */}
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-xs font-bold text-textMain uppercase tracking-wider">
+                    {t('auth.workEmailAddress')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-textMuted">
+                      <i className="fa-regular fa-envelope"></i>
+                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="adminathomehealthcare@yopmail.com"
+                      required
+                      className="input-field w-full h-12 pl-11 pr-4 border border-border rounded-xl bg-white outline-none transition-all text-sm font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/10 flex items-center justify-center gap-2 active:scale-[0.98] disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        {t('auth.sendResetInstructions')}
+                        <i className="fa-solid fa-paper-plane text-[10px]"></i>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* Security Microcopy */}
             <div className="mt-10 pt-6 border-t border-border">
