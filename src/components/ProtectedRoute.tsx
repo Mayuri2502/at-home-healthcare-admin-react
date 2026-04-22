@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useAppSelector } from '../hooks/redux';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setIsAuthenticated(!!token);
-  }, []);
-
-  if (isAuthenticated === null) {
+  if (isLoading) {
     // Still checking authentication
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
