@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLoginMutation } from '../../services/api';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/authSlice';
 import './Login.css';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
-    email: 'admin@at-home.health',
-    password: 'Admin@123'
+    email: '',
+    password: ''
   });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const dispatch = useAppDispatch();
+  const [loginMutation] = useLoginMutation();
+  const { isLoading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -30,30 +35,24 @@ const Login: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    setError('');
+    dispatch(loginFailure(''));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    dispatch(loginStart());
 
-    // Dummy authentication logic
-    setTimeout(() => {
-      if (formData.email === 'admin@at-home.health' && formData.password === 'Admin@123') {
-        // Store authentication token
-        localStorage.setItem('authToken', 'dummy-jwt-token');
-        localStorage.setItem('user', JSON.stringify({
-          name: 'Alexander Wright',
-          email: formData.email,
-          role: 'Senior Admin'
-        }));
-        window.location.href = '/dashboard';
-      } else {
-        setError(t('auth.invalidCredentials'));
-      }
-      setIsLoading(false);
-    }, 1000);
+    try {
+      const result = await loginMutation(formData).unwrap();
+      dispatch(loginSuccess({
+        user: result.data,
+        token: result.data.accessToken
+      }));
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      const errorMessage = err.data?.message || t('auth.invalidCredentials');
+      dispatch(loginFailure(errorMessage));
+    }
   };
 
   return (
@@ -104,7 +103,7 @@ const Login: React.FC = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="admin@at-home.health"
+                      placeholder="adminathomehealthcare@yopmail.com"
                       required
                       className="tradingview-input w-full h-12 pl-11 pr-4 bg-white border border-border rounded-xl text-sm transition-all outline-none"
                     />

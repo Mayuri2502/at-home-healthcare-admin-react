@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 import './App.css';
 import './i18n'; // Initialize i18n
 import { useTranslation } from 'react-i18next';
@@ -53,9 +55,11 @@ function App() {
   }, [i18n]);
 
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <AppContent />
+      </Router>
+    </Provider>
   );
 }
 
