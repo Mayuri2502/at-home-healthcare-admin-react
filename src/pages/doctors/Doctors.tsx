@@ -7,6 +7,8 @@ import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
+import { useGetDoctorsQuery } from '../../services/doctorsApi';
+import { Doctor } from '../../types/doctor';
 
 interface Notification {
   id: string;
@@ -26,40 +28,19 @@ const Doctors: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      title: t('notifications.newDoctorRegistration'),
-      message: t('notifications.newDoctorMessage', { name: 'Dr. Sarah Jenkins', specialty: 'Cardiology', rpps: '#82910' }),
-      time: '2 mins ago',
-      isRead: false,
-      icon: 'fa-user-plus',
-      iconColor: 'text-blue-500',
-      actions: [
-        { label: t('notifications.viewProfile'), variant: 'primary' },
-        { label: t('notifications.dismiss'), variant: 'secondary' }
-      ]
-    },
-    {
-      id: '2',
-      title: t('notifications.monthlyAuditReport'),
-      message: t('notifications.auditReportMessage'),
-      time: '3 hours ago',
-      isRead: true,
-      icon: 'fa-file-export',
-      iconColor: 'text-slate-500'
-    }
-  ]);
+  // Fetch doctors data
+  const { data: doctorsData, isLoading, error } = useGetDoctorsQuery({ page: 1, size: 50 });
+  const doctors = doctorsData?.data?.doctors || [];
+  
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const handleNotificationAction = (notificationId: string, action: string) => {
-    if (action === t('notifications.viewProfile')) {
-      console.log('View profile for notification:', notificationId);
-    } else if (action === t('notifications.dismiss')) {
-      setNotifications(notifications.filter(n => n.id !== notificationId));
-    }
+    // Handle notification actions here
+    console.log('Notification action:', notificationId, action);
   };
 
   const markAllAsRead = () => {
+    // Mark all notifications as read
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
   
@@ -78,24 +59,24 @@ const Doctors: React.FC = () => {
     message: ''
   });
 
-  const handleApprove = (doctor: any) => {
+  const handleApprove = (doctor: Doctor) => {
     setModalState({
       isOpen: true,
       type: 'approve',
-      doctorName: doctor.name
+      doctorName: `Dr. ${doctor.fName} ${doctor.lName}`
     });
   };
 
-  const handleReject = (doctor: any) => {
+  const handleReject = (doctor: Doctor) => {
     setModalState({
       isOpen: true,
       type: 'reject',
-      doctorName: doctor.name
+      doctorName: `Dr. ${doctor.fName} ${doctor.lName}`
     });
   };
 
-  const handleView = (doctor: any) => {
-    navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`);
+  const handleView = (doctor: Doctor) => {
+    navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'approved'}`);
   };
 
   const hideModal = () => {
@@ -172,10 +153,21 @@ const Doctors: React.FC = () => {
 
           {/* Doctors Table */}
           <DoctorsTable 
+            doctors={doctors}
+            loading={isLoading}
             onApprove={handleApprove}
             onReject={handleReject}
             onView={handleView}
           />
+          
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-700 text-sm">
+                {t('doctors.errorLoading') || 'Error loading doctors data. Please try again.'}
+              </p>
+            </div>
+          )}
         </div>
       </main>
 

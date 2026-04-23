@@ -2,24 +2,17 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../ui/PaginationComponent';
-
-interface Doctor {
-  id: string;
-  name: string;
-  email?: string;
-  specialty: string;
-  status: 'pending' | 'active';
-  avatar?: string;
-  rpps?: string;
-}
+import { Doctor } from '../../types/doctor';
 
 interface DoctorsTableProps {
+  doctors: Doctor[];
+  loading?: boolean;
   onApprove: (doctor: Doctor) => void;
   onReject: (doctor: Doctor) => void;
   onView: (doctor: Doctor) => void;
 }
 
-const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
+const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }: DoctorsTableProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
@@ -28,170 +21,31 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const pendingDoctors: Doctor[] = [
-    {
-      id: '1',
-      name: t('doctorsData.dr1.name'),
-      email: t('doctorsData.dr1.email'),
-      specialty: t('doctorsData.dr1.specialty'),
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
-    },
-    {
-      id: '2',
-      name: t('doctorsData.dr2.name'),
-      email: t('doctorsData.dr2.email'),
-      specialty: t('doctorsData.dr2.specialty'),
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg'
-    },
-    {
-      id: '3',
-      name: 'Dr. Michael Chen',
-      email: 'michael.chen@hospital.com',
-      specialty: 'Neurology',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg'
-    },
-    {
-      id: '4',
-      name: 'Dr. Sarah Johnson',
-      email: 'sarah.johnson@hospital.com',
-      specialty: 'Pediatrics',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg'
-    },
-    {
-      id: '5',
-      name: 'Dr. Robert Williams',
-      email: 'robert.williams@hospital.com',
-      specialty: 'Orthopedics',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg'
-    },
-    {
-      id: '6',
-      name: 'Dr. Emily Davis',
-      email: 'emily.davis@hospital.com',
-      specialty: 'Dermatology',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-9.jpg'
-    },
-    {
-      id: '7',
-      name: 'Dr. James Wilson',
-      email: 'james.wilson@hospital.com',
-      specialty: 'Gastroenterology',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-10.jpg'
-    },
-    {
-      id: '8',
-      name: 'Dr. Lisa Anderson',
-      email: 'lisa.anderson@hospital.com',
-      specialty: 'Endocrinology',
-      status: 'pending',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-11.jpg'
-    }
-  ];
-
-  const approvedDoctors: Doctor[] = [
-    {
-      id: '3',
-      name: t('doctorsData.dr3.name'),
-      specialty: t('doctorsData.dr3.specialty'),
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg',
-      rpps: `RPPS: ${t('doctorsData.dr3.rpps')}`
-    },
-    {
-      id: '4',
-      name: t('doctorsData.dr4.name'),
-      specialty: t('doctorsData.dr4.specialty'),
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
-      rpps: `RPPS: ${t('doctorsData.dr4.rpps')}`
-    },
-    {
-      id: '5',
-      name: t('doctorsData.dr5.name'),
-      specialty: t('doctorsData.dr5.specialty'),
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg',
-      rpps: `RPPS: ${t('doctorsData.dr5.rpps')}`
-    },
-    {
-      id: '6',
-      name: 'Dr. Patricia Brown',
-      specialty: 'Cardiology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-12.jpg',
-      rpps: 'RPPS: 82915'
-    },
-    {
-      id: '7',
-      name: 'Dr. David Martinez',
-      specialty: 'Radiology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-13.jpg',
-      rpps: 'RPPS: 82916'
-    },
-    {
-      id: '8',
-      name: 'Dr. Jennifer Taylor',
-      specialty: 'Oncology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-14.jpg',
-      rpps: 'RPPS: 82917'
-    },
-    {
-      id: '9',
-      name: 'Dr. Christopher Lee',
-      specialty: 'Psychiatry',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-15.jpg',
-      rpps: 'RPPS: 82918'
-    },
-    {
-      id: '10',
-      name: 'Dr. Amanda White',
-      specialty: 'Anesthesiology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-16.jpg',
-      rpps: 'RPPS: 82919'
-    },
-    {
-      id: '11',
-      name: 'Dr. Kevin Thompson',
-      specialty: 'Urology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-17.jpg',
-      rpps: 'RPPS: 82920'
-    },
-    {
-      id: '12',
-      name: 'Dr. Michelle Garcia',
-      specialty: 'Rheumatology',
-      status: 'active',
-      avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-18.jpg',
-      rpps: 'RPPS: 82921'
-    }
-  ];
+  // Filter doctors based on status
+  const pendingDoctors = doctors.filter(doctor => doctor.status === 'pendingApproval');
+  const approvedDoctors = doctors.filter(doctor => doctor.status === 'approved');
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'pendingApproval':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
             {t('status.pending') || 'Pending'}
           </span>
         );
-      case 'active':
+      case 'approved':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
             {t('status.active') || 'Active'}
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
+            <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
+            {t('status.rejected') || 'Rejected'}
           </span>
         );
       default:
@@ -228,6 +82,26 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
     setActiveTab(tab);
     setCurrentPage(1);
   };
+
+  // Generate avatar URL based on doctor's name
+  const getAvatarUrl = (doctor: Doctor) => {
+    return `https://ui-avatars.com/api/?name=${doctor.fName}+${doctor.lName}&background=random&color=fff`;
+  };
+
+  // Get doctor's full name
+  const getDoctorName = (doctor: Doctor) => {
+    return `Dr. ${doctor.fName} ${doctor.lName}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200 p-8">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
@@ -300,11 +174,11 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
-                        src={doctor.avatar!}
+                        src={getAvatarUrl(doctor)}
                         className="w-8 h-8 rounded-lg object-cover"
-                        alt={doctor.name}
+                        alt={getDoctorName(doctor)}
                       />
-                      <span className="text-sm font-semibold text-slate-900">{doctor.name}</span>
+                      <span className="text-sm font-semibold text-slate-900">{getDoctorName(doctor)}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">{doctor.email}</td>
@@ -327,7 +201,7 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                         <i className="fa-solid fa-xmark"></i>
                       </button>
                       <button
-                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`)}
+                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'approved'}`)}
                         title="View Details"
                         className="p-2 text-slate-400 hover:bg-slate-100 rounded-lg transition-colors"
                       >
@@ -368,13 +242,13 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
-                        src={doctor.avatar!}
+                        src={getAvatarUrl(doctor)}
                         className="w-8 h-8 rounded-lg object-cover"
-                        alt={doctor.name}
+                        alt={getDoctorName(doctor)}
                       />
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{doctor.name}</p>
-                        <p className="text-[10px] text-slate-400">{doctor.rpps}</p>
+                        <p className="text-sm font-semibold text-slate-900">{getDoctorName(doctor)}</p>
+                        <p className="text-[10px] text-slate-400">RPPS: {doctor.rppsNumber}</p>
                       </div>
                     </div>
                   </td>
@@ -383,7 +257,7 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'active'}`)}
+                        onClick={() => navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'approved'}`)}
                         className="px-3 py-1.5 text-xs font-bold text-primary hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         View
