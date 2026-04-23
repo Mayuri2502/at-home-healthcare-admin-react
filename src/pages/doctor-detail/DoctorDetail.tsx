@@ -1,9 +1,11 @@
-import React, { useState } from 'react'; // Cache bust: 2025-04-15-16-37
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
+import { useGetDoctorDetailsQuery } from '../../services/doctorsApi';
+import { Doctor } from '../../types/doctor';
 
 interface DoctorDetailProps {
   isApproved?: boolean; // Optional prop to pass doctor's approval status
@@ -12,11 +14,23 @@ interface DoctorDetailProps {
 const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved = false }) => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const { id: doctorId } = useParams<{ id: string }>();
+  
+  // Debug: Log the doctorId to check if it's being extracted correctly
+  console.log('Doctor ID from URL:', doctorId);
+  
+  // Fetch doctor details - only call API if doctorId exists
+  const { data: doctorData, isLoading, error } = useGetDoctorDetailsQuery(doctorId!, {
+    skip: !doctorId
+  });
+  const doctor = doctorData?.data;
+  
+  const isApproved = doctor?.status === 'approved' || propIsApproved || searchParams.get('approved') === 'true';
 
   const [modalState, setModalState] = useState({
     isOpen: false,
     type: 'approve' as 'approve' | 'reject',
-    doctorName: t('doctorsData.dr1.name')
+    doctorName: ''
   });
 
   const [toast, setToast] = useState({
@@ -27,15 +41,68 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
   const [rejectReason, setRejectReason] = useState('');
   const [rejectComment, setRejectComment] = useState('');
   const [showRejectError, setShowRejectError] = useState(false);
-  const [isApproved, setIsApproved] = useState(propIsApproved || searchParams.get('approved') === 'true'); // Track doctor approval status
 
   const showModal = (type: 'approve' | 'reject') => {
     setModalState({
       isOpen: true,
       type,
-      doctorName: t('doctorsData.dr1.name')
+      doctorName: doctor ? `Dr. ${doctor.fName} ${doctor.lName}` : ''
     });
   };
+
+  // Generate avatar URL based on doctor's name
+  const getAvatarUrl = (doctor: Doctor) => {
+    return `https://ui-avatars.com/api/?name=${doctor.fName}+${doctor.lName}&background=random&color=fff&size=128`;
+  };
+
+  if (!doctorId) {
+    return (
+      <div className="flex h-[1024px] overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">No doctor ID provided</p>
+              <Link to="/doctors" className="text-primary hover:underline">
+                Back to Doctors List
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[1024px] overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !doctor) {
+    return (
+      <div className="flex h-[1024px] overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">{t('doctors.errorLoading') || 'Error loading doctor details'}</p>
+              <Link to="/doctors" className="text-primary hover:underline">
+                Back to Doctors List
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   const hideModal = () => {
     setModalState({
@@ -58,11 +125,6 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
 
   const handleAction = (status?: string) => {
     hideModal();
-    
-    // Set doctor as approved if status is 'Approved'
-    if (status === 'Approved') {
-      setIsApproved(true);
-    }
     
     setToast({
       show: true,
@@ -113,25 +175,27 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                 <div className="flex items-start gap-6">
                   <div className="relative">
                     <img
-                      src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
+                      src={getAvatarUrl(doctor)}
                       className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md"
-                      alt="Dr. Sarah Jenkins"
+                      alt={`Dr. ${doctor.fName} ${doctor.lName}`}
                     />
-                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success text-white rounded-full flex items-center justify-center border-4 border-white">
-                      <i className="fa-solid fa-check text-[10px]"></i>
-                    </div>
+                    {doctor.isVerified && (
+                      <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success text-white rounded-full flex items-center justify-center border-4 border-white">
+                        <i className="fa-solid fa-check text-[10px]"></i>
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-slate-900">{t('doctorsData.dr1.name')}</h2>
-                    <p className="text-primary font-medium">{t('doctorsData.dr1.specialization')}</p>
+                    <h2 className="text-2xl font-bold text-slate-900">Dr. {doctor.fName} {doctor.lName}</h2>
+                    <p className="text-primary font-medium">{doctor.specialty}</p>
                     <div className="flex flex-wrap gap-4 mt-4">
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
                         <i className="fa-solid fa-envelope opacity-60"></i>
-                        {t('doctorsData.dr1.email')}
+                        {doctor.email}
                       </div>
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
                         <i className="fa-solid fa-location-dot opacity-60"></i>
-                        {t('doctorsData.dr1.location')}
+                        {doctor.businessAddress}
                       </div>
                     </div>
                   </div>
@@ -147,11 +211,11 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{t('doctors.rppsNumber')}</p>
-                        <p className="text-sm font-mono font-bold text-slate-900">{t('doctorsData.dr1.rpps')}</p>
+                        <p className="text-sm font-mono font-bold text-slate-900">{doctor.rppsNumber}</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{t('doctors.finessNumber')}</p>
-                        <p className="text-sm font-mono font-bold text-slate-900">{t('doctorsData.dr1.finess')}</p>
+                        <p className="text-sm font-mono font-bold text-slate-900">{doctor.finessNumber}</p>
                       </div>
                     </div>
                   </div>
@@ -167,12 +231,18 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                     <div className="bg-slate-50 p-4 rounded-xl space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-500">Business Address</span>
-                        <span className="font-medium text-slate-900 text-right">{t('doctorsData.dr1.address')}</span>
+                        <span className="font-medium text-slate-900 text-right">{doctor.businessAddress}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Place of Practice</span>
-                        <span className="font-medium text-slate-900">Paris Medical Center</span>
+                        <span className="text-slate-500">Practice Type</span>
+                        <span className="font-medium text-slate-900 text-right">{doctor.practiceType}</span>
                       </div>
+                      {doctor.country && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-500">Country</span>
+                          <span className="font-medium text-slate-900 text-right">{doctor.country}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

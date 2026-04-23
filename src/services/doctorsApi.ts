@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { DoctorsResponse, DoctorsListParams } from '../types/doctor';
+import { DoctorsResponse, DoctorsListParams, DoctorDetailResponse } from '../types/doctor';
 
 export const doctorsApi = createApi({
   reducerPath: 'doctorsApi',
@@ -23,7 +23,14 @@ export const doctorsApi = createApi({
       }),
       providesTags: ['Doctors'],
     }),
+    getDoctorDetails: builder.query<DoctorDetailResponse, string>({
+      query: (doctorId) => ({
+        url: `/admin/doctors/${doctorId}`,
+        method: 'GET',
+      }),
+      providesTags: ['Doctors'],
+    }),
   }),
 });
 
-export const { useGetDoctorsQuery } = doctorsApi;
+export const { useGetDoctorsQuery, useGetDoctorDetailsQuery } = doctorsApi;

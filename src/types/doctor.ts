@@ -11,6 +11,20 @@ export interface Doctor {
   status: 'pendingApproval' | 'approved' | 'rejected';
   isVerified: boolean;
   createdAt: string;
+  updatedAt: string;
+  country?: string;
+  assignedServices: any[];
+  emailNotificationsEnabled: boolean;
+  digitalSignatureKey: null;
+  submittedFormCount: number;
+  roles: string[];
+  isFirstLogin: boolean;
+  isBlocked: boolean;
+  deleted: {
+    status: boolean;
+    by: null;
+    at: number;
+  };
 }
 
 export interface Pagination {
@@ -30,6 +44,13 @@ export interface DoctorsResponse {
     doctors: Doctor[];
     pagination: Pagination;
   };
+  timestamp: string;
+}
+
+export interface DoctorDetailResponse {
+  status: number;
+  message: string;
+  data: Doctor;
   timestamp: string;
 }
 
