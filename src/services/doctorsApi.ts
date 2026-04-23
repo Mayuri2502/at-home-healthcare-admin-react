@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { DoctorsResponse, DoctorsListParams, DoctorDetailResponse } from '../types/doctor';
+import { DoctorsResponse, DoctorsListParams, DoctorDetailResponse, DoctorStatusUpdateRequest, DoctorStatusUpdateResponse } from '../types/doctor';
 
 export const doctorsApi = createApi({
   reducerPath: 'doctorsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://163.227.92.122:3047',
+    baseUrl: process.env.REACT_APP_API_BASE_URL || 'http://163.227.92.122:3047',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('authToken');
       if (token) {
@@ -30,7 +30,15 @@ export const doctorsApi = createApi({
       }),
       providesTags: ['Doctors'],
     }),
+    updateDoctorStatus: builder.mutation<DoctorStatusUpdateResponse, { doctorId: string; statusData: DoctorStatusUpdateRequest }>({
+      query: ({ doctorId, statusData }) => ({
+        url: `/admin/doctors/${doctorId}/status`,
+        method: 'POST',
+        body: statusData,
+      }),
+      invalidatesTags: ['Doctors'],
+    }),
   }),
 });
 
-export const { useGetDoctorsQuery, useGetDoctorDetailsQuery } = doctorsApi;
+export const { useGetDoctorsQuery, useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation } = doctorsApi;

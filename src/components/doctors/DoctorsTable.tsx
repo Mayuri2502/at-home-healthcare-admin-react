@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../ui/PaginationComponent';
 import { Doctor } from '../../types/doctor';
+import { useUpdateDoctorStatusMutation } from '../../services/doctorsApi';
 
 interface DoctorsTableProps {
   doctors: Doctor[];
@@ -16,6 +17,9 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
+  
+  // Status update mutation
+  const [updateDoctorStatus] = useUpdateDoctorStatusMutation();
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -91,6 +95,32 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
   // Get doctor's full name
   const getDoctorName = (doctor: Doctor) => {
     return `Dr. ${doctor.fName} ${doctor.lName}`;
+  };
+
+  // Handle approve action
+  const handleApprove = async (doctor: Doctor) => {
+    try {
+      await updateDoctorStatus({ 
+        doctorId: doctor.id, 
+        statusData: { status: 'approved' } 
+      }).unwrap();
+      onApprove(doctor);
+    } catch (error) {
+      console.error('Error approving doctor:', error);
+    }
+  };
+
+  // Handle reject action
+  const handleReject = async (doctor: Doctor) => {
+    try {
+      await updateDoctorStatus({ 
+        doctorId: doctor.id, 
+        statusData: { status: 'rejected', reason: 'Rejected by admin' } 
+      }).unwrap();
+      onReject(doctor);
+    } catch (error) {
+      console.error('Error rejecting doctor:', error);
+    }
   };
 
   if (loading) {
@@ -187,14 +217,14 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => onApprove(doctor)}
+                        onClick={() => handleApprove(doctor)}
                         title="Approve"
                         className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                       >
                         <i className="fa-solid fa-check"></i>
                       </button>
                       <button
-                        onClick={() => onReject(doctor)}
+                        onClick={() => handleReject(doctor)}
                         title="Reject"
                         className="p-2 text-danger hover:bg-red-50 rounded-lg transition-colors"
                       >
