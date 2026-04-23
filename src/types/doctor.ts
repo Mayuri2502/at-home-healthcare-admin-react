@@ -60,3 +60,21 @@ export interface DoctorsListParams {
   specialty?: string;
   status?: string;
 }
+
+export interface DoctorStatusUpdateRequest {
+  status: 'approved' | 'rejected';
+  reason?: string;
+  comment?: string;
+}
+
+export interface DoctorStatusUpdateResponse {
+  status: number;
+  message: string;
+  data: {
+    status: 'approved' | 'rejected';
+    updatedBy: string;
+    updatedAt: number;
+    isVerified: boolean;
+  };
+  timestamp: string;
+}

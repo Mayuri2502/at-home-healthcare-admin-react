@@ -4,7 +4,7 @@ import { Link, useSearchParams, useParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
-import { useGetDoctorDetailsQuery } from '../../services/doctorsApi';
+import { useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation } from '../../services/doctorsApi';
 import { Doctor } from '../../types/doctor';
 
 interface DoctorDetailProps {
@@ -24,6 +24,9 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
     skip: !doctorId
   });
   const doctor = doctorData?.data;
+  
+  // Status update mutation
+  const [updateDoctorStatus] = useUpdateDoctorStatusMutation();
   
   const isApproved = doctor?.status === 'approved' || propIsApproved || searchParams.get('approved') === 'true';
 
@@ -48,6 +51,10 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
       type,
       doctorName: doctor ? `Dr. ${doctor.fName} ${doctor.lName}` : ''
     });
+  };
+
+  const handleApprove = () => {
+    handleAction('approved');
   };
 
   // Generate avatar URL based on doctor's name
@@ -120,16 +127,33 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
       return;
     }
     setShowRejectError(false);
-    handleAction('Rejected');
+    handleAction('rejected');
   };
 
-  const handleAction = (status?: string) => {
+  const handleAction = async (status?: string) => {
     hideModal();
     
-    setToast({
-      show: true,
-      message: t('doctors.statusUpdate', { status: status || '', doctorName: modalState.doctorName })
-    });
+    if (!doctorId || !status) return;
+    
+    try {
+      const statusData = {
+        status: status as 'approved' | 'rejected',
+        reason: status === 'rejected' ? rejectReason : undefined,
+        comment: rejectComment || undefined
+      };
+      
+      await updateDoctorStatus({ doctorId, statusData }).unwrap();
+      
+      setToast({
+        show: true,
+        message: t('doctors.statusUpdate', { status: status === 'approved' ? 'Approved' : 'Rejected', doctorName: modalState.doctorName })
+      });
+    } catch (error) {
+      setToast({
+        show: true,
+        message: `Error updating doctor status: ${error}`
+      });
+    }
   };
 
   const hideToast = () => {
@@ -297,10 +321,11 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
 
                 <div className="space-y-3">
                   <button
-                    onClick={() => showModal('approve')}
+                    onClick={handleApprove}
                     className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
                   >
-                    <i className="fa-solid fa-user-check"></i> {t('doctors.approveApplication')}
+                    <i className="fa-solid fa-user-check"></i> 
+                    {t('doctors.approveApplication')}
                   </button>
                   <button
                     onClick={() => showModal('reject')}
