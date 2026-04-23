@@ -158,7 +158,7 @@ const Login: React.FC = () => {
                 </div>
 
                 {/* Remember Me */}
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="remember"
@@ -167,7 +167,7 @@ const Login: React.FC = () => {
                   <label htmlFor="remember" className="text-sm text-textMuted select-none">
                     Remember me
                   </label>
-                </div>
+                </div> */}
 
                 {/* Error Message */}
                 {error && (
@@ -220,5 +220,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
-//testing the vercel deployment...
