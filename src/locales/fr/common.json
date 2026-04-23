@@ -57,6 +57,16 @@
     "bulkDeactivate": "Désactiver en masse",
     "deactivate": "Désactiver"
   },
+  "pagination": {
+    "showingItems": "Affichage {{start}}-{{end}} sur {{total}} éléments",
+    "noItems": "Aucun élément à afficher",
+    "itemsPerPage": "Éléments par page",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "first": "Premier",
+    "last": "Dernier",
+    "page": "Page"
+  },
   "dashboard": {
     "title": "Aperçu du tableau de bord",
     "subtitle": "Surveillance et analyse des opérations de santé en temps réel.",

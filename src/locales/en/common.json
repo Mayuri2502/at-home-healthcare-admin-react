@@ -57,6 +57,16 @@
     "bulkDeactivate": "Bulk Deactivate",
     "deactivate": "Deactivate"
   },
+  "pagination": {
+    "showingItems": "Showing {{start}}-{{end}} of {{total}} items",
+    "noItems": "No items to display",
+    "itemsPerPage": "Items per page",
+    "previous": "Previous",
+    "next": "Next",
+    "first": "First",
+    "last": "Last",
+    "page": "Page"
+  },
   "status": {
     "pending": "Pending",
     "active": "Active"
