@@ -269,9 +269,6 @@ const DoctorsTable = ({ onApprove, onReject, onView }: DoctorsTableProps) => {
             <i className="fa-solid fa-filter mr-1"></i> {t('doctors.moreFilters')}
           </button>
         </div>
-        <div className="text-xs text-slate-500">
-          {t('doctors.showingDoctors', { start: 1, end: 10, total: 128 })}
-        </div>
       </div>
 
       {/* Pending Table */}
