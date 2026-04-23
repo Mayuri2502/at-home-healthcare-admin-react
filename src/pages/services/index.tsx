@@ -48,6 +48,10 @@ export const Services: React.FC = () => {
   const [isViewFormModalOpen, setIsViewFormModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -117,6 +121,23 @@ export const Services: React.FC = () => {
       iconColor: 'emerald'
     }
   ];
+
+  // Pagination calculations
+  const totalItems = services.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedServices = services.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   const stats = {
     totalServices: 24,
@@ -233,11 +254,17 @@ export const Services: React.FC = () => {
 
           {/* Services Table */}
           <ServicesTable
-            services={services}
+            services={displayedServices}
             onEdit={handleEditService}
             onView={handleViewService}
             onMapForm={handleMapForm}
             onViewForm={handleViewForm}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
       </main>

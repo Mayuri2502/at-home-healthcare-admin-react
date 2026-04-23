@@ -5,6 +5,7 @@ import { RequestData } from './RequestTypes';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import Sidebar from '../../components/dashboard/Sidebar';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
+import PaginationComponent from '../../components/ui/PaginationComponent';
 
 interface Notification {
   id: string;
@@ -28,6 +29,10 @@ const Requests: React.FC = () => {
   const [selectedRequestForReset, setSelectedRequestForReset] = useState<RequestData | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -143,6 +148,23 @@ const Requests: React.FC = () => {
       formStatus: 'DRAFT'
     }
   ]);
+
+  // Pagination calculations
+  const totalItems = requestsData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedRequests = requestsData.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   const getStatusChipClass = (status: string): string => {
     const statusClasses = {
@@ -317,7 +339,7 @@ const Requests: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {requestsData.map((request) => (
+                  {displayedRequests.map((request) => (
                     <tr
                       key={request.id}
                       onClick={() => handleRowClick(request)}
@@ -394,24 +416,14 @@ const Requests: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
-              <p className="text-xs text-slate-500 font-medium">
-                {t('requests.showingResults', { start: 1, end: 10, total: 124 })}
-              </p>
-              <div className="flex items-center m-0 gap-1.5 justify-between p-0.5">
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 transition-all">
-                  <i className="fa-solid fa-chevron-left text-[10px]"></i>
-                </button>
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50">1</button>
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50">2</button>
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50">3</button>
-                <span className="mx-1 text-slate-300">...</span>
-                <button className="flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 h-8 w-8">13</button>
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 transition-all">
-                  <i className="fa-solid fa-chevron-right text-[10px]"></i>
-                </button>
-              </div>
-            </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
           </section>
         </div>
       </main>
