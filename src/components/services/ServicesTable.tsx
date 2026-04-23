@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import PaginationComponent from '../ui/PaginationComponent';
 
 interface Service {
   id: string;
@@ -19,6 +20,12 @@ interface ServicesTableProps {
   onView: (service: Service) => void;
   onMapForm: (service: Service) => void;
   onViewForm: (service: Service) => void;
+  currentPage?: number;
+  totalPages?: number;
+  totalItems?: number;
+  itemsPerPage?: number;
+  onPageChange?: (page: number) => void;
+  onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
 
 export const ServicesTable: React.FC<ServicesTableProps> = ({
@@ -26,7 +33,13 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   onEdit,
   onView,
   onMapForm,
-  onViewForm
+  onViewForm,
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  itemsPerPage = 10,
+  onPageChange,
+  onItemsPerPageChange
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -182,20 +195,31 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
       </div>
 
       {/* Pagination */}
-      <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-white">
-        <p className="text-xs text-slate-400 font-medium">{t('services.showingResults', { start: 1, end: services.length, total: 24 })}</p>
-        <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
-            <i className="fa-solid fa-chevron-left text-[10px]"></i>
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">1</button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">2</button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">3</button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
-            <i className="fa-solid fa-chevron-right text-[10px]"></i>
-          </button>
+      {onPageChange && onItemsPerPageChange ? (
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={onPageChange}
+          onItemsPerPageChange={onItemsPerPageChange}
+        />
+      ) : (
+        <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-white">
+          <p className="text-xs text-slate-400 font-medium">{t('services.showingResults', { start: 1, end: services.length, total: 24 })}</p>
+          <div className="flex items-center gap-1">
+            <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
+              <i className="fa-solid fa-chevron-left text-[10px]"></i>
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">1</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">2</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-xs font-bold">3</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 transition-all border border-slate-200">
+              <i className="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

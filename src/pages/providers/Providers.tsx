@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
+import PaginationComponent from '../../components/ui/PaginationComponent';
 
 interface Notification {
   id: string;
@@ -41,6 +42,10 @@ const Providers: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingProvider, setViewingProvider] = useState<Provider | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -160,6 +165,56 @@ const Providers: React.FC = () => {
     );
   };
 
+  // Filter providers based on status and service
+  const getFilteredProviders = () => {
+    let filtered = providers;
+    
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(provider => provider.status === filterStatus);
+    }
+    
+    if (selectedService !== 'all') {
+      filtered = filtered.filter(provider => 
+        provider.services.some(service => 
+          service.toLowerCase().includes(selectedService.toLowerCase())
+        )
+      );
+    }
+    
+    if (searchTerm) {
+      filtered = filtered.filter(provider =>
+        provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        provider.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        provider.phone.includes(searchTerm)
+      );
+    }
+    
+    return filtered;
+  };
+
+  // Pagination calculations
+  const filteredProviders = getFilteredProviders();
+  const totalItems = filteredProviders.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedProviders = filteredProviders.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  // Reset pagination when filters change
+  const handleFilterChange = () => {
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex h-[1024px] overflow-hidden">
       <Sidebar />
@@ -205,7 +260,10 @@ const Providers: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className="flex bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
                 <button
-                  onClick={() => setFilterStatus('all')}
+                  onClick={() => {
+                    setFilterStatus('all');
+                    handleFilterChange();
+                  }}
                   className={`px-4 py-1.5 text-xs font-bold rounded-lg ${
                     filterStatus === 'all' 
                       ? 'bg-primary text-white' 
@@ -215,7 +273,10 @@ const Providers: React.FC = () => {
                   {t('providers.allProviders')}
                 </button>
                 <button
-                  onClick={() => setFilterStatus('active')}
+                  onClick={() => {
+                    setFilterStatus('active');
+                    handleFilterChange();
+                  }}
                   className={`px-4 py-1.5 text-xs font-bold rounded-lg ${
                     filterStatus === 'active' 
                       ? 'bg-primary text-white' 
@@ -225,7 +286,10 @@ const Providers: React.FC = () => {
                   {t('common.active')}
                 </button>
                 <button
-                  onClick={() => setFilterStatus('inactive')}
+                  onClick={() => {
+                    setFilterStatus('inactive');
+                    handleFilterChange();
+                  }}
                   className={`px-4 py-1.5 text-xs font-bold rounded-lg ${
                     filterStatus === 'inactive' 
                       ? 'bg-primary text-white' 
@@ -237,7 +301,10 @@ const Providers: React.FC = () => {
               </div>
               <select
                 value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
+                onChange={(e) => {
+                  setSelectedService(e.target.value);
+                  handleFilterChange();
+                }}
                 className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-600 focus:outline-none shadow-sm"
               >
                 <option value="all">{t('services.allServices')}</option>
@@ -285,7 +352,7 @@ const Providers: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {providers.map((provider) => (
+                {displayedProviders.map((provider) => (
                   <tr key={provider.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -359,29 +426,22 @@ const Providers: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            <div className="p-6 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
-              <div className="flex gap-2">
-                <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
-                  {t('common.bulkDeactivate')}
-                </button>
-                <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
-                  {t('common.export')} CSV
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <button className="px-3 py-1 text-xs font-bold text-slate-400 cursor-not-allowed">
-                  {t('common.previous')}
-                </button>
-                <div className="flex gap-1">
-                  <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">1</button>
-                  <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">2</button>
-                  <button className="w-8 h-8 text-xs font-bold text-slate-600 hover:bg-white rounded-lg">3</button>
-                </div>
-                <button className="px-3 py-1 text-xs font-bold text-primary hover:underline">
-                  {t('common.next')}
-                </button>
-              </div>
+            <div className="flex gap-2 p-6 bg-slate-50/30 border-t border-slate-100">
+              <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
+                {t('common.bulkDeactivate')}
+              </button>
+              <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
+                {t('common.export')} CSV
+              </button>
             </div>
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
           </section>
 
           {/* Quick Stats */}
