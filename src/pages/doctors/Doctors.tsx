@@ -25,7 +25,7 @@ interface Notification {
 }
 
 const Doctors: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   
   // Fetch doctors data

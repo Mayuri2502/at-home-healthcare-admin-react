@@ -14,7 +14,7 @@ interface DoctorsTableProps {
 }
 
 const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }: DoctorsTableProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
   
@@ -23,11 +23,24 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // Filter state
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
-  // Filter doctors based on status
-  const pendingDoctors = doctors.filter(doctor => doctor.status === 'pendingApproval');
-  const approvedDoctors = doctors.filter(doctor => doctor.status === 'approved');
+  // Filter doctors based on status and specialty
+  const pendingDoctors = doctors.filter(doctor => 
+    doctor.status === 'pendingApproval' && 
+    (selectedSpecialty === '' || doctor.specialty === selectedSpecialty)
+  );
+  const approvedDoctors = doctors.filter(doctor => 
+    doctor.status === 'approved' && 
+    (selectedSpecialty === '' || doctor.specialty === selectedSpecialty)
+  );
+
+  const capitalizeFirst = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -163,15 +176,37 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
       {/* Table Filters */}
       <div className="p-4 border-b border-slate-100 flex flex-wrap gap-4 items-center justify-between bg-slate-50/50">
         <div className="flex gap-2">
-          <select className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/10">
-            <option>{t('doctors.allSpecialties')}</option>
-            <option>{t('doctors.generalMedicine')}</option>
-            <option>{t('doctors.cardiology')}</option>
-            <option>{t('doctors.pediatrics')}</option>
+          <select 
+            className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/10"
+            value={selectedSpecialty}
+            onChange={(e) => {
+              setSelectedSpecialty(e.target.value);
+              setCurrentPage(1); // Reset to first page when filter changes
+            }}
+          >
+            <option value="">{t('doctors.allSpecialties')}</option>
+            <option value="generalPractice">{t('doctors.generalPractice')}</option>
+            <option value="cardiology">{t('doctors.cardiology')}</option>
+            <option value="pediatrics">{t('doctors.pediatrics')}</option>
+            <option value="dermatology">{t('doctors.dermatology')}</option>
+            <option value="neurology">{t('doctors.neurology')}</option>
+            <option value="orthopedics">{t('doctors.orthopedics')}</option>
+            <option value="other">{t('doctors.other')}</option>
           </select>
-          <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
+          {selectedSpecialty && (
+            <button 
+              className="px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-medium hover:bg-slate-800"
+              onClick={() => {
+                setSelectedSpecialty('');
+                setCurrentPage(1);
+              }}
+            >
+              <i className="fa-solid fa-times mr-1"></i> {t('doctors.clearFilter')}
+            </button>
+          )}
+          {/* <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
             <i className="fa-solid fa-filter mr-1"></i> {t('doctors.moreFilters')}
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -212,7 +247,7 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">{doctor.email}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{doctor.specialty}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{capitalizeFirst(doctor.specialty)}</td>
                   <td className="px-6 py-4">{getStatusBadge(doctor.status)}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -282,7 +317,7 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{doctor.specialty}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600">{capitalizeFirst(doctor.specialty)}</td>
                   <td className="px-6 py-4">{getStatusBadge(doctor.status)}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">

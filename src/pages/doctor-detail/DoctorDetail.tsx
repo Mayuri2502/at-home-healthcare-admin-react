@@ -12,18 +12,17 @@ interface DoctorDetailProps {
 }
 
 const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved = false }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [searchParams] = useSearchParams();
   const { id: doctorId } = useParams<{ id: string }>();
   
-  // Debug: Log the doctorId to check if it's being extracted correctly
-  console.log('Doctor ID from URL:', doctorId);
-  
   // Fetch doctor details - only call API if doctorId exists
-  const { data: doctorData, isLoading, error } = useGetDoctorDetailsQuery(doctorId!, {
+  const { data: doctorData, isLoading, error } = useGetDoctorDetailsQuery(doctorId || '', {
     skip: !doctorId
   });
-  const doctor = doctorData?.data;
+  
+  // Extract doctor profile from the nested structure
+  const doctor = doctorData?.data?.profile || null;
   
   // Status update mutation
   const [updateDoctorStatus] = useUpdateDoctorStatusMutation();
@@ -69,9 +68,9 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
         <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <p className="text-red-600 mb-4">No doctor ID provided</p>
+              <p className="text-red-600 mb-4">{t('doctors.noDoctorId')}</p>
               <Link to="/doctors" className="text-primary hover:underline">
-                Back to Doctors List
+                {t('doctors.backToDoctorsList')}
               </Link>
             </div>
           </div>
@@ -93,7 +92,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
     );
   }
 
-  if (error || !doctor) {
+  if (error) {
     return (
       <div className="flex h-[1024px] overflow-hidden">
         <Sidebar />
@@ -102,7 +101,25 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
             <div className="text-center">
               <p className="text-red-600 mb-4">{t('doctors.errorLoading') || 'Error loading doctor details'}</p>
               <Link to="/doctors" className="text-primary hover:underline">
-                Back to Doctors List
+                {t('doctors.backToDoctorsList')}
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!doctor) {
+    return (
+      <div className="flex h-[1024px] overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-red-600 mb-4">{t('doctors.doctorDataNotFound')}</p>
+              <Link to="/doctors" className="text-primary hover:underline">
+                {t('doctors.backToDoctorsList')}
               </Link>
             </div>
           </div>
@@ -186,7 +203,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                 : 'bg-amber-50 text-amber-700 border border-amber-100'
             }`}>
               <i className={`fa-solid ${isApproved ? 'fa-check' : 'fa-clock'}`}></i> 
-              {isApproved ? 'Approved' : t('doctors.pendingApproval')}
+              {isApproved ? t('doctors.approved') : t('doctors.pendingApproval')}
             </div>
           </div>
         </header>
@@ -254,16 +271,16 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                     </h3>
                     <div className="bg-slate-50 p-4 rounded-xl space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Business Address</span>
+                        <span className="text-slate-500">{t('doctors.businessAddress')}</span>
                         <span className="font-medium text-slate-900 text-right">{doctor.businessAddress}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Practice Type</span>
+                        <span className="text-slate-500">{t('doctors.practiceType')}</span>
                         <span className="font-medium text-slate-900 text-right">{doctor.practiceType}</span>
                       </div>
                       {doctor.country && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-500">Country</span>
+                          <span className="text-slate-500">{t('doctors.country')}</span>
                           <span className="font-medium text-slate-900 text-right">{doctor.country}</span>
                         </div>
                       )}
@@ -399,10 +416,10 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
               </div>
               <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                 <button onClick={hideModal} className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg">
-                  Cancel
+                  {t('doctors.cancel')}
                 </button>
                 <button onClick={validateReject} className="px-4 py-2 text-sm font-bold text-white bg-danger rounded-lg hover:bg-red-700">
-                  Confirm Reject
+                  {t('doctors.confirmReject')}
                 </button>
               </div>
             </div>
