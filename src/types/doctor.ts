@@ -50,7 +50,21 @@ export interface DoctorsResponse {
 export interface DoctorDetailResponse {
   status: number;
   message: string;
-  data: Doctor;
+  data: {
+    profile: Doctor;
+    verification: {
+      assignedAt: null;
+      assignedTo: null;
+      automatedChecks: any;
+      createdAt: string;
+      currentStatus: string;
+      decisionReason: string;
+      reviewCompletedAt: null;
+      reviewStartedAt: null;
+      timeline: any[];
+      updatedAt: string;
+    };
+  };
   timestamp: string;
 }
 
