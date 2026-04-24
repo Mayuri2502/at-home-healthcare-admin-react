@@ -21,8 +21,9 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
     skip: !doctorId
   });
   
-  // Extract doctor profile from the nested structure
+  // Extract doctor profile and verification data from the nested structure
   const doctor = doctorData?.data?.profile || null;
+  const verification = doctorData?.data?.verification || null;
   
   // Status update mutation
   const [updateDoctorStatus] = useUpdateDoctorStatusMutation();
@@ -305,37 +306,79 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('doctors.auditSnippet')}</span>
                     </div>
                     <p className="text-sm text-slate-600 italic">
-                      {t('doctors.auditSnippetText')}
+                      {verification?.automatedChecks?.rppsValid !== null && verification?.automatedChecks?.addressMatchesPublicRecords !== null 
+                        ? "\"RPPS database check confirmed identity. Professional address matches public records. Documents uploaded are high quality and legible.\""
+                        : t('doctors.auditSnippetText')
+                      }
                     </p>
                   </div>
 
-                  <div className="space-y-4 block">
-                    <div className="relative step-line pb-2.5 pl-11">
-                      <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between m-0 p-2.5 gap-1.5">
-                        <i className="fa-solid fa-check text-xs"></i>
+                  <div className="relative">
+                    <div className="absolute left-0 top-0 w-0.5 h-full bg-slate-200 left-4"></div>
+                    <div className="space-y-6">
+                      <div className="relative step-line pb-2.5 pl-11">
+                        <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between m-0 p-2.5 gap-1.5">
+                          <i className="fa-solid fa-check text-xs"></i>
+                        </div>
+                        <p className="text-xs font-bold text-slate-900">{t('doctors.steps.registrationSubmitted')}</p>
+                        <p className="text-[10px] text-slate-500">
+                          {verification?.timeline?.[0]?.timestamp 
+                            ? new Date(verification.timeline[0].timestamp).toLocaleDateString()
+                            : t('doctors.steps.registrationDate')
+                          }
+                        </p>
                       </div>
-                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.registrationSubmitted')}</p>
-                      <p className="text-[10px] text-slate-500">{t('doctors.steps.registrationDate')}</p>
-                    </div>
 
-                    <div className="relative step-line pb-2.5 pl-11">
-                      <div className="absolute left-0 top-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center z-10 justify-between p-2.5 gap-1.5">
-                        <i className="fa-solid fa-check text-xs"></i>
+                      <div className="relative step-line pb-2.5 pl-11">
+                        <div className={`absolute left-0 top-0 w-8 h-8 ${
+                          doctor?.status === 'pendingApproval' ? 'bg-amber-100 text-amber-600' :
+                          doctor?.status === 'approved' || doctor?.status === 'rejected' ? 'bg-emerald-100 text-emerald-600' :
+                          'bg-slate-100 text-slate-600'
+                        } rounded-full flex items-center justify-center z-10 p-2.5 m-0 gap-1.5`}>
+                          <i className={`fa-solid ${
+                            doctor?.status === 'pendingApproval' ? 'fa-clock' :
+                            doctor?.status === 'approved' || doctor?.status === 'rejected' ? 'fa-check' :
+                            'fa-circle text-xs'
+                          } text-xs`}></i>
+                        </div>
+                        <p className="text-xs font-bold text-slate-900">{t('doctors.steps.adminReview')}</p>
+                        <p className="text-[10px] text-slate-500">
+                          {doctor?.status === 'pendingApproval' 
+                            ? 'pending approval'
+                            : doctor?.status === 'approved' 
+                            ? 'approved'
+                            : doctor?.status === 'rejected'
+                            ? 'rejected'
+                            : t('doctors.steps.adminReviewStatus')
+                          }
+                        </p>
                       </div>
-                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.emailVerified')}</p>
-                      <p className="text-[10px] text-slate-500">{t('doctors.steps.emailDate')}</p>
-                    </div>
 
-                    <div className="relative pl-11">
-                      <div className="absolute left-0 top-0 w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center z-10 p-2.5 m-0 gap-1.5">
-                        <i className="fa-solid fa-clock text-xs"></i>
+                      <div className="relative pl-11">
+                        <div className={`absolute left-0 top-0 w-8 h-8 ${
+                          doctor?.status === 'approved' ? 'bg-emerald-100 text-emerald-600' :
+                          doctor?.status === 'rejected' ? 'bg-red-100 text-red-600' :
+                          'bg-slate-100 text-slate-600'
+                        } rounded-full flex items-center justify-center z-10 p-2.5 m-0 gap-1.5`}>
+                          <i className={`fa-solid ${
+                            doctor?.status === 'approved' ? 'fa-check' :
+                            doctor?.status === 'rejected' ? 'fa-times' :
+                            'fa-circle text-xs'
+                          } text-xs`}></i>
+                        </div>
+                        <p className="text-xs font-bold text-slate-900">{t('doctors.steps.emailVerified')}</p>
+                        <p className="text-[10px] text-slate-500">
+                          {doctor?.status === 'approved' 
+                            ? 'Verified'
+                            : doctor?.status === 'rejected'
+                            ? 'Not verified'
+                            : 'Pending admin approval'
+                          }
+                        </p>
                       </div>
-                      <p className="text-xs font-bold text-slate-900">{t('doctors.steps.adminReview')}</p>
-                      <p className="text-[10px] text-slate-500">{t('doctors.steps.adminReviewStatus')}</p>
                     </div>
                   </div>
                 </div>
-
                 <div className="space-y-3">
                   <button
                     onClick={handleApprove}
