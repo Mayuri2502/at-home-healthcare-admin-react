@@ -75,6 +75,15 @@ const Doctors: React.FC = () => {
     });
   };
 
+  const handleDisable = (doctor: Doctor) => {
+    const status = doctor.status === 'inactive' ? 'Activated' : 'Disabled';
+    const doctorName = `Dr. ${doctor.fName} ${doctor.lName}`;
+    setToast({
+      show: true,
+      message: `${doctorName} ${status} successfully`
+    });
+  };
+
   const handleView = (doctor: Doctor) => {
     navigate(`/doctors/${doctor.id}?approved=${doctor.status === 'approved'}`);
   };
@@ -158,6 +167,7 @@ const Doctors: React.FC = () => {
             onApprove={handleApprove}
             onReject={handleReject}
             onView={handleView}
+            onDisable={handleDisable}
           />
           
           {/* Error State */}
