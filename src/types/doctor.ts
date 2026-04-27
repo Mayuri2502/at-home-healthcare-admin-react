@@ -25,6 +25,7 @@ export interface Doctor {
     by: null;
     at: number;
   };
+  internalNotes?: string;
 }
 
 export interface Pagination {
@@ -91,4 +92,12 @@ export interface DoctorStatusUpdateResponse {
     isVerified: boolean;
   };
   timestamp: string;
+}
+
+export interface InternalNotesRequest {
+  internalNotes: string;
+}
+
+export interface InternalNotesResponse {
+  internalNotes: string;
 }

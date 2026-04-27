@@ -4,7 +4,7 @@ import { Link, useSearchParams, useParams } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Modal from '../../components/doctors/Modal';
 import Toast from '../../components/doctors/Toast';
-import { useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation } from '../../services/doctorsApi';
+import { useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation, useUpdateInternalNotesMutation } from '../../services/doctorsApi';
 import { Doctor } from '../../types/doctor';
 
 interface DoctorDetailProps {
@@ -28,6 +28,9 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
   // Status update mutation
   const [updateDoctorStatus] = useUpdateDoctorStatusMutation();
   
+  // Internal notes mutation
+  const [updateInternalNotes] = useUpdateInternalNotesMutation();
+  
   const isApproved = doctor?.status === 'approved' || propIsApproved || searchParams.get('approved') === 'true';
 
   const [modalState, setModalState] = useState({
@@ -44,6 +47,42 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
   const [rejectReason, setRejectReason] = useState('');
   const [rejectComment, setRejectComment] = useState('');
   const [showRejectError, setShowRejectError] = useState(false);
+  const [internalNotes, setInternalNotes] = useState('');
+
+  // Initialize internal notes when doctor data is loaded
+  React.useEffect(() => {
+    if (doctor?.internalNotes) {
+      setInternalNotes(doctor.internalNotes);
+    }
+  }, [doctor]);
+
+  const handleSaveInternalNotes = async () => {
+    if (!doctorId || !internalNotes.trim()) {
+      setToast({
+        show: true,
+        message: 'Please enter some notes before saving'
+      });
+      return;
+    }
+
+    try {
+      await updateInternalNotes({ 
+        doctorId, 
+        notesData: { internalNotes: internalNotes.trim() } 
+      }).unwrap();
+      
+      setToast({
+        show: true,
+        message: 'Internal notes saved successfully'
+      });
+    } catch (error) {
+      console.error('Error saving internal notes:', error);
+      setToast({
+        show: true,
+        message: 'Error saving internal notes. Please try again.'
+      });
+    }
+  };
 
   const showModal = (type: 'approve' | 'reject') => {
     setModalState({
@@ -402,11 +441,18 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
               <h3 className="text-sm font-bold text-slate-900 mb-4">{t('doctors.internalNotes')}</h3>
               <div className="space-y-4">
                 <textarea
+                  value={internalNotes}
+                  onChange={(e) => setInternalNotes(e.target.value)}
                   placeholder={t('doctors.notesPlaceholder')}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/10 outline-none min-h-[100px]"
                 />
                 <div className="flex justify-end">
-                  <button className="text-xs font-bold text-primary hover:underline">{t('doctors.saveNote')}</button>
+                  <button 
+                    onClick={handleSaveInternalNotes}
+                    className="text-xs font-bold text-primary hover:underline"
+                  >
+                    {t('doctors.saveNote')}
+                  </button>
                 </div>
               </div>
             </div>
