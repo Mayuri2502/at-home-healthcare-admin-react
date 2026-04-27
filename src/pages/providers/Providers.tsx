@@ -308,9 +308,18 @@ const Providers: React.FC = () => {
                 className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-600 focus:outline-none shadow-sm"
               >
                 <option value="all">{t('services.allServices')}</option>
-                <option value="home-care">{t('services.homeCare')}</option>
-                <option value="diagnostics">{t('services.diagnostics')}</option>
-                <option value="pharmacy">{t('services.pharmacy')}</option>
+                <option value="generic">Generic</option>
+                <option value="wound-care">Wound Care</option>
+                <option value="iv-therapy">IV Therapy</option>
+                <option value="medical-oxygen">Medical Oxygen</option>
+                <option value="artificial-nutrition">Artificial Nutrition</option>
+                <option value="personal-hygiene-care">Personal Hygiene care</option>
+                <option value="pca-pain-management">PCA(Pain management)</option>
+                <option value="pregnancy-related-care">Pregnancy related care</option>
+                <option value="parenteral-nutrition">Parenteral nutrition (central line)</option>
+                <option value="cno">CNO</option>
+                <option value="hydration-infusion">Hydration Infusion</option>
+                <option value="antibiotherapy-infusion">Antibiothérapy infusion</option>
               </select>
             </div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
