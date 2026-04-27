@@ -8,7 +8,7 @@ export interface Doctor {
   specialty: string;
   businessAddress: string;
   practiceType: 'private' | 'public' | 'other';
-  status: 'pendingApproval' | 'approved' | 'rejected';
+  status: 'pendingApproval' | 'approved' | 'rejected' | 'inactive';
   isVerified: boolean;
   createdAt: string;
   updatedAt: string;
@@ -76,7 +76,7 @@ export interface DoctorsListParams {
 }
 
 export interface DoctorStatusUpdateRequest {
-  status: 'approved' | 'rejected';
+  status: 'approved' | 'rejected' | 'inactive';
   reason?: string;
   comment?: string;
 }
@@ -85,7 +85,7 @@ export interface DoctorStatusUpdateResponse {
   status: number;
   message: string;
   data: {
-    status: 'approved' | 'rejected';
+    status: 'approved' | 'rejected' | 'inactive';
     updatedBy: string;
     updatedAt: number;
     isVerified: boolean;
