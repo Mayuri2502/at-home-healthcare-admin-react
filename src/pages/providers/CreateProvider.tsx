@@ -27,17 +27,21 @@ const CreateProvider: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
+  const [showAllServices, setShowAllServices] = useState(false);
 
   const availableServices: Service[] = [
-    { id: '1', name: 'Pharmacy Delivery' },
-    { id: '2', name: 'Radiology' },
-    { id: '3', name: 'Physical Therapy' },
-    { id: '4', name: 'Elderly Care' },
-    { id: '5', name: 'Wound Dressing' },
-    { id: '6', name: 'Blood Test' },
-    { id: '7', name: 'Home Nursing' },
-    { id: '8', name: 'Post-Op Care' },
-    { id: '9', name: 'Medication Management' }
+    { id: '1', name: 'Generic' },
+    { id: '2', name: 'Wound Care' },
+    { id: '3', name: 'IV Therapy' },
+    { id: '4', name: 'Medical Oxygen' },
+    { id: '5', name: 'Artificial Nutrition' },
+    { id: '6', name: 'Personal Hygiene care' },
+    { id: '7', name: 'PCA(Pain management)' },
+    { id: '8', name: 'Pregnancy related care' },
+    { id: '9', name: 'Parenteral nutrition (central line)' },
+    { id: '10', name: 'CNO' },
+    { id: '11', name: 'Hydration Infusion' },
+    { id: '12', name: 'Antibiothérapy infusion' }
   ];
 
   useEffect(() => {
@@ -301,8 +305,13 @@ const CreateProvider: React.FC = () => {
                     placeholder="Search and add services (e.g. Blood Test, Nursing...)"
                     className="flex-1 pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   />
-                  <button className="flex items-center justify-center px-4 py-2.5 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-all group">
-                    <span className="text-[10px] font-bold text-slate-400 group-hover:text-primary tracking-widest">VIEW ALL SERVICES</span>
+                  <button 
+                    onClick={() => setShowAllServices(!showAllServices)}
+                    className="flex items-center justify-center px-4 py-2.5 border border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-all group"
+                  >
+                    <span className="text-[10px] font-bold text-slate-400 group-hover:text-primary tracking-widest">
+                      {showAllServices ? 'HIDE SERVICES' : 'VIEW ALL SERVICES'}
+                    </span>
                   </button>
                 </div>
                 
@@ -327,7 +336,7 @@ const CreateProvider: React.FC = () => {
 
               {/* Service Suggestions */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {availableServices.slice(0, 5).map((service) => {
+                {availableServices.slice(0, showAllServices ? availableServices.length : 5).map((service) => {
                   const isSelected = formData.services.includes(service.name);
                   return (
                     <button
