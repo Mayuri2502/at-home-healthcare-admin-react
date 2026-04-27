@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { DoctorsResponse, DoctorsListParams, DoctorDetailResponse, DoctorStatusUpdateRequest, DoctorStatusUpdateResponse } from '../types/doctor';
+import { DoctorsResponse, DoctorsListParams, DoctorDetailResponse, DoctorStatusUpdateRequest, DoctorStatusUpdateResponse, InternalNotesRequest, InternalNotesResponse } from '../types/doctor';
 
 export const doctorsApi = createApi({
   reducerPath: 'doctorsApi',
@@ -38,7 +38,15 @@ export const doctorsApi = createApi({
       }),
       invalidatesTags: ['Doctors'],
     }),
+    updateInternalNotes: builder.mutation<InternalNotesResponse, { doctorId: string; notesData: InternalNotesRequest }>({
+      query: ({ doctorId, notesData }) => ({
+        url: `/admin/doctors/${doctorId}/internal-notes`,
+        method: 'PUT',
+        body: notesData,
+      }),
+      invalidatesTags: ['Doctors'],
+    }),
   }),
 });
 
-export const { useGetDoctorsQuery, useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation } = doctorsApi;
+export const { useGetDoctorsQuery, useGetDoctorDetailsQuery, useUpdateDoctorStatusMutation, useUpdateInternalNotesMutation } = doctorsApi;
