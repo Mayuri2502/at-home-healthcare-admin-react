@@ -42,6 +42,9 @@ const Providers: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingProvider, setViewingProvider] = useState<Provider | null>(null);
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+  const [showBulkDeactivateModal, setShowBulkDeactivateModal] = useState(false);
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -120,6 +123,48 @@ const Providers: React.FC = () => {
   const handleDeactivate = (providerName: string) => {
     setSelectedProvider(providerName);
     setShowDeactivateModal(true);
+  };
+
+  const handleBulkDeactivate = () => {
+    if (!showCheckboxes) {
+      setShowCheckboxes(true);
+      setToastMessage('Select providers to deactivate');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+    if (selectedProviders.length === 0) {
+      setToastMessage('Please select at least one provider to deactivate');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+    setShowBulkDeactivateModal(true);
+  };
+
+  const confirmBulkDeactivate = () => {
+    setShowBulkDeactivateModal(false);
+    setToastMessage(`${selectedProviders.length} provider(s) deactivated successfully`);
+    setShowToast(true);
+    setSelectedProviders([]);
+    setShowCheckboxes(false);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const toggleProviderSelection = (providerId: string) => {
+    setSelectedProviders(prev => 
+      prev.includes(providerId) 
+        ? prev.filter(id => id !== providerId)
+        : [...prev, providerId]
+    );
+  };
+
+  const selectAllProviders = () => {
+    if (selectedProviders.length === displayedProviders.length) {
+      setSelectedProviders([]);
+    } else {
+      setSelectedProviders(displayedProviders.map(p => p.id));
+    }
   };
 
   const confirmDeactivate = () => {
@@ -340,7 +385,20 @@ const Providers: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  {showCheckboxes && (
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedProviders.length === displayedProviders.length && displayedProviders.length > 0}
+                          onChange={selectAllProviders}
+                          className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
+                        />
+                        <span>Select All</span>
+                      </div>
+                    </th>
+                  )}
+                  <th className={`px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest ${showCheckboxes ? '' : 'pl-12'}`}>
                     {t('providers.providerName')}
                   </th>
                   <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -362,8 +420,18 @@ const Providers: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-50">
                 {displayedProviders.map((provider) => (
-                  <tr key={provider.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={provider.id} className={`hover:bg-slate-50/50 transition-colors ${selectedProviders.includes(provider.id) ? 'bg-primary/5' : ''}`}>
+                    {showCheckboxes && (
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedProviders.includes(provider.id)}
+                          onChange={() => toggleProviderSelection(provider.id)}
+                          className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
+                        />
+                      </td>
+                    )}
+                    <td className={`px-6 py-4 ${showCheckboxes ? '' : 'pl-6'}`}>
                       <div className="flex items-center gap-3">
                         {getInitialsBadge(provider.initials, provider.status)}
                         <div>
@@ -436,7 +504,10 @@ const Providers: React.FC = () => {
               </tbody>
             </table>
             <div className="flex gap-2 p-6 bg-slate-50/30 border-t border-slate-100">
-              <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
+              <button 
+                onClick={handleBulkDeactivate}
+                className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all"
+              >
                 {t('common.bulkDeactivate')}
               </button>
               <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
@@ -484,6 +555,47 @@ const Providers: React.FC = () => {
           </section> */}
         </div>
       </main>
+
+      {/* Bulk Deactivate Confirmation Modal */}
+      {showBulkDeactivateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 text-center">
+            <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Bulk Deactivate Providers?</h3>
+            <p className="text-slate-500 text-sm mt-2">
+              Are you sure you want to deactivate {selectedProviders.length} selected provider(s)?
+            </p>
+            <div className="mt-4 mb-6">
+              <div className="bg-slate-50 rounded-lg p-3 max-h-32 overflow-y-auto">
+                {selectedProviders.map(providerId => {
+                  const provider = providers.find(p => p.id === providerId);
+                  return provider ? (
+                    <div key={providerId} className="text-xs text-slate-600 py-1">
+                      • {provider.name}
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
+            <div className="mt-8 flex gap-3">
+              <button
+                onClick={() => setShowBulkDeactivateModal(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={confirmBulkDeactivate}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl"
+              >
+                {t('common.deactivate')} All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Deactivate Confirmation Modal */}
       {showDeactivateModal && (
