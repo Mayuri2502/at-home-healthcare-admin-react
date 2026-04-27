@@ -11,9 +11,10 @@ interface DoctorsTableProps {
   onApprove: (doctor: Doctor) => void;
   onReject: (doctor: Doctor) => void;
   onView: (doctor: Doctor) => void;
+  onDisable?: (doctor: Doctor) => void;
 }
 
-const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }: DoctorsTableProps) => {
+const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView, onDisable }: DoctorsTableProps) => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
@@ -34,7 +35,7 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
     (selectedSpecialty === '' || doctor.specialty === selectedSpecialty)
   );
   const approvedDoctors = doctors.filter(doctor => 
-    doctor.status === 'approved' && 
+    (doctor.status === 'approved' || doctor.status === 'inactive') && 
     (selectedSpecialty === '' || doctor.specialty === selectedSpecialty)
   );
 
@@ -63,6 +64,13 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">
             <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
             {t('status.rejected') || 'Rejected'}
+          </span>
+        );
+      case 'inactive':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200">
+            <i className="fa-solid fa-circle text-[6px] mr-1.5"></i>
+            Inactive
           </span>
         );
       default:
@@ -120,6 +128,22 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
       onApprove(doctor);
     } catch (error) {
       console.error('Error approving doctor:', error);
+    }
+  };
+
+  // Handle disable/activate action
+  const handleDisable = async (doctor: Doctor) => {
+    try {
+      const newStatus = doctor.status === 'inactive' ? 'approved' : 'inactive';
+      const reason = doctor.status === 'inactive' ? 'Reactivated by admin' : 'Disabled by admin';
+      
+      await updateDoctorStatus({ 
+        doctorId: doctor.id, 
+        statusData: { status: newStatus, reason } 
+      }).unwrap();
+      onDisable?.(doctor);
+    } catch (error) {
+      console.error('Error updating doctor status:', error);
     }
   };
 
@@ -327,7 +351,16 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView }:
                       >
                         View
                       </button>
-                      <button className="px-3 py-1.5 text-xs font-bold text-danger hover:bg-red-50 rounded-lg transition-colors">Disable</button>
+                      <button 
+                        onClick={() => handleDisable(doctor)}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                          doctor.status === 'inactive' 
+                            ? 'text-emerald-600 hover:bg-emerald-50' 
+                            : 'text-danger hover:bg-red-50'
+                        }`}
+                      >
+                        {doctor.status === 'inactive' ? 'Activate' : 'Disable'}
+                      </button>
                     </div>
                   </td>
                 </tr>
