@@ -322,7 +322,7 @@ const Providers: React.FC = () => {
                 <option value="antibiotherapy-infusion">Antibiothérapy infusion</option>
               </select>
             </div>
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+            {/* <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
               <span>{t('common.showing', { start: 1, end: providers.length, total: providers.length, type: t('providers.title') })}</span>
               <div className="flex gap-1 ml-2">
                 <button className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
@@ -332,7 +332,7 @@ const Providers: React.FC = () => {
                   <i className="fa-solid fa-chevron-right text-[10px]"></i>
                 </button>
               </div>
-            </div>
+            </div> */}
           </section>
 
           {/* Providers Table */}
