@@ -138,6 +138,19 @@ export interface ActivateProviderResponse {
   timestamp: string;
 }
 
+export interface BulkDeactivateRequest {
+  providerIds: string[];
+}
+
+export interface BulkDeactivateResponse {
+  status: number;
+  message: string;
+  data: {
+    deactivatedCount: number;
+  };
+  timestamp: string;
+}
+
 export interface UpdateProviderResponse {
   status: number;
   message: string;
