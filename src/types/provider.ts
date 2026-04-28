@@ -108,6 +108,36 @@ export interface GetProviderResponse {
   timestamp: string;
 }
 
+export interface DeactivateProviderRequest {
+  status: 'inactive';
+}
+
+export interface DeactivateProviderResponse {
+  status: number;
+  message: string;
+  data: {
+    status: 'inactive';
+    updatedBy: string;
+    updatedAt: number;
+  };
+  timestamp: string;
+}
+
+export interface ActivateProviderRequest {
+  status: 'approved';
+}
+
+export interface ActivateProviderResponse {
+  status: number;
+  message: string;
+  data: {
+    status: 'approved';
+    updatedBy: string;
+    updatedAt: number;
+  };
+  timestamp: string;
+}
+
 export interface UpdateProviderResponse {
   status: number;
   message: string;
