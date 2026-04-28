@@ -63,7 +63,7 @@ const Doctors: React.FC = () => {
     setModalState({
       isOpen: true,
       type: 'approve',
-      doctorName: `Dr. ${doctor.fName} ${doctor.lName}`
+      doctorName: `Dr. ${doctor.fullName}`
     });
   };
 
@@ -71,13 +71,13 @@ const Doctors: React.FC = () => {
     setModalState({
       isOpen: true,
       type: 'reject',
-      doctorName: `Dr. ${doctor.fName} ${doctor.lName}`
+      doctorName: `Dr. ${doctor.fullName}`
     });
   };
 
   const handleDisable = (doctor: Doctor) => {
     const status = doctor.status === 'inactive' ? 'Activated' : 'Disabled';
-    const doctorName = `Dr. ${doctor.fName} ${doctor.lName}`;
+    const doctorName = `Dr. ${doctor.fullName}`;
     setToast({
       show: true,
       message: `${doctorName} ${status} successfully`
