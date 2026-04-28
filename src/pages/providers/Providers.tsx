@@ -5,6 +5,8 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
 import PaginationComponent from '../../components/ui/PaginationComponent';
+import { useGetProvidersQuery } from '../../services/providersApi';
+import { Provider as APIProvider } from '../../types/provider';
 
 interface Notification {
   id: string;
@@ -20,6 +22,7 @@ interface Notification {
   }[];
 }
 
+// Local interface for UI compatibility
 interface Provider {
   id: string;
   name: string;
@@ -30,6 +33,22 @@ interface Provider {
   initials: string;
   activeRequests: number;
 }
+
+// Service mapping from dropdown values to actual backend service names
+const SERVICE_VALUE_TO_NAME: Record<string, string> = {
+  'generic': 'Generic',
+  'wound-care': 'Wound Care',
+  'iv-therapy': 'IV Therapy',
+  'medical-oxygen': 'Medical Oxygen',
+  'artificial-nutrition': 'Artificial Nutrition',
+  'personal-hygiene-care': 'Personal Hygiene care',
+  'pca-pain-management': 'PCA(Pain management)',
+  'pregnancy-related-care': 'Pregnancy related care',
+  'parenteral-nutrition': 'Parenteral nutrition (central line)',
+  'cno': 'CNO',
+  'hydration-infusion': 'Hydration Infusion',
+  'antibiotherapy-infusion': 'Antibiothérapy infusion',
+};
 
 const Providers: React.FC = () => {
   const { t } = useTranslation();
@@ -87,38 +106,36 @@ const Providers: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  const providers: Provider[] = [
-    {
-      id: 'PRV-9021',
-      name: t('providersData.bioHealth.name'),
-      email: t('providersData.bioHealth.email'),
-      phone: t('providersData.bioHealth.phone'),
-      services: [t('servicesData.diagnostics'), t('servicesData.bloodTest.name')],
-      status: 'active',
-      initials: 'BH',
-      activeRequests: 12
-    },
-    {
-      id: 'PRV-4432',
-      name: t('providersData.swiftCare.name'),
-      email: t('providersData.swiftCare.email'),
-      phone: t('providersData.swiftCare.phone'),
-      services: [t('servicesData.homeNursing'), t('servicesData.postOpCare'), t('servicesData.medicationManagement')],
-      status: 'active',
-      initials: 'SC',
-      activeRequests: 8
-    },
-    {
-      id: 'PRV-1108',
-      name: t('providersData.medipack.name'),
-      email: t('providersData.medipack.email'),
-      phone: t('providersData.medipack.phone'),
-      services: [t('servicesData.pharmacyDelivery')],
-      status: 'inactive',
-      initials: 'MP',
-      activeRequests: 0
-    }
-  ];
+  // API call to get providers
+  const { data: providersData, isLoading, error } = useGetProvidersQuery({
+    page: currentPage,
+    size: itemsPerPage,
+    status: filterStatus === 'all' ? undefined : 
+            filterStatus === 'active' ? 'approved' : 'inactive',
+    search: searchTerm || undefined,
+    service: selectedService === 'all' ? undefined : SERVICE_VALUE_TO_NAME[selectedService]
+  });
+
+  // Transform API data to local Provider interface
+  const transformApiProvider = (apiProvider: APIProvider): Provider => {
+    const names = apiProvider.providerName.split(' ');
+    const initials = names.length > 1 
+      ? names[0][0] + names[names.length - 1][0]
+      : names[0][0] + (names[0][1] || '');
+    
+    return {
+      id: apiProvider.id,
+      name: apiProvider.providerName,
+      email: apiProvider.email,
+      phone: apiProvider.phoneNumber,
+      services: apiProvider.serviceDetails.map(service => service.serviceName),
+      status: apiProvider.status === 'approved' ? 'active' : 'inactive',
+      initials: initials.toUpperCase(),
+      activeRequests: 0 // API doesn't provide this, default to 0
+    };
+  };
+
+  const providers: Provider[] = providersData?.data?.providers?.map(transformApiProvider) || [];
 
   const handleDeactivate = (providerName: string) => {
     setSelectedProvider(providerName);
@@ -210,40 +227,16 @@ const Providers: React.FC = () => {
     );
   };
 
-  // Filter providers based on status and service
-  const getFilteredProviders = () => {
-    let filtered = providers;
-    
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(provider => provider.status === filterStatus);
-    }
-    
-    if (selectedService !== 'all') {
-      filtered = filtered.filter(provider => 
-        provider.services.some(service => 
-          service.toLowerCase().includes(selectedService.toLowerCase())
-        )
+  // Use API-provided pagination data
+  const totalItems = providersData?.data?.pagination?.total || 0;
+  const totalPages = providersData?.data?.pagination?.totalPages || 1;
+  
+  // Client-side service filtering as fallback if API doesn't support it
+  const displayedProviders = selectedService === 'all' 
+    ? providers 
+    : providers.filter(provider => 
+        provider.services.includes(SERVICE_VALUE_TO_NAME[selectedService])
       );
-    }
-    
-    if (searchTerm) {
-      filtered = filtered.filter(provider =>
-        provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        provider.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        provider.phone.includes(searchTerm)
-      );
-    }
-    
-    return filtered;
-  };
-
-  // Pagination calculations
-  const filteredProviders = getFilteredProviders();
-  const totalItems = filteredProviders.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedProviders = filteredProviders.slice(startIndex, endIndex);
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
@@ -367,142 +360,158 @@ const Providers: React.FC = () => {
                 <option value="antibiotherapy-infusion">Antibiothérapy infusion</option>
               </select>
             </div>
-            {/* <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span>{t('common.showing', { start: 1, end: providers.length, total: providers.length, type: t('providers.title') })}</span>
-              <div className="flex gap-1 ml-2">
-                <button className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
-                  <i className="fa-solid fa-chevron-left text-[10px]"></i>
-                </button>
-                <button className="w-8 h-8 flex items-center justify-center border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
-                  <i className="fa-solid fa-chevron-right text-[10px]"></i>
-                </button>
-              </div>
-            </div> */}
           </section>
 
           {/* Providers Table */}
           <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  {showCheckboxes && (
-                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedProviders.length === displayedProviders.length && displayedProviders.length > 0}
-                          onChange={selectAllProviders}
-                          className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
-                        />
-                        <span>Select All</span>
-                      </div>
-                    </th>
-                  )}
-                  <th className={`px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest ${showCheckboxes ? '' : 'pl-12'}`}>
-                    {t('providers.providerName')}
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    {t('common.contact')}
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Eligible services
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Active requests
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    {t('common.status')}
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
-                    {t('common.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {displayedProviders.map((provider) => (
-                  <tr key={provider.id} className={`hover:bg-slate-50/50 transition-colors ${selectedProviders.includes(provider.id) ? 'bg-primary/5' : ''}`}>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm text-slate-500">Loading providers...</span>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <i className="fa-solid fa-triangle-exclamation text-danger text-2xl mb-3"></i>
+                  <p className="text-sm text-slate-500">Error loading providers. Please try again.</p>
+                </div>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
                     {showCheckboxes && (
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedProviders.includes(provider.id)}
-                          onChange={() => toggleProviderSelection(provider.id)}
-                          className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
-                        />
-                      </td>
-                    )}
-                    <td className={`px-6 py-4 ${showCheckboxes ? '' : 'pl-6'}`}>
-                      <div className="flex items-center gap-3">
-                        {getInitialsBadge(provider.initials, provider.status)}
-                        <div>
-                          <p className="text-sm font-bold text-slate-900">{provider.name}</p>
-                          <p className="text-[11px] text-slate-500">ID: {provider.id}</p>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedProviders.length === displayedProviders.length && displayedProviders.length > 0}
+                            onChange={selectAllProviders}
+                            className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
+                          />
+                          <span>Select All</span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-slate-700">{provider.email}</p>
-                      <p className="text-[11px] text-slate-500">{provider.phone}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {provider.services.slice(0, 2).map((service, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200"
-                          >
-                            {service}
-                          </span>
-                        ))}
-                        {provider.services.length > 2 && (
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200">
-                            +{provider.services.length - 2}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900">{provider.activeRequests}</span>
-                        <span className="text-sm text-slate-500">requests</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {getStatusBadge(provider.status)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button 
-                          onClick={() => handleViewProvider(provider)}
-                          className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
-                        >
-                          <i className="fa-solid fa-eye"></i>
-                        </button>
-                        <Link to={`/providers/edit/${provider.id}`} className="inline-block">
-                          <button 
-                            className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
-                          >
-                            <i className="fa-solid fa-pen-to-square"></i>
-                          </button>
-                        </Link>
-                        {provider.status === 'active' ? (
-                          <button
-                            onClick={() => handleDeactivate(provider.name)}
-                            className="p-2 text-slate-400 hover:text-danger hover:bg-white rounded-lg transition-all"
-                          >
-                            <i className="fa-solid fa-ban"></i>
-                          </button>
-                        ) : (
-                          <button className="p-2 text-emerald-500 hover:bg-white rounded-lg transition-all">
-                            <i className="fa-solid fa-circle-check"></i>
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                      </th>
+                    )}
+                    <th className={`px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest ${showCheckboxes ? '' : 'pl-12'}`}>
+                      {t('providers.providerName')}
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      {t('common.contact')}
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Eligible services
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Active requests
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      {t('common.status')}
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
+                      {t('common.actions')}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {displayedProviders.length === 0 ? (
+                    <tr>
+                      <td colSpan={showCheckboxes ? 7 : 6} className="px-6 py-12 text-center">
+                        <div className="text-center">
+                          <i className="fa-solid fa-inbox text-slate-300 text-3xl mb-3"></i>
+                          <p className="text-sm text-slate-500">No providers found</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedProviders.map((provider) => (
+                      <tr key={provider.id} className={`hover:bg-slate-50/50 transition-colors ${selectedProviders.includes(provider.id) ? 'bg-primary/5' : ''}`}>
+                        {showCheckboxes && (
+                          <td className="px-6 py-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedProviders.includes(provider.id)}
+                              onChange={() => toggleProviderSelection(provider.id)}
+                              className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary"
+                            />
+                          </td>
+                        )}
+                        <td className={`px-6 py-4 ${showCheckboxes ? '' : 'pl-6'}`}>
+                          <div className="flex items-center gap-3">
+                            {getInitialsBadge(provider.initials, provider.status)}
+                            <div>
+                              <p className="text-sm font-bold text-slate-900">{provider.name}</p>
+                              <p className="text-[11px] text-slate-500">ID: {provider.id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-slate-700">{provider.email}</p>
+                          <p className="text-[11px] text-slate-500">{provider.phone}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {provider.services.slice(0, 2).map((service, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200"
+                              >
+                                {service}
+                              </span>
+                            ))}
+                            {provider.services.length > 2 && (
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200">
+                                +{provider.services.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-slate-900">{provider.activeRequests}</span>
+                            <span className="text-sm text-slate-500">requests</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {getStatusBadge(provider.status)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button 
+                              onClick={() => handleViewProvider(provider)}
+                              className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
+                            >
+                              <i className="fa-solid fa-eye"></i>
+                            </button>
+                            <Link to={`/providers/edit/${provider.id}`} className="inline-block">
+                              <button 
+                                className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all"
+                              >
+                                <i className="fa-solid fa-pen-to-square"></i>
+                              </button>
+                            </Link>
+                            {provider.status === 'active' ? (
+                              <button
+                                onClick={() => handleDeactivate(provider.name)}
+                                className="p-2 text-slate-400 hover:text-danger hover:bg-white rounded-lg transition-all"
+                              >
+                                <i className="fa-solid fa-ban"></i>
+                              </button>
+                            ) : (
+                              <button className="p-2 text-emerald-500 hover:bg-white rounded-lg transition-all">
+                                <i className="fa-solid fa-circle-check"></i>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
             <div className="flex gap-2 p-6 bg-slate-50/30 border-t border-slate-100">
               <button 
                 onClick={handleBulkDeactivate}
@@ -523,36 +532,6 @@ const Providers: React.FC = () => {
               onItemsPerPageChange={handleItemsPerPageChange}
             />
           </section>
-
-          {/* Quick Stats */}
-          {/* <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                  <i className="fa-solid fa-building-circle-check text-xl"></i>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    {t('providers.activeProviders')}
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900">112</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-                  <i className="fa-solid fa-building-circle-xmark text-xl"></i>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Inactive providers
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900">8</p>
-                </div>
-              </div>
-            </div>
-          </section> */}
         </div>
       </main>
 
