@@ -5,7 +5,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
 import PaginationComponent from '../../components/ui/PaginationComponent';
-import { useGetProvidersQuery, useGetProviderByIdQuery, useDeactivateProviderMutation, useActivateProviderMutation } from '../../services/providersApi';
+import { useGetProvidersQuery, useGetProviderByIdQuery, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation } from '../../services/providersApi';
 import { Provider as APIProvider } from '../../types/provider';
 
 interface Notification {
@@ -124,6 +124,7 @@ const Providers: React.FC = () => {
 
   const [deactivateProvider, { isLoading: isDeactivating }] = useDeactivateProviderMutation();
   const [activateProvider, { isLoading: isActivating }] = useActivateProviderMutation();
+  const [bulkDeactivateProviders, { isLoading: isBulkDeactivating }] = useBulkDeactivateProvidersMutation();
 
   // Transform provider details to local Provider interface for modal
   const getTransformedProvider = (): Provider | null => {
@@ -209,13 +210,23 @@ const Providers: React.FC = () => {
     setShowBulkDeactivateModal(true);
   };
 
-  const confirmBulkDeactivate = () => {
-    setShowBulkDeactivateModal(false);
-    setToastMessage(`${selectedProviders.length} provider(s) deactivated successfully`);
-    setShowToast(true);
-    setSelectedProviders([]);
-    setShowCheckboxes(false);
-    setTimeout(() => setShowToast(false), 3000);
+  const confirmBulkDeactivate = async () => {
+    try {
+      const result = await bulkDeactivateProviders({
+        providerIds: selectedProviders
+      }).unwrap();
+      
+      setShowBulkDeactivateModal(false);
+      setShowCheckboxes(false);
+      setSelectedProviders([]);
+      setToastMessage(`${result.data.deactivatedCount} provider(s) deactivated successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      setToastMessage('Failed to deactivate providers. Please try again.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const toggleProviderSelection = (providerId: string) => {
@@ -676,9 +687,13 @@ const Providers: React.FC = () => {
               </button>
               <button
                 onClick={confirmBulkDeactivate}
-                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl"
+                disabled={isBulkDeactivating}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {t('common.deactivate')} All
+                {isBulkDeactivating && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {isBulkDeactivating ? 'Deactivating...' : t('common.deactivate')} All
               </button>
             </div>
           </div>

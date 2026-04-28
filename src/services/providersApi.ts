@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { ProvidersResponse, ProvidersListParams, CreateProviderRequest, CreateProviderResponse, UpdateProviderRequest, UpdateProviderResponse, GetProviderResponse, DeactivateProviderRequest, DeactivateProviderResponse, ActivateProviderRequest, ActivateProviderResponse } from '../types/provider';
+import { ProvidersResponse, ProvidersListParams, CreateProviderRequest, CreateProviderResponse, UpdateProviderRequest, UpdateProviderResponse, GetProviderResponse, DeactivateProviderRequest, DeactivateProviderResponse, ActivateProviderRequest, ActivateProviderResponse, BulkDeactivateRequest, BulkDeactivateResponse } from '../types/provider';
 
 export const providersApi = createApi({
   reducerPath: 'providersApi',
@@ -54,6 +54,14 @@ export const providersApi = createApi({
       }),
       invalidatesTags: ['Providers'],
     }),
+    bulkDeactivateProviders: builder.mutation<BulkDeactivateResponse, BulkDeactivateRequest>({
+      query: (body) => ({
+        url: '/admin/providers/bulk/deactivate',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Providers'],
+    }),
     updateProvider: builder.mutation<UpdateProviderResponse, { id: string; body: UpdateProviderRequest }>({
       query: ({ id, body }) => ({
         url: `/admin/providers/${id}`,
@@ -65,4 +73,4 @@ export const providersApi = createApi({
   }),
 });
 
-export const { useGetProvidersQuery, useGetProviderByIdQuery, useCreateProviderMutation, useUpdateProviderMutation, useDeactivateProviderMutation, useActivateProviderMutation } = providersApi;
+export const { useGetProvidersQuery, useGetProviderByIdQuery, useCreateProviderMutation, useUpdateProviderMutation, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation } = providersApi;
