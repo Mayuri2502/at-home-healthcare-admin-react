@@ -5,7 +5,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
 import PaginationComponent from '../../components/ui/PaginationComponent';
-import { useGetProvidersQuery, useGetProviderByIdQuery, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation } from '../../services/providersApi';
+import { useGetProvidersQuery, useGetProviderByIdQuery, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation, useExportProvidersCSVMutation } from '../../services/providersApi';
 import { Provider as APIProvider } from '../../types/provider';
 
 interface Notification {
@@ -125,6 +125,7 @@ const Providers: React.FC = () => {
   const [deactivateProvider, { isLoading: isDeactivating }] = useDeactivateProviderMutation();
   const [activateProvider, { isLoading: isActivating }] = useActivateProviderMutation();
   const [bulkDeactivateProviders, { isLoading: isBulkDeactivating }] = useBulkDeactivateProvidersMutation();
+  const [exportProvidersCSV, { isLoading: isExporting }] = useExportProvidersCSVMutation();
 
   // Transform provider details to local Provider interface for modal
   const getTransformedProvider = (): Provider | null => {
@@ -224,6 +225,30 @@ const Providers: React.FC = () => {
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       setToastMessage('Failed to deactivate providers. Please try again.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const result = await exportProvidersCSV().unwrap();
+      
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(result);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `providers_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      setToastMessage('Providers exported successfully');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      setToastMessage('Failed to export providers. Please try again.');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
@@ -639,8 +664,15 @@ const Providers: React.FC = () => {
               >
                 {t('common.bulkDeactivate')}
               </button>
-              <button className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
-                {t('common.export')} CSV
+              <button 
+                onClick={handleExportCSV}
+                disabled={isExporting}
+                className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isExporting && (
+                  <div className="w-3 h-3 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {isExporting ? 'Exporting...' : `${t('common.export')} CSV`}
               </button>
             </div>
             <PaginationComponent
