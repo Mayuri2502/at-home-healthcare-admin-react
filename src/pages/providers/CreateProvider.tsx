@@ -53,28 +53,17 @@ const CreateProvider: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (isEditMode && providerData) {
-      // Try different possible response structures
-      let provider = null;
+    if (isEditMode && providerData?.data) {
+      const provider = providerData.data;
       
-      if (providerData.data && 'provider' in providerData.data && providerData.data.provider) {
-        provider = providerData.data.provider;
-      } else if (providerData.data && !('provider' in providerData.data)) {
-        provider = providerData.data as Provider;
-      } else if ('provider' in providerData && providerData.provider) {
-        provider = providerData.provider as Provider;
-      }
-      
-      if (provider) {
-        setFormData({
-          providerName: provider.providerName || '',
-          email: provider.email || '',
-          phoneNumber: provider.phoneNumber || '',
-          registrationId: provider.registrationId || '',
-          emailNotificationsEnabled: provider.emailNotificationsEnabled || true,
-          assignedServices: provider.assignedServices || []
-        });
-      }
+      setFormData({
+        providerName: provider.providerName || '',
+        email: provider.email || '',
+        phoneNumber: provider.phoneNumber || '',
+        registrationId: provider.registrationId || '',
+        emailNotificationsEnabled: provider.emailNotificationsEnabled || true,
+        assignedServices: provider.assignedServices || []
+      });
     }
   }, [isEditMode, providerData, providerError]);
 
