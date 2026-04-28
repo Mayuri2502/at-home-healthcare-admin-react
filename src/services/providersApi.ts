@@ -62,6 +62,13 @@ export const providersApi = createApi({
       }),
       invalidatesTags: ['Providers'],
     }),
+    exportProvidersCSV: builder.mutation<Blob, void>({
+      query: () => ({
+        url: '/admin/providers/export/csv',
+        method: 'GET',
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
     updateProvider: builder.mutation<UpdateProviderResponse, { id: string; body: UpdateProviderRequest }>({
       query: ({ id, body }) => ({
         url: `/admin/providers/${id}`,
@@ -73,4 +80,4 @@ export const providersApi = createApi({
   }),
 });
 
-export const { useGetProvidersQuery, useGetProviderByIdQuery, useCreateProviderMutation, useUpdateProviderMutation, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation } = providersApi;
+export const { useGetProvidersQuery, useGetProviderByIdQuery, useCreateProviderMutation, useUpdateProviderMutation, useDeactivateProviderMutation, useActivateProviderMutation, useBulkDeactivateProvidersMutation, useExportProvidersCSVMutation } = providersApi;
