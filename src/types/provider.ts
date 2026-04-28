@@ -26,6 +26,27 @@ export interface Provider {
   createdAt: string;
   id: string;
   serviceDetails: ServiceDetail[];
+  deleted?: {
+    status: boolean;
+    by: string | null;
+    at: number;
+  };
+  digitalSignatureKey?: string | null;
+  submittedFormCount?: number;
+  roles?: string[];
+  isFirstLogin?: boolean;
+  isBlocked?: boolean;
+  createdBy?: {
+    fName: string;
+    lName: string;
+    id: string;
+  };
+  updatedBy?: {
+    fName: string;
+    lName: string;
+    id: string;
+  };
+  updatedAt?: string;
 }
 
 export interface Pagination {
@@ -83,10 +104,8 @@ export interface UpdateProviderRequest {
 export interface GetProviderResponse {
   status: number;
   message: string;
-  data?: {
-    provider?: Provider;
-  } | Provider;
-  timestamp?: string;
+  data: Provider;
+  timestamp: string;
 }
 
 export interface UpdateProviderResponse {
