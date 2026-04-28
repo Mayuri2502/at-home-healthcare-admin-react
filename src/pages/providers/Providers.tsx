@@ -5,7 +5,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
 import PaginationComponent from '../../components/ui/PaginationComponent';
-import { useGetProvidersQuery, useGetProviderByIdQuery } from '../../services/providersApi';
+import { useGetProvidersQuery, useGetProviderByIdQuery, useDeactivateProviderMutation, useActivateProviderMutation } from '../../services/providersApi';
 import { Provider as APIProvider } from '../../types/provider';
 
 interface Notification {
@@ -56,10 +56,13 @@ const Providers: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [selectedService, setSelectedService] = useState('all');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<string>('');
+  const [selectedProviderForDeactivate, setSelectedProviderForDeactivate] = useState<string>('');
+  const [showActivateModal, setShowActivateModal] = useState(false);
+  const [selectedProviderForActivate, setSelectedProviderForActivate] = useState<string>('');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedProviderForView, setSelectedProviderForView] = useState<string>('');
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [showBulkDeactivateModal, setShowBulkDeactivateModal] = useState(false);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
@@ -115,9 +118,12 @@ const Providers: React.FC = () => {
     service: selectedService === 'all' ? undefined : SERVICE_VALUE_TO_NAME[selectedService]
   });
 
-  const { data: providerDetails, isLoading: isLoadingProvider } = useGetProviderByIdQuery(selectedProvider, {
-    skip: !selectedProvider || !showViewModal
+  const { data: providerDetails, isLoading: isLoadingProvider } = useGetProviderByIdQuery(selectedProviderForView, {
+    skip: !selectedProviderForView || !showViewModal
   });
+
+  const [deactivateProvider, { isLoading: isDeactivating }] = useDeactivateProviderMutation();
+  const [activateProvider, { isLoading: isActivating }] = useActivateProviderMutation();
 
   // Transform provider details to local Provider interface for modal
   const getTransformedProvider = (): Provider | null => {
@@ -162,9 +168,28 @@ const Providers: React.FC = () => {
 
   const providers: Provider[] = providersData?.data?.providers?.map(transformApiProvider) || [];
 
-  const handleDeactivate = (providerName: string) => {
-    setSelectedProvider(providerName);
+  const handleDeactivate = (providerId: string) => {
+    console.log('handleDeactivate called with:', providerId);
+    console.log('providerId type:', typeof providerId);
+    console.log('providerId length:', providerId?.length);
+    // Close other modals
+    setShowActivateModal(false);
+    setShowViewModal(false);
+    setShowBulkDeactivateModal(false);
+    setSelectedProviderForDeactivate(providerId);
     setShowDeactivateModal(true);
+  };
+
+  const handleActivate = (providerId: string) => {
+    console.log('handleActivate called with:', providerId);
+    console.log('providerId type:', typeof providerId);
+    console.log('providerId length:', providerId?.length);
+    // Close other modals
+    setShowDeactivateModal(false);
+    setShowViewModal(false);
+    setShowBulkDeactivateModal(false);
+    setSelectedProviderForActivate(providerId);
+    setShowActivateModal(true);
   };
 
   const handleBulkDeactivate = () => {
@@ -209,15 +234,60 @@ const Providers: React.FC = () => {
     }
   };
 
-  const confirmDeactivate = () => {
-    setShowDeactivateModal(false);
-    setToastMessage(t('providers.deactivatedSuccessfully'));
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+  const confirmDeactivate = async () => {
+    console.log('confirmDeactivate - selectedProviderForDeactivate:', selectedProviderForDeactivate);
+    console.log('confirmDeactivate - selectedProviderForDeactivate type:', typeof selectedProviderForDeactivate);
+    console.log('confirmDeactivate - selectedProviderForDeactivate length:', selectedProviderForDeactivate?.length);
+    
+    try {
+      const result = await deactivateProvider({
+        id: selectedProviderForDeactivate,
+        body: { status: 'inactive' }
+      }).unwrap();
+      
+      console.log('Deactivate success:', result);
+      setShowDeactivateModal(false);
+      setToastMessage(t('providers.deactivatedSuccessfully'));
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      console.error('Deactivate error:', error);
+      setToastMessage('Failed to deactivate provider. Please try again.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
+  const confirmActivate = async () => {
+    console.log('confirmActivate - selectedProviderForActivate:', selectedProviderForActivate);
+    console.log('confirmActivate - selectedProviderForActivate type:', typeof selectedProviderForActivate);
+    console.log('confirmActivate - selectedProviderForActivate length:', selectedProviderForActivate?.length);
+    
+    try {
+      const result = await activateProvider({
+        id: selectedProviderForActivate,
+        body: { status: 'approved' }
+      }).unwrap();
+      
+      console.log('Activate success:', result);
+      setShowActivateModal(false);
+      setToastMessage('Provider activated successfully');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      console.error('Activate error:', error);
+      setToastMessage('Failed to activate provider. Please try again.');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const handleViewProvider = (provider: Provider) => {
-    setSelectedProvider(provider.id);
+    // Close other modals
+    setShowDeactivateModal(false);
+    setShowActivateModal(false);
+    setShowBulkDeactivateModal(false);
+    setSelectedProviderForView(provider.id);
     setShowViewModal(true);
   };
 
@@ -277,6 +347,14 @@ const Providers: React.FC = () => {
   const handleFilterChange = () => {
     setCurrentPage(1);
   };
+
+  // Debug modal states
+  console.log('Modal states:', {
+    showDeactivateModal,
+    showActivateModal,
+    showViewModal,
+    showBulkDeactivateModal
+  });
 
   return (
     <div className="flex h-[1024px] overflow-hidden">
@@ -517,15 +595,21 @@ const Providers: React.FC = () => {
                                 <i className="fa-solid fa-pen-to-square"></i>
                               </button>
                             </Link>
+                            {/* Debug: Provider {provider.name} status: {provider.status} */}
                             {provider.status === 'active' ? (
                               <button
-                                onClick={() => handleDeactivate(provider.name)}
-                                className="p-2 text-slate-400 hover:text-danger hover:bg-white rounded-lg transition-all"
+                                onClick={() => handleDeactivate(provider.id)}
+                                className="p-2 text-slate-400 hover:text-danger hover:bg-white rounded-lg transition-all relative z-10"
+                                title="Deactivate Provider"
                               >
                                 <i className="fa-solid fa-ban"></i>
                               </button>
                             ) : (
-                              <button className="p-2 text-emerald-500 hover:bg-white rounded-lg transition-all">
+                              <button
+                                onClick={() => handleActivate(provider.id)}
+                                className="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-white rounded-lg transition-all relative z-10"
+                                title="Activate Provider"
+                              >
                                 <i className="fa-solid fa-circle-check"></i>
                               </button>
                             )}
@@ -562,7 +646,7 @@ const Providers: React.FC = () => {
 
       {/* Bulk Deactivate Confirmation Modal */}
       {showBulkDeactivateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 text-center">
             <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
@@ -603,14 +687,14 @@ const Providers: React.FC = () => {
 
       {/* Deactivate Confirmation Modal */}
       {showDeactivateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 text-center">
             <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fa-solid fa-triangle-exclamation text-2xl"></i>
             </div>
             <h3 className="text-xl font-bold text-slate-900">{t('providers.deactivateProvider')}?</h3>
             <p className="text-slate-500 text-sm mt-2">
-              {t('providers.deactivateConfirm', { providerName: selectedProvider })}
+              {t('providers.deactivateConfirm', { providerName: providers.find(p => p.id === selectedProviderForDeactivate)?.name || 'Unknown Provider' })}
             </p>
             <div className="mt-8 flex gap-3">
               <button
@@ -621,9 +705,46 @@ const Providers: React.FC = () => {
               </button>
               <button
                 onClick={confirmDeactivate}
-                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl"
+                disabled={isDeactivating}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-danger hover:bg-red-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {t('common.deactivate')}
+                {isDeactivating && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {isDeactivating ? 'Deactivating...' : t('common.deactivate')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Activate Confirmation Modal */}
+      {showActivateModal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 text-center">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i className="fa-solid fa-circle-check text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Activate Provider?</h3>
+            <p className="text-slate-500 text-sm mt-2">
+              Are you sure you want to activate {providers.find(p => p.id === selectedProviderForActivate)?.name || 'Unknown Provider'}? This will allow them to accept new service requests.
+            </p>
+            <div className="mt-8 flex gap-3">
+              <button
+                onClick={() => setShowActivateModal(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={confirmActivate}
+                disabled={isActivating}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isActivating && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {isActivating ? 'Activating...' : 'Activate'}
               </button>
             </div>
           </div>
@@ -641,8 +762,8 @@ const Providers: React.FC = () => {
       )}
 
       {/* View Provider Modal */}
-      {showViewModal && selectedProvider && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+      {showViewModal && selectedProviderForView && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg overflow-hidden">
             {/* Show loading state while fetching provider details */}
             {isLoadingProvider ? (
@@ -661,7 +782,7 @@ const Providers: React.FC = () => {
                       {getTransformedProvider() && getInitialsBadge(getTransformedProvider()!.initials, getTransformedProvider()!.status)}
                       <div>
                         <h2 className="text-xl font-bold text-slate-900">{getTransformedProvider()?.name}</h2>
-                        <p className="text-sm text-slate-500">ID: {selectedProvider}</p>
+                        <p className="text-sm text-slate-500">ID: {selectedProviderForView}</p>
                       </div>
                     </div>
                     <button
@@ -761,7 +882,7 @@ const Providers: React.FC = () => {
                     Close
                   </button>
                   <Link 
-                    to={`/providers/edit/${selectedProvider}`}
+                    to={`/providers/edit/${selectedProviderForView}`}
                     className="inline-block"
                     onClick={() => setShowViewModal(false)}
                   >
