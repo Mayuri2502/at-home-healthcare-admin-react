@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useCreateProviderMutation, useUpdateProviderMutation, useGetProviderByIdQuery } from '../../services/providersApi';
-import { Provider } from '../../types/provider';
 
 interface Service {
   id: string;

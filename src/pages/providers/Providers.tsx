@@ -60,7 +60,6 @@ const Providers: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
-  const [viewingProvider, setViewingProvider] = useState<Provider | null>(null);
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [showBulkDeactivateModal, setShowBulkDeactivateModal] = useState(false);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
