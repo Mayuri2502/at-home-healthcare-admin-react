@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { ProvidersResponse, ProvidersListParams } from '../types/provider';
+import { ProvidersResponse, ProvidersListParams, CreateProviderRequest, CreateProviderResponse, UpdateProviderRequest, UpdateProviderResponse, GetProviderResponse } from '../types/provider';
 
 export const providersApi = createApi({
   reducerPath: 'providersApi',
@@ -23,7 +23,30 @@ export const providersApi = createApi({
       }),
       providesTags: ['Providers'],
     }),
+    createProvider: builder.mutation<CreateProviderResponse, CreateProviderRequest>({
+      query: (body) => ({
+        url: '/admin/providers',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Providers'],
+    }),
+    getProviderById: builder.query<GetProviderResponse, string>({
+      query: (id) => ({
+        url: `/admin/providers/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['Providers'],
+    }),
+    updateProvider: builder.mutation<UpdateProviderResponse, { id: string; body: UpdateProviderRequest }>({
+      query: ({ id, body }) => ({
+        url: `/admin/providers/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Providers'],
+    }),
   }),
 });
 
-export const { useGetProvidersQuery } = providersApi;
+export const { useGetProvidersQuery, useGetProviderByIdQuery, useCreateProviderMutation, useUpdateProviderMutation } = providersApi;

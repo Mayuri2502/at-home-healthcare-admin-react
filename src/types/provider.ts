@@ -55,3 +55,50 @@ export interface ProvidersListParams {
   search?: string;
   service?: string;
 }
+
+export interface CreateProviderRequest {
+  providerName: string;
+  email: string;
+  phoneNumber: string;
+  registrationId: string;
+  assignedServices: string[];
+}
+
+export interface CreateProviderResponse {
+  status: number;
+  message: string;
+  data: {
+    provider: Provider;
+  };
+  timestamp: string;
+}
+
+export interface UpdateProviderRequest {
+  providerName: string;
+  phoneNumber: string;
+  registrationId: string;
+  emailNotificationsEnabled: boolean;
+}
+
+export interface GetProviderResponse {
+  status: number;
+  message: string;
+  data?: {
+    provider?: Provider;
+  } | Provider;
+  timestamp?: string;
+}
+
+export interface UpdateProviderResponse {
+  status: number;
+  message: string;
+  data: {
+    updatedBy: string;
+    updatedAt: number;
+    providerName: string;
+    phoneNumber: string;
+    registrationId: string;
+    emailNotificationsEnabled: boolean;
+  };
+  timestamp: string;
+}
