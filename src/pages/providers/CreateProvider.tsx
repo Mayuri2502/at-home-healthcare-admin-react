@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Sidebar from '../../components/dashboard/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { useCreateProviderMutation, useUpdateProviderMutation, useGetProviderByIdQuery } from '../../services/providersApi';
+import { Provider } from '../../types/provider';
 
 interface Service {
   id: string;
@@ -14,13 +16,19 @@ const CreateProvider: React.FC = () => {
   const { id } = useParams<any>();
   const isEditMode = !!id;
 
+  const [createProvider, { isLoading: isCreating }] = useCreateProviderMutation();
+  const [updateProvider, { isLoading: isUpdating }] = useUpdateProviderMutation();
+  const { data: providerData, isLoading: isLoadingProvider, error: providerError } = useGetProviderByIdQuery(id!, { 
+  skip: !isEditMode,
+});
+
   const [formData, setFormData] = useState({
     providerName: '',
     email: '',
-    contact: '',
+    phoneNumber: '',
     registrationId: '',
-    status: true,
-    services: ['Diagnostics', 'Home Care']
+    emailNotificationsEnabled: true,
+    assignedServices: [] as string[]
   });
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -30,33 +38,45 @@ const CreateProvider: React.FC = () => {
   const [showAllServices, setShowAllServices] = useState(false);
 
   const availableServices: Service[] = [
-    { id: '1', name: 'Generic' },
-    { id: '2', name: 'Wound Care' },
-    { id: '3', name: 'IV Therapy' },
-    { id: '4', name: 'Medical Oxygen' },
-    { id: '5', name: 'Artificial Nutrition' },
-    { id: '6', name: 'Personal Hygiene care' },
-    { id: '7', name: 'PCA(Pain management)' },
-    { id: '8', name: 'Pregnancy related care' },
-    { id: '9', name: 'Parenteral nutrition (central line)' },
-    { id: '10', name: 'CNO' },
-    { id: '11', name: 'Hydration Infusion' },
-    { id: '12', name: 'Antibiothérapy infusion' }
+    { id: '69eb112a056b86c571c1a44f', name: 'Generic' },
+    { id: '69eb112b056b86c571c1a450', name: 'Wound Care' },
+    { id: '69eb112c056b86c571c1a451', name: 'IV Therapy' },
+    { id: '69eb112d056b86c571c1a452', name: 'Medical Oxygen' },
+    { id: '69eb112e056b86c571c1a453', name: 'Artificial Nutrition' },
+    { id: '69eb112f056b86c571c1a454', name: 'Personal Hygiene care' },
+    { id: '69eb1130056b86c571c1a455', name: 'PCA(Pain management)' },
+    { id: '69eb1131056b86c571c1a456', name: 'Pregnancy related care' },
+    { id: '69eb1132056b86c571c1a457', name: 'Parenteral nutrition (central line)' },
+    { id: '69eb1133056b86c571c1a458', name: 'CNO' },
+    { id: '69eb1134056b86c571c1a459', name: 'Hydration Infusion' },
+    { id: '69eb1135056b86c571c1a45a', name: 'Antibiothérapy infusion' }
   ];
 
   useEffect(() => {
-    if (isEditMode) {
-      // Simulate loading existing provider data
-      setFormData({
-        providerName: 'BioHealth Labs',
-        email: 'contact@biohealth.fr',
-        contact: '+33 1 45 67 89 00',
-        registrationId: 'PRV-9021',
-        status: true,
-        services: ['Diagnostics', 'Blood Test']
-      });
+    if (isEditMode && providerData) {
+      // Try different possible response structures
+      let provider = null;
+      
+      if (providerData.data && 'provider' in providerData.data && providerData.data.provider) {
+        provider = providerData.data.provider;
+      } else if (providerData.data && !('provider' in providerData.data)) {
+        provider = providerData.data as Provider;
+      } else if ('provider' in providerData && providerData.provider) {
+        provider = providerData.provider as Provider;
+      }
+      
+      if (provider) {
+        setFormData({
+          providerName: provider.providerName || '',
+          email: provider.email || '',
+          phoneNumber: provider.phoneNumber || '',
+          registrationId: provider.registrationId || '',
+          emailNotificationsEnabled: provider.emailNotificationsEnabled || true,
+          assignedServices: provider.assignedServices || []
+        });
+      }
     }
-  }, [isEditMode]);
+  }, [isEditMode, providerData, providerError]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -67,25 +87,22 @@ const CreateProvider: React.FC = () => {
   };
 
   const handleStatusToggle = () => {
-    setFormData(prev => ({
-      ...prev,
-      status: !prev.status
-    }));
+    // Status is handled by the backend, no need to toggle here
   };
 
-  const handleAddService = (serviceName: string) => {
-    if (formData.services.indexOf(serviceName) === -1) {
+  const handleAddService = (serviceId: string) => {
+    if (formData.assignedServices.indexOf(serviceId) === -1) {
       setFormData(prev => ({
         ...prev,
-        services: [...prev.services, serviceName]
+        assignedServices: [...prev.assignedServices, serviceId]
       }));
     }
   };
 
-  const handleRemoveService = (serviceName: string) => {
+  const handleRemoveService = (serviceId: string) => {
     setFormData(prev => ({
       ...prev,
-      services: prev.services.filter(service => service !== serviceName)
+      assignedServices: prev.assignedServices.filter(id => id !== serviceId)
     }));
   };
 
@@ -102,29 +119,63 @@ const CreateProvider: React.FC = () => {
     setShowConfirmModal(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.providerName) {
       showToastMessage(t('providers.validation.providerNameRequired'), 'error');
       return;
     }
 
-    if (!formData.email) {
+    if (!formData.email && !isEditMode) {
       showToastMessage(t('providers.validation.emailRequired'), 'error');
       return;
     }
 
-    if (formData.services.length === 0) {
+    if (!formData.phoneNumber) {
+      showToastMessage('Phone number is required', 'error');
+      return;
+    }
+
+    // Registration ID is optional, no validation needed
+
+    if (formData.assignedServices.length === 0 && !isEditMode) {
       showToastMessage('At least one service must be selected', 'error');
       return;
     }
 
-    const action = isEditMode ? t('providers.validation.updated') : t('providers.validation.created');
-    showToastMessage(t('providers.validation.success', { action }), 'success');
+    try {
+      if (isEditMode) {
+        // Update existing provider
+        await updateProvider({
+          id: id!,
+          body: {
+            providerName: formData.providerName,
+            phoneNumber: formData.phoneNumber,
+            registrationId: formData.registrationId,
+            emailNotificationsEnabled: formData.emailNotificationsEnabled
+          }
+        }).unwrap();
+      } else {
+        // Create new provider
+        await createProvider({
+          providerName: formData.providerName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          registrationId: formData.registrationId,
+          assignedServices: formData.assignedServices
+        }).unwrap();
+      }
 
-    // Redirect after delay
-    setTimeout(() => {
-      window.location.href = '/providers';
-    }, 2000);
+      const action = isEditMode ? t('providers.validation.updated') : t('providers.validation.created');
+      showToastMessage(t('providers.validation.success', { action }), 'success');
+
+      // Redirect after delay
+      setTimeout(() => {
+        window.location.href = '/providers';
+      }, 2000);
+    } catch (err) {
+      const action = isEditMode ? 'update' : 'create';
+      showToastMessage(`Failed to ${action} provider. Please try again.`, 'error');
+    }
   };
 
   const showToastMessage = (message: string, type: 'success' | 'error' | 'info') => {
@@ -146,6 +197,21 @@ const CreateProvider: React.FC = () => {
         return 'fa-solid fa-circle-check text-emerald-400';
     }
   };
+
+  // Show loading state while fetching provider data in edit mode
+  if (isEditMode && isLoadingProvider) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm text-slate-500">Loading provider data...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[1024px] overflow-hidden">
@@ -184,8 +250,12 @@ const CreateProvider: React.FC = () => {
             </button>
             <button 
               onClick={handleSubmit}
-              className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10"
+              disabled={isCreating || isUpdating}
+              className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
+              {(isCreating || isUpdating) && (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              )}
               {isEditMode ? t('providers.saveChanges') : t('providers.createProvider')}
             </button>
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
@@ -211,14 +281,14 @@ const CreateProvider: React.FC = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={formData.status}
+                      checked={true} // Always active for new providers
                       onChange={handleStatusToggle}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"></div>
                   </label>
-                  <span className={`text-xs font-bold ${formData.status ? 'text-emerald-600' : 'text-slate-400'}`}>
-                    {formData.status ? t('common.active') : t('common.inactive')}
+                  <span className={`text-xs font-bold text-emerald-600`}>
+                    {t('common.active')}
                   </span>
                 </div>
               )}
@@ -258,8 +328,8 @@ const CreateProvider: React.FC = () => {
                   <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                   <input
                     type="text"
-                    name="contact"
-                    value={formData.contact}
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleInputChange}
                     placeholder="+33 X XX XX XX XX"
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
@@ -280,6 +350,29 @@ const CreateProvider: React.FC = () => {
                   />
                 </div>
               </div>
+              {isEditMode && (
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Email Notifications</label>
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="emailNotificationsEnabled"
+                        checked={formData.emailNotificationsEnabled}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          emailNotificationsEnabled: e.target.checked
+                        }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"></div>
+                    </label>
+                    <span className={`text-xs font-bold ${formData.emailNotificationsEnabled ? 'text-emerald-600' : 'text-slate-400'}`}>
+                      {formData.emailNotificationsEnabled ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
@@ -317,31 +410,34 @@ const CreateProvider: React.FC = () => {
                 
                 {/* Selected Services Chips */}
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {formData.services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-bold"
-                    >
-                      {service}
-                      <button 
-                        onClick={() => handleRemoveService(service)}
-                        className="hover:text-danger"
+                  {formData.assignedServices.map((serviceId, index) => {
+                    const service = availableServices.find(s => s.id === serviceId);
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-bold"
                       >
-                        <i className="fa-solid fa-xmark"></i>
-                      </button>
-                    </div>
-                  ))}
+                        {service?.name || 'Unknown Service'}
+                        <button 
+                          onClick={() => handleRemoveService(serviceId)}
+                          className="hover:text-danger"
+                        >
+                          <i className="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Service Suggestions */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {availableServices.slice(0, showAllServices ? availableServices.length : 5).map((service) => {
-                  const isSelected = formData.services.includes(service.name);
+                  const isSelected = formData.assignedServices.includes(service.id);
                   return (
                     <button
                       key={service.id}
-                      onClick={() => handleAddService(service.name)}
+                      onClick={() => handleAddService(service.id)}
                       className={`flex items-center justify-between p-3 border rounded-xl transition-all text-left ${
                         isSelected 
                           ? 'border-primary/30 bg-primary/5 text-primary' 
