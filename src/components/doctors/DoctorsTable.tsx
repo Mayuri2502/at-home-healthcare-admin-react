@@ -110,12 +110,12 @@ const DoctorsTable = ({ doctors, loading = false, onApprove, onReject, onView, o
 
   // Generate avatar URL based on doctor's name
   const getAvatarUrl = (doctor: Doctor) => {
-    return `https://ui-avatars.com/api/?name=${doctor.fName}+${doctor.lName}&background=random&color=fff`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(doctor.fullName)}&background=random&color=fff`;
   };
 
   // Get doctor's full name
   const getDoctorName = (doctor: Doctor) => {
-    return `Dr. ${doctor.fName} ${doctor.lName}`;
+    return `Dr. ${doctor.fullName}`;
   };
 
   // Handle approve action

@@ -1,7 +1,8 @@
 export interface Doctor {
   id: string;
-  fName: string;
-  lName: string;
+  fullName: string;
+  fName?: string;
+  lName?: string;
   email: string;
   rppsNumber: string;
   finessNumber: string;
@@ -11,16 +12,16 @@ export interface Doctor {
   status: 'pendingApproval' | 'approved' | 'rejected' | 'inactive';
   isVerified: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   country?: string;
-  assignedServices: any[];
-  emailNotificationsEnabled: boolean;
-  digitalSignatureKey: null;
-  submittedFormCount: number;
-  roles: string[];
-  isFirstLogin: boolean;
-  isBlocked: boolean;
-  deleted: {
+  assignedServices?: any[];
+  emailNotificationsEnabled?: boolean;
+  digitalSignatureKey?: null;
+  submittedFormCount?: number;
+  roles?: string[];
+  isFirstLogin?: boolean;
+  isBlocked?: boolean;
+  deleted?: {
     status: boolean;
     by: null;
     at: number;
