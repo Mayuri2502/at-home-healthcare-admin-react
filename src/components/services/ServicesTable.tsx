@@ -180,13 +180,13 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                     >
                       <i className="fa-solid fa-eye"></i>
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => onEdit(service)}
                       className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
                       title="Edit"
                     >
                       <i className="fa-solid fa-pen-to-square"></i>
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>
