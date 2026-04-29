@@ -62,6 +62,19 @@ export interface ServicesListResponse {
   timestamp: string;
 }
 
+export interface ServiceStatsResponse {
+  status: number;
+  message: string;
+  data: {
+    totalServices: number;
+    activeServices: number;
+    inactiveServices: number;
+    mappedForms: number;
+    unmappedServices: number;
+  };
+  timestamp: string;
+}
+
 export const servicesApi = createApi({
   reducerPath: 'servicesApi',
   baseQuery: fetchBaseQuery({
@@ -83,6 +96,12 @@ export const servicesApi = createApi({
       }),
       providesTags: ['Services'],
     }),
+    getServiceStats: builder.query<ServiceStatsResponse, void>({
+      query: () => ({
+        url: '/services/stats/admin',
+      }),
+      providesTags: ['Services'],
+    }),
     getServiceById: builder.query<ServiceResponse, string>({
       query: (id) => ({
         url: `/services/${id}`,
@@ -92,4 +111,4 @@ export const servicesApi = createApi({
   }),
 });
 
-export const { useGetServicesQuery, useGetServiceByIdQuery } = servicesApi;
+export const { useGetServicesQuery, useGetServiceByIdQuery, useGetServiceStatsQuery } = servicesApi;
