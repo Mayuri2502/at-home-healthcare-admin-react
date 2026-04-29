@@ -88,7 +88,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
     setModalState({
       isOpen: true,
       type,
-      doctorName: doctor ? `Dr. ${doctor.fName} ${doctor.lName}` : ''
+      doctorName: doctor ? `Dr. ${doctor.fullName}` : ''
     });
   };
 
@@ -98,7 +98,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
 
   // Generate avatar URL based on doctor's name
   const getAvatarUrl = (doctor: Doctor) => {
-    return `https://ui-avatars.com/api/?name=${doctor.fName}+${doctor.lName}&background=random&color=fff&size=128`;
+    return `https://ui-avatars.com/api/?name=${doctor.fullName}&background=random&color=fff&size=128`;
   };
 
   if (!doctorId) {
@@ -258,7 +258,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                     <img
                       src={getAvatarUrl(doctor)}
                       className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md"
-                      alt={`Dr. ${doctor.fName} ${doctor.lName}`}
+                      alt={`Dr. ${doctor.fullName}`}
                     />
                     {doctor.isVerified && (
                       <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success text-white rounded-full flex items-center justify-center border-4 border-white">
@@ -267,7 +267,7 @@ const DoctorDetail: React.FC<DoctorDetailProps> = ({ isApproved: propIsApproved 
                     )}
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-slate-900">Dr. {doctor.fName} {doctor.lName}</h2>
+                    <h2 className="text-2xl font-bold text-slate-900">Dr. {doctor.fullName}</h2>
                     <p className="text-primary font-medium">{doctor.specialty}</p>
                     <div className="flex flex-wrap gap-4 mt-4">
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
