@@ -1,15 +1,5 @@
 import React from 'react';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
-}
+import { Service } from '../../services/servicesApi';
 
 interface ViewServiceModalProps {
   isOpen: boolean;
@@ -24,17 +14,6 @@ export const ViewServiceModal: React.FC<ViewServiceModalProps> = ({
 }) => {
 
   if (!isOpen || !service) return null;
-
-  const getIconColorClass = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      blue: 'bg-blue-50 text-blue-600',
-      purple: 'bg-purple-50 text-purple-600',
-      emerald: 'bg-emerald-50 text-emerald-600',
-      red: 'bg-red-50 text-red-600',
-      amber: 'bg-amber-50 text-amber-600'
-    };
-    return colorMap[color] || 'bg-slate-50 text-slate-600';
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
@@ -52,12 +31,12 @@ export const ViewServiceModal: React.FC<ViewServiceModalProps> = ({
         <div className="p-8 space-y-6">
           {/* Service Header */}
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 ${getIconColorClass(service.iconColor)} rounded-xl flex items-center justify-center`}>
-              <i className={`fa-solid ${service.icon} text-lg`}></i>
+            <div className={`w-12 h-12 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center`}>
+              <i className={`fa-solid fa-kit-medical text-lg`}></i>
             </div>
             <div>
-              <h4 className="text-lg font-bold text-slate-900">{service.name}</h4>
-              <p className="text-sm text-slate-500">{service.category}</p>
+              <h4 className="text-lg font-bold text-slate-900">{service?.serviceName || 'N/A'}</h4>
+              <p className="text-sm text-slate-500">{service?.category || 'No category'}</p>
             </div>
           </div>
 
@@ -67,7 +46,7 @@ export const ViewServiceModal: React.FC<ViewServiceModalProps> = ({
               Description
             </label>
             <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl">
-              {service.description}
+              {service?.description || 'No description available'}
             </p>
           </div>
 
@@ -76,7 +55,7 @@ export const ViewServiceModal: React.FC<ViewServiceModalProps> = ({
             <div className="bg-slate-50 p-4 rounded-xl">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Form Status</p>
               <div className="flex items-center gap-2">
-                {service.formMapped ? (
+                {service?.formMapping?.status === 'Mapped' ? (
                   <>
                     <i className="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
                     <span className="text-sm font-bold text-emerald-700">Mapped</span>
@@ -90,10 +69,10 @@ export const ViewServiceModal: React.FC<ViewServiceModalProps> = ({
               </div>
             </div>
             <div className="bg-slate-50 p-4 rounded-xl">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Providers</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
               <div className="flex items-center gap-2">
-                <i className="fa-solid fa-users text-slate-500 text-sm"></i>
-                <span className="text-sm font-bold text-slate-700">{service.providers}</span>
+                <i className={`fa-solid fa-circle text-${service?.isActive ? 'emerald' : 'amber'}-500 text-sm`}></i>
+                <span className="text-sm font-bold text-slate-700">{service?.isActive ? 'Active' : 'Inactive'}</span>
               </div>
             </div>
           </div>

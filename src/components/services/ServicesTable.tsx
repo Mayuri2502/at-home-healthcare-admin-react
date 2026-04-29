@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../ui/PaginationComponent';
 
 interface Service {
   id: string;
-  name: string;
+  serviceName: string;
   description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
+  icon: string | null;
+  formTemplateId: string | null;
+  category: string | null;
+  isActive: boolean;
+  providers?: number;
+  formMapping: {
+    status: 'Mapped' | 'Unmapped';
+    templateId: string | null;
+    templateName: string | null;
+    version: string | null;
+  };
 }
 
 interface ServicesTableProps {
@@ -26,6 +32,7 @@ interface ServicesTableProps {
   itemsPerPage?: number;
   onPageChange?: (page: number) => void;
   onItemsPerPageChange?: (itemsPerPage: number) => void;
+  onRefresh?: () => void;
 }
 
 export const ServicesTable: React.FC<ServicesTableProps> = ({
@@ -39,67 +46,58 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   totalItems = 0,
   itemsPerPage = 10,
   onPageChange,
-  onItemsPerPageChange
+  onItemsPerPageChange,
+  onRefresh
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const getIconColorClass = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      blue: 'bg-blue-50 text-blue-600',
-      purple: 'bg-purple-50 text-purple-600',
-      emerald: 'bg-emerald-50 text-emerald-600',
-      red: 'bg-red-50 text-red-600',
-      amber: 'bg-amber-50 text-amber-600'
-    };
-    return colorMap[color] || 'bg-slate-50 text-slate-600';
+  const [filterStatus, setFilterStatus] = useState<'all' | 'mapped' | 'unmapped'>('all');
+
+  // Filter services based on selected status
+  const filteredServices = useMemo(() => {
+    switch (filterStatus) {
+      case 'mapped':
+        return services.filter(service => service.formMapping.status === 'Mapped');
+      case 'unmapped':
+        return services.filter(service => service.formMapping.status === 'Unmapped');
+      default:
+        return services;
+    }
+  }, [services, filterStatus]);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === t('services.mappedOnly')) {
+      setFilterStatus('mapped');
+    } else if (value === t('services.unmappedOnly')) {
+      setFilterStatus('unmapped');
+    } else {
+      setFilterStatus('all');
+    }
   };
-
-  const getProviderAvatars = (count: number) => {
-    const avatarUrls = [
-      'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg',
-      'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
-      'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
-      'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
-      'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg'
-    ];
-
-    const visibleCount = Math.min(count, 2);
-    const remainingCount = count - visibleCount;
-
-    return (
-      <div className="flex -space-x-2">
-        {Array.from({ length: visibleCount }).map((_, index) => (
-          <img
-            key={index}
-            src={avatarUrls[index % avatarUrls.length]}
-            alt=""
-            className="w-6 h-6 rounded-full border-2 border-white"
-          />
-        ))}
-        {remainingCount > 0 && (
-          <div className="w-6 h-6 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">
-            +{remainingCount}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <section className="bg-white rounded-2xl border border-slate-200 tradingview-shadow overflow-hidden">
       <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
         <div className="flex items-center gap-4">
           <h2 className="text-sm font-bold text-slate-800">{t('services.allServices')}</h2>
           <div className="flex gap-2">
-            <select className="text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none">
-              <option>{t('services.allStatus')}</option>
-              <option>{t('services.mappedOnly')}</option>
-              <option>{t('services.unmappedOnly')}</option>
+            <select 
+              className="text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none"
+              value={filterStatus === 'all' ? t('services.allStatus') : filterStatus === 'mapped' ? t('services.mappedOnly') : t('services.unmappedOnly')}
+              onChange={handleFilterChange}
+            >
+              <option value={t('services.allStatus')}>{t('services.allStatus')}</option>
+              <option value={t('services.mappedOnly')}>{t('services.mappedOnly')}</option>
+              <option value={t('services.unmappedOnly')}>{t('services.unmappedOnly')}</option>
             </select>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200">
+          <button 
+            onClick={onRefresh}
+            className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
+            title="Refresh"
+          >
             <i className="fa-solid fa-rotate"></i>
           </button>
           <button className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200">
@@ -130,21 +128,21 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {services.map((service) => (
+            {filteredServices.map((service) => (
               <tr key={service.id} className="hover:bg-slate-50/80 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 ${getIconColorClass(service.iconColor)} rounded-lg flex items-center justify-center`}>
-                      <i className={`fa-solid ${service.icon} text-xs`}></i>
+                    <div className={`w-8 h-8 bg-slate-50 text-slate-600 rounded-lg flex items-center justify-center`}>
+                      <i className={`fa-solid fa-kit-medical text-xs`}></i>
                     </div>
-                    <span className="text-sm font-bold text-slate-700">{service.name}</span>
+                    <span className="text-sm font-bold text-slate-700">{service.serviceName}</span>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <p className="text-xs text-slate-500 max-w-xs truncate">{service.description}</p>
                 </td>
                 <td className="px-6 py-4">
-                  {service.formMapped ? (
+                  {service.formMapping.status === 'Mapped' ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold border border-emerald-100 uppercase tracking-wider">
                       <i className="fa-solid fa-circle-check text-[8px]"></i>
                       {t('common.yes')}
@@ -157,19 +155,37 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {getProviderAvatars(service.providers)}
+                  {service.providers ? (
+                    <div className="flex -space-x-2">
+                      {Array.from({ length: Math.min(service.providers, 3) }).map((_, index) => (
+                        <img
+                          key={index}
+                          src={`https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-${index + 1}.jpg`}
+                          alt=""
+                          className="w-6 h-6 rounded-full border-2 border-white"
+                        />
+                      ))}
+                      {service.providers > 3 && (
+                        <div className="w-6 h-6 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">
+                          +{service.providers - 3}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-400">No providers</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => {
                         // Navigate to forms page with the specific service
-                        navigate(`/forms?serviceId=${service.id}&serviceName=${encodeURIComponent(service.name)}&formMapped=${service.formMapped}`);
+                        navigate(`/forms?serviceId=${service.id}&serviceName=${encodeURIComponent(service.serviceName)}&formMapped=${service.formMapping.status === 'Mapped'}`);
                       }}
                       className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200"
-                      title={service.formMapped ? "Change Form" : "Assign Form"}
+                      title={service.formMapping.status === 'Mapped' ? "Change Form" : "Assign Form"}
                     >
-                      <i className={`fa-solid ${service.formMapped ? 'fa-file-lines' : 'fa-link'}`}></i>
+                      <i className={`fa-solid ${service.formMapping.status === 'Mapped' ? 'fa-file-lines' : 'fa-link'}`}></i>
                     </button>
                     <div className="w-px h-4 bg-slate-200"></div>
                     <button
