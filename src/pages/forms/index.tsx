@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { ServiceListPanel } from './ServiceListPanel';
 import { FormStructureViewer } from './FormStructureViewer';
 import { UnmapModal } from './UnmapModal';
 import { Service } from './FormTypes';
+import { useGetFormMappingsQuery } from '../../services/formMappingsApi';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import Sidebar from '../../components/dashboard/Sidebar';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
@@ -30,6 +31,36 @@ const Forms: React.FC = () => {
   const [isUnmapModalOpen, setIsUnmapModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState(false);
+  
+  // Fetch form mappings from API - get first page to see total
+  const { data: firstPageData, isLoading, error } = useGetFormMappingsQuery({ page: 1, limit: 10 });
+  
+  // Fetch second page if it exists
+  const { data: secondPageData } = useGetFormMappingsQuery({ 
+    page: 2, 
+    limit: 10 
+  }, {
+    skip: !firstPageData?.data?.pagination?.hasNextPage
+  });
+  
+  // Combine all pages data
+  const formMappingsData = React.useMemo(() => {
+    if (!firstPageData) return null;
+    
+    const combinedServices = [...firstPageData.data.services];
+    
+    if (secondPageData?.data?.services) {
+      combinedServices.push(...secondPageData.data.services);
+    }
+    
+    return {
+      ...firstPageData,
+      data: {
+        ...firstPageData.data,
+        services: combinedServices
+      }
+    };
+  }, [firstPageData, secondPageData]);
   
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -68,36 +99,22 @@ const Forms: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  const services = useMemo((): Service[] => [
-    {
-      id: '1',
-      name: t('servicesData.bloodTest.name'),
-      formName: 'Diagnostic_Intake_V2',
-      status: 'mapped'
-    },
-    {
-      id: '2',
-      name: t('servicesData.physicalTherapy.name'),
-      status: 'unmapped'
-    },
-    {
-      id: '3',
-      name: t('servicesData.postOpNursing.name'),
-      formName: 'Nursing_Care_Standard',
-      status: 'mapped'
-    },
-    {
-      id: '4',
-      name: t('servicesData.elderlyHomeCheckup.name'),
-      status: 'unmapped'
-    },
-    {
-      id: '5',
-      name: t('servicesData.woundCareManagement.name'),
-      formName: 'Wound_Care_Form_V1',
-      status: 'mapped'
-    }
-  ], [t]);
+  // Transform API data to Service interface
+  const services: Service[] = React.useMemo(() => {
+    if (!formMappingsData?.data?.services) return [];
+    
+    return formMappingsData.data.services.map((apiService) => ({
+      id: apiService.id,
+      name: apiService.serviceName,
+      description: apiService.description,
+      formName: apiService.formMapping.templateName || undefined,
+      status: apiService.formMapping.status.toLowerCase() === 'mapped' ? 'mapped' : 'unmapped',
+      isActive: apiService.isActive,
+      category: apiService.category,
+      icon: apiService.icon,
+      assignedProviders: apiService.assignedProviders
+    }));
+  }, [formMappingsData]);
 
   // Handle URL parameters for service selection from services page
   useEffect(() => {
@@ -184,18 +201,36 @@ const Forms: React.FC = () => {
 
         {/* Main Content Area */}
         <div className="p-8 h-[calc(1024px-64px)] flex gap-6 overflow-hidden">
-          {/* Left: Services List */}
-          <ServiceListPanel
-            services={services}
-            selectedService={selectedService}
-            onServiceSelect={handleServiceSelect}
-          />
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <i className="fa-solid fa-spinner fa-spin text-3xl text-primary mb-4"></i>
+                <p className="text-sm text-slate-600">Loading services...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <i className="fa-solid fa-exclamation-triangle text-3xl text-red-500 mb-4"></i>
+                <p className="text-sm text-slate-600">Error loading services. Please try again.</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Left: Services List */}
+              <ServiceListPanel
+                services={services}
+                selectedService={selectedService}
+                onServiceSelect={handleServiceSelect}
+              />
 
-          {/* Right: Form Structure Viewer */}
-          <FormStructureViewer
-            selectedService={selectedService}
-            onMapService={handleMapService}
-          />
+              {/* Right: Form Structure Viewer */}
+              <FormStructureViewer
+                selectedService={selectedService}
+                onMapService={handleMapService}
+              />
+            </>
+          )}
         </div>
       </main>
 

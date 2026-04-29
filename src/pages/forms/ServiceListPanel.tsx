@@ -107,6 +107,11 @@ export const ServiceListPanel: React.FC<ServiceListPanelProps> = ({
                 <p className="text-sm font-bold text-slate-800">{service.name}</p>
                 {getStatusBadge(service.status)}
               </div>
+              {service.description && (
+                <p className="text-[11px] text-slate-500 line-clamp-2 mb-1">
+                  {service.description}
+                </p>
+              )}
               <p className="text-[11px] text-slate-500 line-clamp-1">
                 {service.formName ? <>{t('forms.form')}: <span className="font-bold">{service.formName}</span></> : t('forms.noFormAssigned')}
               </p>
