@@ -8,6 +8,8 @@ import { MapFormModal } from '../../components/services/MapFormModal';
 import { ViewFormModal } from '../../components/services/ViewFormModal';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
+import { useGetServicesQuery, useGetServiceByIdQuery } from '../../services/servicesApi';
+import { Service } from '../../services/servicesApi';
 
 interface Notification {
   id: string;
@@ -23,17 +25,6 @@ interface Notification {
   }[];
 }
 
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
-}
-
 interface MapFormData {
   formName: string;
   formType: string;
@@ -47,6 +38,15 @@ export const Services: React.FC = () => {
   const [isMapFormModalOpen, setIsMapFormModalOpen] = useState(false);
   const [isViewFormModalOpen, setIsViewFormModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Fetch individual service details when selectedServiceId changes
+  const { data: serviceDetails } = useGetServiceByIdQuery(selectedServiceId, {
+    skip: !selectedServiceId
+  });
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,45 +89,20 @@ export const Services: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  const services: Service[] = [
-    {
-      id: '1',
-      name: t('servicesData.bloodTest.name'),
-      description: t('servicesData.bloodTest.description'),
-      category: t('servicesData.bloodTest.category'),
-      formMapped: true,
-      providers: 14,
-      icon: 'fa-droplet',
-      iconColor: 'blue'
-    },
-    {
-      id: '2',
-      name: t('servicesData.physicalTherapy.name'),
-      description: t('servicesData.physicalTherapy.description'),
-      category: t('servicesData.physicalTherapy.category'),
-      formMapped: false,
-      providers: 5,
-      icon: 'fa-person-walking-with-cane',
-      iconColor: 'purple'
-    },
-    {
-      id: '3',
-      name: t('servicesData.postOpNursing.name'),
-      description: t('servicesData.postOpNursing.description'),
-      category: t('servicesData.postOpNursing.category'),
-      formMapped: true,
-      providers: 10,
-      icon: 'fa-house-medical',
-      iconColor: 'emerald'
-    }
-  ];
-
+  // Fetch services from API
+  const { data: servicesData, isLoading, error, refetch } = useGetServicesQuery({ page: currentPage, size: itemsPerPage });
+  const rawServices = servicesData?.data?.services || [];
+  const pagination = servicesData?.data?.pagination;
+  
+  // Filter services based on search term
+  const services = rawServices.filter(service => 
+    service.serviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    service.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   // Pagination calculations
-  const totalItems = services.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedServices = services.slice(startIndex, endIndex);
+  const totalItems = pagination?.total || 0;
+  const totalPages = pagination?.totalPages || 1;
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
@@ -139,14 +114,25 @@ export const Services: React.FC = () => {
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  // Calculate stats based on API data
   const stats = {
-    totalServices: 24,
-    mappedForms: 18,
-    unmappedServices: 6,
-    activeProviders: 142
+    totalServices: servicesData?.data?.pagination?.total || 0,
+    mappedForms: services.filter(s => s.formMapping.status === 'Mapped').length,
+    unmappedServices: services.filter(s => s.formMapping.status === 'Unmapped').length,
+    activeProviders: services.filter(s => s.isActive).length
   };
 
   const handleViewService = (service: Service) => {
+    setSelectedServiceId(service.id);
     setSelectedService(service);
     setIsViewModalOpen(true);
   };
@@ -196,16 +182,18 @@ export const Services: React.FC = () => {
               <input
                 type="text"
                 placeholder={t('services.searchServices')}
+                value={searchTerm}
+                onChange={handleSearchChange}
                 className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 w-64 transition-all"
               />
             </div>
-            <button
+            {/* <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-md shadow-primary/10 flex items-center gap-2"
             >
               <i className="fa-solid fa-plus"></i>
               {t('services.addService')}
-            </button>
+            </button> */}
             <div className="h-8 w-[1px] bg-slate-200"></div>
             <NotificationDropdown
               notifications={notifications}
@@ -253,19 +241,30 @@ export const Services: React.FC = () => {
           </section>
 
           {/* Services Table */}
-          <ServicesTable
-            services={displayedServices}
-            onEdit={handleEditService}
-            onView={handleViewService}
-            onMapForm={handleMapForm}
-            onViewForm={handleViewForm}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            onPageChange={handlePageChange}
-            onItemsPerPageChange={handleItemsPerPageChange}
-          />
+          {isLoading ? (
+            <div className="bg-white rounded-2xl border border-slate-200 tradingview-shadow p-8">
+              <div className="text-center text-slate-500">Loading services...</div>
+            </div>
+          ) : error ? (
+            <div className="bg-white rounded-2xl border border-slate-200 tradingview-shadow p-8">
+              <div className="text-center text-red-500">Error loading services. Please try again.</div>
+            </div>
+          ) : (
+            <ServicesTable
+              services={services}
+              onEdit={handleEditService}
+              onView={handleViewService}
+              onMapForm={handleMapForm}
+              onViewForm={handleViewForm}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+              onRefresh={handleRefresh}
+            />
+          )}
         </div>
       </main>
 
@@ -285,8 +284,9 @@ export const Services: React.FC = () => {
         onClose={() => {
           setIsViewModalOpen(false);
           setSelectedService(null);
+          setSelectedServiceId(null);
         }}
-        service={selectedService}
+        service={serviceDetails?.data || selectedService}
       />
 
       <MapFormModal

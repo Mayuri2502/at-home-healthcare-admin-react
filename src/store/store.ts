@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { api } from '../services/api';
 import { doctorsApi } from '../services/doctorsApi';
 import { providersApi } from '../services/providersApi';
+import { servicesApi } from '../services/servicesApi';
 import authReducer from './authSlice';
 
 export const store = configureStore({
@@ -10,9 +11,10 @@ export const store = configureStore({
     api: api.reducer,
     doctorsApi: doctorsApi.reducer,
     providersApi: providersApi.reducer,
+    servicesApi: servicesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware, doctorsApi.middleware, providersApi.middleware),
+    getDefaultMiddleware().concat(api.middleware, doctorsApi.middleware, providersApi.middleware, servicesApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

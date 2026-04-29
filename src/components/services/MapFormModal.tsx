@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
-}
+import { Service } from '../../services/servicesApi';
 
 interface MapFormModalProps {
   isOpen: boolean;
@@ -37,17 +27,6 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
   });
 
   if (!isOpen || !service) return null;
-
-  const getIconColorClass = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      blue: 'bg-blue-50 text-blue-600',
-      purple: 'bg-purple-50 text-purple-600',
-      emerald: 'bg-emerald-50 text-emerald-600',
-      red: 'bg-red-50 text-red-600',
-      amber: 'bg-amber-50 text-amber-600'
-    };
-    return colorMap[color] || 'bg-slate-50 text-slate-600';
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,12 +71,12 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
         <div className="p-8 space-y-6">
           {/* Service Info */}
           <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-            <div className={`w-10 h-10 ${getIconColorClass(service.iconColor)} rounded-lg flex items-center justify-center`}>
-              <i className={`fa-solid ${service.icon} text-sm`}></i>
+            <div className={`w-10 h-10 bg-slate-50 text-slate-600 rounded-lg flex items-center justify-center`}>
+              <i className={`fa-solid fa-kit-medical text-sm`}></i>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">{service.name}</h4>
-              <p className="text-xs text-slate-500">{service.category}</p>
+              <h4 className="text-sm font-bold text-slate-900">{service.serviceName}</h4>
+              <p className="text-xs text-slate-500">{service.category || 'No category'}</p>
             </div>
           </div>
 

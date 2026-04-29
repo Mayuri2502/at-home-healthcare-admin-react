@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
-}
+import { Service } from '../../services/servicesApi';
 
 interface AddServiceModalProps {
   isOpen: boolean;
@@ -27,7 +17,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
-    name: service?.name || '',
+    serviceName: service?.serviceName || '',
     description: service?.description || '',
     category: service?.category || 'Diagnostics'
   });
@@ -68,8 +58,8 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               {t('services.serviceName')}
             </label>
             <select
-              name="name"
-              value={formData.name}
+              name="serviceName"
+              value={formData.serviceName}
               onChange={handleInputChange}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               required
