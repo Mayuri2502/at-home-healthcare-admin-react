@@ -1,15 +1,5 @@
 import React from 'react';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  formMapped: boolean;
-  providers: number;
-  icon: string;
-  iconColor: string;
-}
+import { Service } from '../../services/servicesApi';
 
 interface ViewFormModalProps {
   isOpen: boolean;
@@ -25,20 +15,9 @@ export const ViewFormModal: React.FC<ViewFormModalProps> = ({
 
   if (!isOpen || !service) return null;
 
-  const getIconColorClass = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      blue: 'bg-blue-50 text-blue-600',
-      purple: 'bg-purple-50 text-purple-600',
-      emerald: 'bg-emerald-50 text-emerald-600',
-      red: 'bg-red-50 text-red-600',
-      amber: 'bg-amber-50 text-amber-600'
-    };
-    return colorMap[color] || 'bg-slate-50 text-slate-600';
-  };
-
   // Mock form data - in real app this would come from API
   const formData = {
-    formName: `${service.name} Form`,
+    formName: service.formMapping.templateName || `${service.serviceName} Form`,
     formType: 'Medical',
     fields: [
       'Patient Name',
@@ -73,12 +52,12 @@ export const ViewFormModal: React.FC<ViewFormModalProps> = ({
         <div className="p-8 space-y-6">
           {/* Service Info */}
           <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-            <div className={`w-10 h-10 ${getIconColorClass(service.iconColor)} rounded-lg flex items-center justify-center`}>
-              <i className={`fa-solid ${service.icon} text-sm`}></i>
+            <div className={`w-10 h-10 bg-slate-50 text-slate-600 rounded-lg flex items-center justify-center`}>
+              <i className={`fa-solid fa-kit-medical text-sm`}></i>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">{service.name}</h4>
-              <p className="text-xs text-slate-500">{service.category}</p>
+              <h4 className="text-sm font-bold text-slate-900">{service.serviceName}</h4>
+              <p className="text-xs text-slate-500">{service.category || 'No category'}</p>
             </div>
           </div>
 
@@ -141,7 +120,7 @@ export const ViewFormModal: React.FC<ViewFormModalProps> = ({
           <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
             <i className="fa-solid fa-circle-info text-blue-500"></i>
             <p className="text-[11px] text-blue-700 leading-relaxed font-medium">
-              This form is currently active and being used by {service.providers} providers for this service.
+              This form is currently active and being used by providers for this service.
             </p>
           </div>
         </div>
