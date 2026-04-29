@@ -8,7 +8,7 @@ import { MapFormModal } from '../../components/services/MapFormModal';
 import { ViewFormModal } from '../../components/services/ViewFormModal';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import NotificationDropdown from '../../components/common/NotificationDropdown';
-import { useGetServicesQuery, useGetServiceByIdQuery } from '../../services/servicesApi';
+import { useGetServicesQuery, useGetServiceByIdQuery, useGetServiceStatsQuery } from '../../services/servicesApi';
 import { Service } from '../../services/servicesApi';
 
 interface Notification {
@@ -89,8 +89,9 @@ export const Services: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  // Fetch services from API
+  // Fetch services and stats from API
   const { data: servicesData, isLoading, error, refetch } = useGetServicesQuery({ page: currentPage, size: itemsPerPage });
+  const { data: statsData } = useGetServiceStatsQuery();
   const rawServices = servicesData?.data?.services || [];
   const pagination = servicesData?.data?.pagination;
   
@@ -125,10 +126,10 @@ export const Services: React.FC = () => {
 
   // Calculate stats based on API data
   const stats = {
-    totalServices: servicesData?.data?.pagination?.total || 0,
-    mappedForms: services.filter(s => s.formMapping.status === 'Mapped').length,
-    unmappedServices: services.filter(s => s.formMapping.status === 'Unmapped').length,
-    activeProviders: services.filter(s => s.isActive).length
+    totalServices: statsData?.data?.totalServices || 0,
+    mappedForms: statsData?.data?.mappedForms || 0,
+    unmappedServices: statsData?.data?.unmappedServices || 0,
+    activeProviders: 0 // Not available in stats API
   };
 
   const handleViewService = (service: Service) => {
