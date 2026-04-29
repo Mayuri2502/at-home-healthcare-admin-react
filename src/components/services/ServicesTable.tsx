@@ -1,24 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Service } from '../../services/servicesApi';
 import PaginationComponent from '../ui/PaginationComponent';
-
-interface Service {
-  id: string;
-  serviceName: string;
-  description: string;
-  icon: string | null;
-  formTemplateId: string | null;
-  category: string | null;
-  isActive: boolean;
-  providers?: number;
-  formMapping: {
-    status: 'Mapped' | 'Unmapped';
-    templateId: string | null;
-    templateName: string | null;
-    version: string | null;
-  };
-}
 
 interface ServicesTableProps {
   services: Service[];
@@ -155,19 +139,20 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {service.providers ? (
+                  {service.assignedProviders && service.assignedProviders.length > 0 ? (
                     <div className="flex -space-x-2">
-                      {Array.from({ length: Math.min(service.providers, 3) }).map((_, index) => (
-                        <img
+                      {service.assignedProviders.slice(0, 3).map((group, index) => (
+                        <div
                           key={index}
-                          src={`https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-${index + 1}.jpg`}
-                          alt=""
-                          className="w-6 h-6 rounded-full border-2 border-white"
-                        />
+                          className="w-6 h-6 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500"
+                          title={group.providers[0]?.name || 'Provider'}
+                        >
+                          {group.providers[0]?.name.charAt(0).toUpperCase() || 'P'}
+                        </div>
                       ))}
-                      {service.providers > 3 && (
+                      {service.assignedProviders.length > 3 && (
                         <div className="w-6 h-6 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">
-                          +{service.providers - 3}
+                          +{service.assignedProviders.length - 3}
                         </div>
                       )}
                     </div>

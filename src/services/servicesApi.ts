@@ -7,6 +7,16 @@ export interface FormMapping {
   version: string | null;
 }
 
+export interface Provider {
+  id: string;
+  name: string;
+}
+
+export interface ProviderGroup {
+  total: number;
+  providers: Provider[];
+}
+
 export interface Service {
   id: string;
   serviceName: string;
@@ -15,7 +25,7 @@ export interface Service {
   formTemplateId: string | null;
   category: string | null;
   isActive: boolean;
-  providers?: number;
+  assignedProviders: ProviderGroup[];
   formMapping: FormMapping;
   createdBy?: {
     id: string;
