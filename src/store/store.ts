@@ -3,6 +3,7 @@ import { api } from '../services/api';
 import { doctorsApi } from '../services/doctorsApi';
 import { providersApi } from '../services/providersApi';
 import { servicesApi } from '../services/servicesApi';
+import { formMappingsApi } from '../services/formMappingsApi';
 import authReducer from './authSlice';
 
 export const store = configureStore({
@@ -12,9 +13,10 @@ export const store = configureStore({
     doctorsApi: doctorsApi.reducer,
     providersApi: providersApi.reducer,
     servicesApi: servicesApi.reducer,
+    formMappingsApi: formMappingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware, doctorsApi.middleware, providersApi.middleware, servicesApi.middleware),
+    getDefaultMiddleware().concat(api.middleware, doctorsApi.middleware, providersApi.middleware, servicesApi.middleware, formMappingsApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
