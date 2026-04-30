@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Service } from '../../services/servicesApi';
+import { Service, useLazyDownloadServicesQuery } from '../../services/servicesApi';
 import PaginationComponent from '../ui/PaginationComponent';
 
 interface ServicesTableProps {
@@ -36,6 +36,25 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState<'all' | 'mapped' | 'unmapped'>('all');
+  const [triggerDownload, { isFetching: isDownloading }] = useLazyDownloadServicesQuery();
+
+  const handleDownload = async () => {
+    try {
+      const { data: blob } = await triggerDownload();
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'services.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
 
   // Filter services based on selected status
   const filteredServices = useMemo(() => {
@@ -84,8 +103,13 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
           >
             <i className="fa-solid fa-rotate"></i>
           </button>
-          <button className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200">
-            <i className="fa-solid fa-download"></i>
+          <button 
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all border border-transparent hover:border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Download"
+          >
+            <i className={`fa-solid ${isDownloading ? 'fa-spinner fa-spin' : 'fa-download'}`}></i>
           </button>
         </div>
       </div>
