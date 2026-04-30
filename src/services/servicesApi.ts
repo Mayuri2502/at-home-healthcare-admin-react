@@ -108,7 +108,14 @@ export const servicesApi = createApi({
       }),
       providesTags: ['Services'],
     }),
+    downloadServices: builder.query<Blob, void>({
+      query: () => ({
+        url: '/services/download',
+        responseHandler: (response) => response.blob(),
+        cache: 'no-cache',
+      }),
+    }),
   }),
 });
 
-export const { useGetServicesQuery, useGetServiceByIdQuery, useGetServiceStatsQuery } = servicesApi;
+export const { useGetServicesQuery, useGetServiceByIdQuery, useGetServiceStatsQuery, useLazyDownloadServicesQuery } = servicesApi;
