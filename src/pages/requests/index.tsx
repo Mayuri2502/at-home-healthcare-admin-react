@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RequestDetailModal } from './RequestDetailModal';
 import { RequestData } from './RequestTypes';
@@ -21,6 +21,24 @@ interface Notification {
   }[];
 }
 
+interface ApiResponse {
+  status: number;
+  message: string;
+  data: {
+    requests: RequestData[];
+    pagination: {
+      total: number;
+      page: number;
+      size: number;
+      totalPages: number;
+      totalRange: string;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+  };
+  timestamp: string;
+}
+
 const Requests: React.FC = () => {
   const { t } = useTranslation();
   const [selectedRequest, setSelectedRequest] = useState<RequestData | null>(null);
@@ -33,6 +51,12 @@ const Requests: React.FC = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // API state
+  const [requestsData, setRequestsData] = useState<RequestData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -71,99 +95,193 @@ const Requests: React.FC = () => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
-  const [requestsData, setRequestsData] = useState<RequestData[]>([
-    {
-      id: 'REQ-9421',
-      doctor: {
-        name: t('requestsData.dr1.name'),
-        specialty: t('requestsData.dr1.specialty'),
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg'
-      },
-      patient: t('requestsData.dr1.patient'),
-      serviceType: t('requestsData.dr1.serviceType'),
-      status: 'inprogress',
-      dateCreated: 'Oct 26, 2023 14:20',
-      lastUpdated: 'Oct 26, 2023 16:30',
-      serviceColor: 'blue',
-      formStatus: 'SIGNED'
-    },
-    {
-      id: 'REQ-9418',
-      doctor: {
-        name: t('requestsData.dr2.name'),
-        specialty: t('requestsData.dr2.specialty'),
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg'
-      },
-      patient: t('requestsData.dr2.patient'),
-      serviceType: t('requestsData.dr2.serviceType'),
-      status: 'completed',
-      dateCreated: 'Oct 25, 2023 09:15',
-      lastUpdated: 'Oct 25, 2023 17:45',
-      serviceColor: 'emerald',
-      formStatus: 'SIGNED'
-    },
-    {
-      id: 'REQ-9415',
-      doctor: {
-        name: t('requestsData.dr3.name'),
-        specialty: t('requestsData.dr3.specialty'),
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg'
-      },
-      patient: t('requestsData.dr3.patient'),
-      serviceType: t('requestsData.dr3.serviceType'),
-      status: 'pending',
-      dateCreated: 'Oct 25, 2023 16:45',
-      lastUpdated: 'Oct 25, 2023 18:20',
-      serviceColor: 'amber',
-      formStatus: 'SUBMITTED'
-    },
-    {
-      id: 'REQ-9412',
-      doctor: {
-        name: t('requestsData.dr4.name'),
-        specialty: t('requestsData.dr4.specialty'),
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg'
-      },
-      patient: t('requestsData.dr4.patient'),
-      serviceType: t('requestsData.dr4.serviceType'),
-      status: 'returned',
-      dateCreated: 'Oct 24, 2023 11:30',
-      lastUpdated: 'Oct 24, 2023 14:15',
-      serviceColor: 'red',
-      formStatus: 'RETURNED'
-    },
-    {
-      id: 'REQ-9410',
-      doctor: {
-        name: t('requestsData.dr1.name'),
-        specialty: t('requestsData.dr1.specialty'),
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
-      },
-      patient: 'John Smith',
-      serviceType: t('servicesData.bloodTest.name'),
-      status: 'draft',
-      dateCreated: 'Oct 23, 2023 10:15',
-      lastUpdated: 'Oct 23, 2023 10:15',
-      serviceColor: 'gray',
-      formStatus: 'DRAFT'
-    }
-  ]);
+  // Helper function to get service color based on status
+  const getServiceColor = (status: string): string => {
+    const colorMap = {
+      pending: 'amber',
+      completed: 'emerald',
+      inprogress: 'blue',
+      returned: 'red',
+      draft: 'gray'
+    };
+    return colorMap[status as keyof typeof colorMap] || 'gray';
+  };
 
-  // Pagination calculations
-  const totalItems = requestsData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedRequests = requestsData.slice(startIndex, endIndex);
+  // Helper function to get form status based on request data
+  const getFormStatus = (request: any): string => {
+    if (request.digitalSignature?.signedAt) {
+      return 'SIGNED';
+    }
+    if (request.formData) {
+      return 'SUBMITTED';
+    }
+    if (request.status === 'draft') {
+      return 'DRAFT';
+    }
+    return 'PENDING';
+  };
+
+  // API function to fetch requests
+  const fetchRequests = useCallback(async (page: number = 1, size: number = 10, status?: string) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString(),
+        ...(status && { status })
+      });
+      
+      // Get auth token from localStorage
+      const token = localStorage.getItem('authToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`http://163.227.92.122:3047/admin/requests?${params}`, {
+        method: 'GET',
+        headers
+      });
+      const data: ApiResponse = await response.json();
+      
+      if (data.status === 200) {
+        // Transform API response to match component structure
+        const transformedRequests = data.data.requests.map((apiRequest: any) => ({
+          ...apiRequest,
+          // Add backward compatibility properties
+          doctor: {
+            name: apiRequest.doctorName || 'Unknown Doctor',
+            specialty: apiRequest.doctorSpeciality || 'Unknown Specialty',
+            avatar: apiRequest.doctorProfileImage || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg'
+          },
+          patient: apiRequest.patientName || 'Unknown Patient',
+          serviceType: apiRequest.serviceName || 'Unknown Service',
+          dateCreated: apiRequest.createdAt ? new Date(apiRequest.createdAt).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) : 'Unknown Date',
+          lastUpdated: apiRequest.updatedAt ? new Date(apiRequest.updatedAt).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) : 'Unknown Date',
+          serviceColor: getServiceColor(apiRequest.status),
+          formStatus: getFormStatus(apiRequest)
+        }));
+        
+        setRequestsData(transformedRequests);
+        setTotalItems(data.data.pagination.total);
+        setTotalPages(data.data.pagination.totalPages);
+        setCurrentPage(data.data.pagination.page);
+        setItemsPerPage(data.data.pagination.size);
+      } else {
+        console.error('API Error:', data.message);
+        // Set empty data on error
+        setRequestsData([]);
+        setTotalItems(0);
+        setTotalPages(0);
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      // Set empty data on error
+      setRequestsData([]);
+      setTotalItems(0);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
+  }, []); // Empty dependency array since this function doesn't depend on any props/state
+
+  // API function to fetch detailed request data
+  const fetchRequestDetails = useCallback(async (requestId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No auth token found');
+        return null;
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      const response = await fetch(`http://163.227.92.122:3047/admin/requests/${requestId}`, {
+        method: 'GET',
+        headers
+      });
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        return data.data;
+      } else {
+        console.error('API Error:', data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return null;
+    }
+  }, []);
+
+  const fetchAuditLogs = useCallback(async (requestId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No auth token found');
+        return null;
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      const response = await fetch(`http://163.227.92.122:3047/admin/requests/${requestId}/audit-logs`, {
+        method: 'GET',
+        headers
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        return data.data.auditLogs;
+      } else {
+        console.error('API Error:', data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return null;
+    }
+  }, []);
+
+  // Fetch data on component mount and when pagination changes
+  useEffect(() => {
+    fetchRequests(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage, fetchRequests]);
+
+  // Display requests from API (already paginated)
+  const displayedRequests = requestsData;
 
   // Pagination handlers
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchRequests(page, itemsPerPage);
   };
 
   const handleItemsPerPageChange = (newItemsPerPage: number) => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1); // Reset to first page when changing items per page
+    fetchRequests(1, newItemsPerPage);
   };
 
   const getStatusChipClass = (status: string): string => {
@@ -188,9 +306,48 @@ const Requests: React.FC = () => {
     return statusTexts[status as keyof typeof statusTexts] || status;
   };
 
-  const handleRowClick = (request: RequestData) => {
-    setSelectedRequest(request);
-    setIsModalOpen(true);
+  const handleRowClick = async (request: RequestData) => {
+    // Fetch detailed request data
+    const detailedData = await fetchRequestDetails(request.id);
+    
+    if (detailedData) {
+      // Pass complete API response data directly
+      const completeRequestData: RequestData = {
+        ...request, // Keep basic fields
+        ...detailedData, // Add all detailed API fields
+        // Keep backward compatibility for existing UI
+        doctor: {
+          name: detailedData.doctorId?.fName + ' ' + detailedData.doctorId?.lName || request.doctorName || 'Unknown Doctor',
+          specialty: detailedData.doctorId?.specialty || request.doctorSpeciality || 'Unknown Specialty',
+          avatar: request.doctorProfileImage || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg'
+        },
+        patient: detailedData.patientId?.fullName || request.patientName || 'Unknown Patient',
+        serviceType: detailedData.serviceId?.serviceName || request.serviceName || 'Unknown Service',
+        dateCreated: detailedData.createdAt ? new Date(detailedData.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : request.dateCreated,
+        lastUpdated: detailedData.updatedAt ? new Date(detailedData.updatedAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : request.lastUpdated,
+        serviceColor: getServiceColor(detailedData.status),
+        formStatus: getFormStatus(detailedData)
+      };
+      
+      setSelectedRequest(completeRequestData);
+      setIsModalOpen(true);
+    } else {
+      // Fallback to basic request data if detailed fetch fails
+      setSelectedRequest(request);
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -339,7 +496,26 @@ const Requests: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {displayedRequests.map((request) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={9} className="px-6 py-8 text-center">
+                        <div className="flex items-center justify-center">
+                          <i className="fa-solid fa-spinner fa-spin text-primary text-xl mr-3"></i>
+                          <span className="text-sm text-slate-600">Loading requests...</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : displayedRequests.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="px-6 py-8 text-center">
+                        <div className="flex flex-col items-center">
+                          <i className="fa-solid fa-inbox text-slate-300 text-3xl mb-3"></i>
+                          <span className="text-sm text-slate-500">No requests found</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedRequests.map((request) => (
                     <tr
                       key={request.id}
                       onClick={() => handleRowClick(request)}
@@ -351,10 +527,14 @@ const Requests: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                          <img src={request.doctor.avatar} alt={`${request.doctor.name} - Doctor Avatar`} className="w-8 h-8 rounded-lg object-cover" />
+                          <img 
+                            src={request.doctor?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg'} 
+                            alt={`${request.doctor?.name || 'Unknown Doctor'} - Doctor Avatar`} 
+                            className="w-8 h-8 rounded-lg object-cover" 
+                          />
                           <div>
-                            <p className="text-xs font-bold text-slate-800">{request.doctor.name}</p>
-                            <p className="text-[10px] text-slate-500">{request.doctor.specialty}</p>
+                            <p className="text-xs font-bold text-slate-800">{request.doctor?.name || 'Unknown Doctor'}</p>
+                            <p className="text-[10px] text-slate-500">{request.doctor?.specialty || 'Unknown Specialty'}</p>
                           </div>
                         </div>
                       </td>
@@ -410,7 +590,8 @@ const Requests: React.FC = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -430,10 +611,11 @@ const Requests: React.FC = () => {
 
       {/* Request Detail Modal */}
       <RequestDetailModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        request={selectedRequest}
-      />
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            request={selectedRequest}
+            fetchAuditLogs={fetchAuditLogs}
+          />
 
       {/* Reset Status Modal */}
       {showResetModal && (
