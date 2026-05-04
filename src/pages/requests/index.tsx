@@ -200,6 +200,38 @@ const Requests: React.FC = () => {
     }
   }, []); // Empty dependency array since this function doesn't depend on any props/state
 
+  // API function to fetch detailed request data
+  const fetchRequestDetails = useCallback(async (requestId: string) => {
+    try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem('authToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`http://163.227.92.122:3047/admin/requests/${requestId}`, {
+        method: 'GET',
+        headers
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        return data.data;
+      } else {
+        console.error('API Error:', data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return null;
+    }
+  }, []);
+
   // Fetch data on component mount and when pagination changes
   useEffect(() => {
     fetchRequests(currentPage, itemsPerPage);
@@ -242,9 +274,48 @@ const Requests: React.FC = () => {
     return statusTexts[status as keyof typeof statusTexts] || status;
   };
 
-  const handleRowClick = (request: RequestData) => {
-    setSelectedRequest(request);
-    setIsModalOpen(true);
+  const handleRowClick = async (request: RequestData) => {
+    // Fetch detailed request data
+    const detailedData = await fetchRequestDetails(request.id);
+    
+    if (detailedData) {
+      // Pass complete API response data directly
+      const completeRequestData: RequestData = {
+        ...request, // Keep basic fields
+        ...detailedData, // Add all detailed API fields
+        // Keep backward compatibility for existing UI
+        doctor: {
+          name: detailedData.doctorId?.fName + ' ' + detailedData.doctorId?.lName || request.doctorName || 'Unknown Doctor',
+          specialty: detailedData.doctorId?.specialty || request.doctorSpeciality || 'Unknown Specialty',
+          avatar: request.doctorProfileImage || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg'
+        },
+        patient: detailedData.patientId?.fullName || request.patientName || 'Unknown Patient',
+        serviceType: detailedData.serviceId?.serviceName || request.serviceName || 'Unknown Service',
+        dateCreated: detailedData.createdAt ? new Date(detailedData.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : request.dateCreated,
+        lastUpdated: detailedData.updatedAt ? new Date(detailedData.updatedAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : request.lastUpdated,
+        serviceColor: getServiceColor(detailedData.status),
+        formStatus: getFormStatus(detailedData)
+      };
+      
+      setSelectedRequest(completeRequestData);
+      setIsModalOpen(true);
+    } else {
+      // Fallback to basic request data if detailed fetch fails
+      setSelectedRequest(request);
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
