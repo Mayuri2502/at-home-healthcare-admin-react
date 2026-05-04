@@ -203,17 +203,49 @@ const Requests: React.FC = () => {
   // API function to fetch detailed request data
   const fetchRequestDetails = useCallback(async (requestId: string) => {
     try {
-      // Get auth token from localStorage
       const token = localStorage.getItem('authToken');
-      const headers: HeadersInit = {
+      if (!token) {
+        console.error('No auth token found');
+        return null;
+      }
+
+      const headers = {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       };
       
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
       const response = await fetch(`http://163.227.92.122:3047/admin/requests/${requestId}`, {
+        method: 'GET',
+        headers
+      });
+      const data = await response.json();
+      
+      if (data.status === 200) {
+        return data.data;
+      } else {
+        console.error('API Error:', data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return null;
+    }
+  }, []);
+
+  const fetchAuditLogs = useCallback(async (requestId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No auth token found');
+        return null;
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      
+      const response = await fetch(`http://163.227.92.122:3047/admin/requests/${requestId}/audit-logs`, {
         method: 'GET',
         headers
       });
@@ -221,7 +253,7 @@ const Requests: React.FC = () => {
       const data = await response.json();
       
       if (data.status === 200) {
-        return data.data;
+        return data.data.auditLogs;
       } else {
         console.error('API Error:', data.message);
         return null;
@@ -579,10 +611,11 @@ const Requests: React.FC = () => {
 
       {/* Request Detail Modal */}
       <RequestDetailModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        request={selectedRequest}
-      />
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            request={selectedRequest}
+            fetchAuditLogs={fetchAuditLogs}
+          />
 
       {/* Reset Status Modal */}
       {showResetModal && (

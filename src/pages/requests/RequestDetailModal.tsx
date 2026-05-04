@@ -5,18 +5,22 @@ interface RequestDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   request: RequestData | null;
+  fetchAuditLogs?: (requestId: string) => Promise<any>;
 }
 
 export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   isOpen,
   onClose,
-  request
+  request,
+  fetchAuditLogs
 }) => {
   // const { t } = useTranslation(); // Commented out as it's not currently used
   const [showResetModal, setShowResetModal] = useState(false);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
 
   // Move useMemo before early return to satisfy React Hook rules
   const timelineEvents = React.useMemo(() => {
@@ -140,36 +144,26 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   };
 
   
-  const auditLogs = [
-    {
-      action: 'Status changed to "In Progress"',
-      user: 'System Automation',
-      date: 'Oct 26, 2023 at 14:45',
-      icon: 'fa-user-gear',
-      color: 'primary'
-    },
-    {
-      action: 'Provider assigned: LabCorp Services',
-      user: 'Alexander Wright (Admin)',
-      date: 'Oct 26, 2023 at 14:45',
-      icon: 'fa-hospital',
-      color: 'success'
-    },
-    {
-      action: 'Form validated and approved',
-      user: 'System Validation',
-      date: 'Oct 26, 2023 at 14:22',
-      icon: 'fa-file-circle-check',
-      color: 'accent'
-    },
-    {
-      action: 'Request created',
-      user: 'Dr. Julian Moore',
-      date: 'Oct 26, 2023 at 14:20',
-      icon: 'fa-plus',
-      color: 'slate'
+  // Function to fetch audit logs when audit modal is opened
+  const handleOpenAuditModal = async () => {
+    if (!request || !fetchAuditLogs) return;
+    
+    setLoadingAuditLogs(true);
+    try {
+      const logs = await fetchAuditLogs(request.id);
+      if (logs) {
+        setAuditLogs(logs);
+      } else {
+        setAuditLogs([]);
+      }
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      setAuditLogs([]);
+    } finally {
+      setLoadingAuditLogs(false);
+      setShowAuditModal(true);
     }
-  ];
+  };
 
   return (
     <>
@@ -194,7 +188,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
                     <i className="fa-regular fa-clock mr-1"></i> Received: {request.dateCreated} • 
-                    <i className="fa-regular fa-calendar-check ml-2 mr-1"></i> Last Update: 2 hours ago
+                    <i className="fa-regular fa-calendar-check ml-2 mr-1"></i> Last Update: {request.lastUpdated}
                   </p>
                 </div>
               </div>
@@ -203,7 +197,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   <i className="fa-solid fa-file-pdf text-danger"></i> Export PDF
                 </button>
                 <button 
-                  onClick={() => setShowAuditModal(true)}
+                  onClick={handleOpenAuditModal}
                   className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2"
                 >
                   <i className="fa-solid fa-list-ul"></i> Audit Log
@@ -553,25 +547,57 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-overlay">
           <div className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden tradingview-shadow max-h-[80vh] flex flex-col">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-              <h3 className="text-lg font-bold text-slate-900">Audit Log - Request #{request.id}</h3>
+              <h3 className="text-lg font-bold text-slate-900">Audit Log - Request #{request?.id}</h3>
               <button onClick={() => setShowAuditModal(false)} className="text-slate-400 hover:text-slate-600">
                 <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-4">
-                {auditLogs.map((log, index) => (
-                  <div key={index} className="flex gap-4 pb-4 border-b border-slate-100">
-                    <div className={`w-10 h-10 rounded-xl bg-${log.color}/10 flex items-center justify-center flex-shrink-0`}>
-                      <i className={`fa-solid ${log.icon} text-${log.color}`}></i>
+              {loadingAuditLogs ? (
+                <div className="flex items-center justify-center py-8">
+                  <i className="fa-solid fa-spinner fa-spin text-primary text-xl mr-3"></i>
+                  <span className="text-sm text-slate-600">Loading audit logs...</span>
+                </div>
+              ) : auditLogs.length === 0 ? (
+                <div className="flex flex-col items-center py-8">
+                  <i className="fa-solid fa-clipboard-list text-slate-300 text-3xl mb-3"></i>
+                  <span className="text-sm text-slate-500">No audit logs found</span>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {auditLogs.map((log, index) => (
+                    <div key={log.id || index} className="flex gap-4 pb-4 border-b border-slate-100">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                        <i className="fa-solid fa-history text-slate-600"></i>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-slate-900">{log.actionType}</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          By {log.performedBy?.fName && log.performedBy?.lName 
+                            ? `${log.performedBy.fName} ${log.performedBy.lName}` 
+                            : log.performedBy?.email || 'Unknown User'} • 
+                          {log.performedAt 
+                            ? new Date(log.performedAt).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })
+                            : 'Unknown Date'
+                          }
+                        </p>
+                        {log.reason && (
+                          <p className="text-xs text-slate-600 mt-2 italic">Reason: {log.reason}</p>
+                        )}
+                        {log.ipAddress && (
+                          <p className="text-xs text-slate-400 mt-1">IP: {log.ipAddress}</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-slate-900">{log.action}</p>
-                      <p className="text-xs text-slate-500 mt-1">By {log.user} • {log.date}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
