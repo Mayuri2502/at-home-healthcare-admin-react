@@ -6,13 +6,38 @@ export interface Doctor {
 
 export interface RequestData {
   id: string;
-  doctor: Doctor;
-  patient: string;
-  serviceType: string;
+  requestId: string;
+  doctorName: string;
+  doctorSpeciality: string;
+  doctorProfileImage: string | null;
+  patientName: string;
+  serviceName: string;
   status: 'pending' | 'completed' | 'inprogress' | 'returned' | 'draft';
-  dateCreated: string;
-  lastUpdated: string;
-  serviceColor: string;
+  createdAt: string;
+  updatedAt: string;
+  priorityLevel: string;
+  requestedDate: string;
+  requestedTime: string;
+  assignedProviderName: string;
+  digitalSignature: {
+    signatureData: string | null;
+    signedAt: string | null;
+    signedBy: string | null;
+  } | null;
+  formData: any | null;
+  providerFormData: any | null;
+  signedPdfUrl: string | null;
+  isReadyForDoctorReview: boolean;
+  statusDuration: number;
+  statusDurationDays: number;
+  statusHistory: any[];
+  // Computed properties for backward compatibility
+  doctor?: Doctor;
+  patient?: string;
+  serviceType?: string;
+  dateCreated?: string;
+  lastUpdated?: string;
+  serviceColor?: string;
   formStatus?: string;
 }
 

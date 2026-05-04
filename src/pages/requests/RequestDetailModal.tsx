@@ -154,13 +154,13 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 </h3>
                 <div className="flex items-center gap-4">
                   <img
-                    src={request.doctor.avatar || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"}
-                    alt={`${request.doctor.name} - Doctor Avatar`}
+                    src={request.doctor?.avatar || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"}
+                    alt={`${request.doctor?.name || 'Unknown Doctor'} - Doctor Avatar`}
                     className="w-14 h-14 rounded-xl object-cover"
                   />
                   <div>
-                    <p className="text-sm font-bold text-slate-900">{request.doctor.name}</p>
-                    <p className="text-xs text-slate-500">{request.doctor.specialty} • St. Mary's Hospital</p>
+                    <p className="text-sm font-bold text-slate-900">{request.doctor?.name || 'Unknown Doctor'}</p>
+                    <p className="text-xs text-slate-500">{request.doctor?.specialty || 'Unknown Specialty'} • St. Mary's Hospital</p>
                     <p className="text-[11px] font-mono text-primary mt-1">RPPS: 10100239485</p>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                       </div>
                       <div>
                         <p className="font-bold text-slate-400 uppercase mb-2">Prescriber</p>
-                        <p className="text-slate-900 font-medium">{request.doctor.name}</p>
+                        <p className="text-slate-900 font-medium">{request.doctor?.name || 'Unknown Doctor'}</p>
                         <p className="text-slate-500 mt-1">License: #NY-99201</p>
                       </div>
                     </div>
@@ -313,7 +313,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     <div className="pt-8 flex justify-end">
                       <div className="text-center">
                         <div className="w-48 h-12 border-b-2 border-slate-200 flex items-center justify-center italic text-primary font-serif">
-                          {request.doctor.name}
+                          {request.doctor?.name || 'Unknown Doctor'}
                         </div>
                         <p className="text-[10px] text-slate-400 mt-2">Digitally Signed on 26/10/2023</p>
                       </div>
