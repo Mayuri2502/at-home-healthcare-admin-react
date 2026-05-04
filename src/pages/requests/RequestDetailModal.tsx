@@ -5,18 +5,114 @@ interface RequestDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   request: RequestData | null;
+  fetchAuditLogs?: (requestId: string) => Promise<any>;
 }
 
 export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
   isOpen,
   onClose,
-  request
+  request,
+  fetchAuditLogs
 }) => {
   // const { t } = useTranslation(); // Commented out as it's not currently used
   const [showResetModal, setShowResetModal] = useState(false);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
+
+  // Move useMemo before early return to satisfy React Hook rules
+  const timelineEvents = React.useMemo(() => {
+    if (!request) return [];
+    
+    const events = [];
+    const timestamps = request.statusTimestamps;
+    
+    // Only show statuses that have actual timestamps in API data
+    
+    // Draft/Request Created (always show if timestamp exists)
+    if (timestamps?.draft) {
+      events.push({
+        status: 'Request Created',
+        date: `${new Date(timestamps.draft).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit',
+            minute: '2-digit'
+          })} by ${request.createdBy?.fName && request.createdBy?.lName ? `${request.createdBy.fName} ${request.createdBy.lName}` : request.createdBy?.email || 'Unknown User'}`,
+        icon: 'fa-check',
+        isActive: true,
+        isCompleted: true
+      });
+    }
+    
+    // Submitted (only show if timestamp exists)
+    if (timestamps?.submitted) {
+      events.push({
+        status: 'Submitted',
+        date: new Date(timestamps.submitted).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        icon: 'fa-paper-plane',
+        isActive: request.status === 'pending' || request.status === 'inprogress' || request.status === 'completed',
+        isCompleted: request.status === 'inprogress' || request.status === 'completed'
+      });
+    }
+    
+    // In Progress (only show if timestamp exists)
+    if (timestamps?.inProgress) {
+      events.push({
+        status: 'In Progress',
+        date: new Date(timestamps.inProgress).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        icon: 'fa-spinner',
+        isActive: request.status === 'inprogress' || request.status === 'completed',
+        isCompleted: request.status === 'completed'
+      });
+    }
+    
+    // Completed (only show if timestamp exists)
+    if (timestamps?.completed) {
+      events.push({
+        status: 'Completed',
+        date: new Date(timestamps.completed).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        icon: 'fa-flag-checkered',
+        isActive: request.status === 'completed',
+        isCompleted: request.status === 'completed'
+      });
+    }
+    
+    // Returned (only show if timestamp exists)
+    if (timestamps?.returned) {
+      events.push({
+        status: 'Returned',
+        date: new Date(timestamps.returned).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        icon: 'fa-undo',
+        isActive: request.status === 'returned',
+        isCompleted: request.status === 'returned'
+      });
+    }
+    
+    return events;
+  }, [request]);
 
   if (!isOpen || !request) return null;
 
@@ -47,60 +143,27 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const timelineEvents = [
-    {
-      status: 'Request Created',
-      date: 'Oct 26, 14:20 by Dr. Moore',
-      icon: 'fa-check',
-      isActive: true,
-      isCompleted: true
-    },
-    {
-      status: 'In Progress',
-      date: 'Waiting for sample collection',
-      icon: 'fa-spinner',
-      isActive: true,
-      isCompleted: false
-    },
-    {
-      status: 'Completed',
-      date: 'Results pending upload',
-      icon: 'fa-flag-checkered',
-      isActive: false,
-      isCompleted: false
+  
+  // Function to fetch audit logs when audit modal is opened
+  const handleOpenAuditModal = async () => {
+    if (!request || !fetchAuditLogs) return;
+    
+    setLoadingAuditLogs(true);
+    try {
+      const logs = await fetchAuditLogs(request.id);
+      if (logs) {
+        setAuditLogs(logs);
+      } else {
+        setAuditLogs([]);
+      }
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      setAuditLogs([]);
+    } finally {
+      setLoadingAuditLogs(false);
+      setShowAuditModal(true);
     }
-  ];
-
-  const auditLogs = [
-    {
-      action: 'Status changed to "In Progress"',
-      user: 'System Automation',
-      date: 'Oct 26, 2023 at 14:45',
-      icon: 'fa-user-gear',
-      color: 'primary'
-    },
-    {
-      action: 'Provider assigned: LabCorp Services',
-      user: 'Alexander Wright (Admin)',
-      date: 'Oct 26, 2023 at 14:45',
-      icon: 'fa-hospital',
-      color: 'success'
-    },
-    {
-      action: 'Form validated and approved',
-      user: 'System Validation',
-      date: 'Oct 26, 2023 at 14:22',
-      icon: 'fa-file-circle-check',
-      color: 'accent'
-    },
-    {
-      action: 'Request created',
-      user: 'Dr. Julian Moore',
-      date: 'Oct 26, 2023 at 14:20',
-      icon: 'fa-plus',
-      color: 'slate'
-    }
-  ];
+  };
 
   return (
     <>
@@ -125,7 +188,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
                     <i className="fa-regular fa-clock mr-1"></i> Received: {request.dateCreated} • 
-                    <i className="fa-regular fa-calendar-check ml-2 mr-1"></i> Last Update: 2 hours ago
+                    <i className="fa-regular fa-calendar-check ml-2 mr-1"></i> Last Update: {request.lastUpdated}
                   </p>
                 </div>
               </div>
@@ -134,7 +197,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   <i className="fa-solid fa-file-pdf text-danger"></i> Export PDF
                 </button>
                 <button 
-                  onClick={() => setShowAuditModal(true)}
+                  onClick={handleOpenAuditModal}
                   className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2"
                 >
                   <i className="fa-solid fa-list-ul"></i> Audit Log
@@ -154,14 +217,14 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 </h3>
                 <div className="flex items-center gap-4">
                   <img
-                    src={request.doctor.avatar || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"}
-                    alt={`${request.doctor.name} - Doctor Avatar`}
+                    src={request.doctorProfileImage || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"}
+                    alt={`${request.doctorName || 'Unknown Doctor'} - Doctor Avatar`}
                     className="w-14 h-14 rounded-xl object-cover"
                   />
                   <div>
-                    <p className="text-sm font-bold text-slate-900">{request.doctor.name}</p>
-                    <p className="text-xs text-slate-500">{request.doctor.specialty} • St. Mary's Hospital</p>
-                    <p className="text-[11px] font-mono text-primary mt-1">RPPS: 10100239485</p>
+                    <p className="text-sm font-bold text-slate-900">{request.doctorName || 'Unknown Doctor'}</p>
+                    <p className="text-xs text-slate-500">{request.doctorSpeciality || 'Unknown Specialty'} • {request.doctorId?.businessAddress || 'Private Practice'}</p>
+                    <p className="text-[11px] font-mono text-primary mt-1">RPPS: {request.doctorId?.rppsNumber || 'N/A'}</p>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
@@ -182,10 +245,17 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     RJ
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">{request.patient}</p>
-                    <p className="text-xs text-slate-500">64 years • Male • O+ Positive</p>
+                    <p className="text-sm font-bold text-slate-900">{request.patientName || 'Unknown Patient'}</p>
+                    <p className="text-xs text-slate-500">
+                      {request.patientId?.dateOfBirth ? new Date().getFullYear() - new Date(request.patientId.dateOfBirth).getFullYear() : 'N/A'} years • 
+                      {request.patientId?.gender || 'Unknown'} • 
+                      {request.patientId?.bloodGroup || 'Unknown Blood Group'}
+                    </p>
                     <p className="text-[11px] text-slate-500 mt-1">
-                      <i className="fa-solid fa-location-dot mr-1"></i> 124 Park Avenue, NY
+                      <i className="fa-solid fa-location-dot mr-1"></i> 
+                      {request.patientId?.streetAddress && request.patientId?.city && request.patientId?.zip 
+                        ? `${request.patientId.streetAddress}, ${request.patientId.city}, ${request.patientId.zip}`
+                        : 'Address Not Available'}
                     </p>
                   </div>
                 </div>
@@ -203,18 +273,22 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-xs text-slate-500">Category</span>
-                    <span className="text-xs font-bold text-slate-900">Laboratory</span>
+                    <span className="text-xs text-slate-500">Service</span>
+                    <span className="text-xs font-bold text-slate-900">{request.serviceName || request.serviceType || 'Unknown Service'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-xs text-slate-500">Service</span>
-                    <span className="text-xs font-bold text-slate-900">{request.serviceType}</span>
+                    <span className="text-xs text-slate-500">Description</span>
+                    <span className="text-xs font-bold text-slate-900">{request.serviceId?.description || 'No Description'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-slate-500">Priority</span>
+                    <span className="text-xs font-bold text-slate-900 capitalize">{request.priorityLevel || 'Normal'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-xs text-slate-500">Provider</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-primary">LabCorp Services</span>
-                      <i className="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>
+                      <span className="text-xs font-bold text-primary">{request.assignedProviderName || 'Not Assigned'}</span>
+                      {request.assignedProviderName && <i className="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>}
                     </div>
                   </div>
                                   </div>
@@ -259,7 +333,15 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[10px] text-slate-500">
-                      <span><i className="fa-solid fa-calendar-check mr-1"></i>Updated: Oct 26, 14:20 by Dr. Moore</span>
+                      <span>
+                        <i className="fa-solid fa-calendar-check mr-1"></i>
+                        Updated: {request.updatedAt ? new Date(request.updatedAt).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : 'Unknown Date'} by {request.updatedBy?.fName && request.updatedBy?.lName ? `${request.updatedBy.fName} ${request.updatedBy.lName}` : request.updatedBy?.email || 'Unknown User'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -268,7 +350,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     <div className="flex justify-between items-start border-b pb-6">
                       <div>
                         <h2 className="text-xl font-bold text-slate-900">MEDICAL PRESCRIPTION</h2>
-                        <p className="text-xs text-slate-500">ID: PRES-88210-LAB</p>
+                        <p className="text-xs text-slate-500">ID: {request.requestId || 'N/A'}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs font-bold text-slate-800">At-Home Healthcare</p>
@@ -278,44 +360,51 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     <div className="grid grid-cols-2 gap-8 text-xs">
                       <div>
                         <p className="font-bold text-slate-400 uppercase mb-2">Patient</p>
-                        <p className="text-slate-900 font-medium">{request.patient}</p>
-                        <p className="text-slate-500 mt-1">DOB: 12/05/1959</p>
+                        <p className="text-slate-900 font-medium">{request.patientName || request.patient || 'Unknown Patient'}</p>
+                        <p className="text-slate-500 mt-1">DOB: {request.patientId?.dateOfBirth ? new Date(request.patientId.dateOfBirth).toLocaleDateString('en-US', { 
+                          month: '2-digit', 
+                          day: '2-digit', 
+                          year: 'numeric'
+                        }) : 'Not Available'}</p>
                       </div>
                       <div>
                         <p className="font-bold text-slate-400 uppercase mb-2">Prescriber</p>
-                        <p className="text-slate-900 font-medium">{request.doctor.name}</p>
-                        <p className="text-slate-500 mt-1">License: #NY-99201</p>
+                        <p className="text-slate-900 font-medium">{request.doctorName || request.doctor?.name || 'Unknown Doctor'}</p>
+                        <p className="text-slate-500 mt-1">License: #{request.doctorId?.rppsNumber || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="space-y-4">
                       <p className="text-xs font-bold text-slate-400 uppercase">Analysis Requested</p>
-                      <div className="p-4 bg-slate-50 rounded-lg space-y-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-4 h-4 rounded border-2 border-primary flex items-center justify-center">
-                            <i className="fa-solid fa-check text-[10px] text-primary"></i>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <div className="w-4 h-4 rounded border-2 border-primary flex items-center justify-center mt-0.5">
+                            <i className="fa-solid fa-file-medical text-[10px] text-primary"></i>
                           </div>
-                          <span className="text-xs text-slate-800 font-medium">Complete Blood Count (CBC) with differential</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-4 h-4 rounded border-2 border-primary flex items-center justify-center">
-                            <i className="fa-solid fa-check text-[10px] text-primary"></i>
+                          <div className="flex-1">
+                            <p className="text-xs text-slate-800 font-medium leading-relaxed">
+                              {request.patientId?.medicalDescription || 'No medical description available'}
+                            </p>
                           </div>
-                          <span className="text-xs text-slate-800 font-medium">Lipid Panel (Total, LDL, HDL, Triglycerides)</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="w-4 h-4 rounded border-2 border-primary flex items-center justify-center">
-                            <i className="fa-solid fa-check text-[10px] text-primary"></i>
-                          </div>
-                          <span className="text-xs text-slate-800 font-medium">Hemoglobin A1c (HbA1c)</span>
                         </div>
                       </div>
                     </div>
                     <div className="pt-8 flex justify-end">
                       <div className="text-center">
                         <div className="w-48 h-12 border-b-2 border-slate-200 flex items-center justify-center italic text-primary font-serif">
-                          {request.doctor.name}
+                          {request.doctorName || request.doctor?.name || 'Unknown Doctor'}
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-2">Digitally Signed on 26/10/2023</p>
+                        <p className="text-[10px] text-slate-400 mt-2">
+                          {request.digitalSignature?.signedAt 
+                            ? `Digitally Signed on ${new Date(request.digitalSignature.signedAt).toLocaleDateString('en-US', { 
+                                month: '2-digit', 
+                                day: '2-digit', 
+                                year: 'numeric'
+                              })}` 
+                            : request.status === 'completed' 
+                              ? 'Digitally Signed'
+                              : 'Awaiting Signature'
+                          }
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -370,12 +459,28 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     <button className="text-primary text-[10px] font-bold hover:underline">+ ADD NOTE</button>
                   </div>
                   <div className="space-y-4">
-                    <div className="p-3 bg-slate-50 rounded-lg">
-                      <p className="text-xs text-slate-700 leading-relaxed">
-                        Patient requested collection after 4 PM only. Informed LabCorp driver.
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-2">By Sarah W. • 1 hour ago</p>
-                    </div>
+                    {request.initialNotes ? (
+                      <div className="p-3 bg-slate-50 rounded-lg">
+                        <p className="text-xs text-slate-700 leading-relaxed">
+                          {request.initialNotes}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-2">
+                          By {request.createdBy?.fName && request.createdBy?.lName ? `${request.createdBy.fName} ${request.createdBy.lName}` : request.createdBy?.email || 'Unknown User'} • 
+                          {request.createdAt ? new Date(request.createdAt).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : 'Unknown Date'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-slate-50 rounded-lg">
+                        <p className="text-xs text-slate-400 italic">
+                          No internal notes available
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -442,25 +547,57 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-overlay">
           <div className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden tradingview-shadow max-h-[80vh] flex flex-col">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-              <h3 className="text-lg font-bold text-slate-900">Audit Log - Request #{request.id}</h3>
+              <h3 className="text-lg font-bold text-slate-900">Audit Log - Request #{request?.id}</h3>
               <button onClick={() => setShowAuditModal(false)} className="text-slate-400 hover:text-slate-600">
                 <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-4">
-                {auditLogs.map((log, index) => (
-                  <div key={index} className="flex gap-4 pb-4 border-b border-slate-100">
-                    <div className={`w-10 h-10 rounded-xl bg-${log.color}/10 flex items-center justify-center flex-shrink-0`}>
-                      <i className={`fa-solid ${log.icon} text-${log.color}`}></i>
+              {loadingAuditLogs ? (
+                <div className="flex items-center justify-center py-8">
+                  <i className="fa-solid fa-spinner fa-spin text-primary text-xl mr-3"></i>
+                  <span className="text-sm text-slate-600">Loading audit logs...</span>
+                </div>
+              ) : auditLogs.length === 0 ? (
+                <div className="flex flex-col items-center py-8">
+                  <i className="fa-solid fa-clipboard-list text-slate-300 text-3xl mb-3"></i>
+                  <span className="text-sm text-slate-500">No audit logs found</span>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {auditLogs.map((log, index) => (
+                    <div key={log.id || index} className="flex gap-4 pb-4 border-b border-slate-100">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                        <i className="fa-solid fa-history text-slate-600"></i>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-slate-900">{log.actionType}</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          By {log.performedBy?.fName && log.performedBy?.lName 
+                            ? `${log.performedBy.fName} ${log.performedBy.lName}` 
+                            : log.performedBy?.email || 'Unknown User'} • 
+                          {log.performedAt 
+                            ? new Date(log.performedAt).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })
+                            : 'Unknown Date'
+                          }
+                        </p>
+                        {log.reason && (
+                          <p className="text-xs text-slate-600 mt-2 italic">Reason: {log.reason}</p>
+                        )}
+                        {log.ipAddress && (
+                          <p className="text-xs text-slate-400 mt-1">IP: {log.ipAddress}</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-slate-900">{log.action}</p>
-                      <p className="text-xs text-slate-500 mt-1">By {log.user} • {log.date}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
